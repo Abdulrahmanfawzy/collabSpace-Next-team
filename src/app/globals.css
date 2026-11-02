@@ -5,58 +5,119 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Primary */
-  --color-app-primary: var(--color-primary);
-  --color-brand-navy: #111a3e;
-  --color-brand-field: #e8eef3;
+  /* ========================================
+     Brand Colors
+  ======================================== */
+  --color-primary: var(--primary);
+  --color-primary-50: var(--primary-50);
+  --color-secondary: var(--secondary);
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-50: var(--secondary-50);
 
-  /* Success */
-  --color-app-success: var(--color-success);
-  --color-app-success-dark: var(--color-success-dark);
-  --color-app-success-medium: var(--color-success-medium);
-  --color-app-success-light: var(--color-success-light);
-  --color-app-success-background: var(--color-success-background);
+  /* ========================================
+     Text Colors
+  ======================================== */
+  --color-text-primary: var(--text-primary);
+  --color-text-body: var(--text-body);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-dark: var(--text-dark);
+  --color-text-white: var(--white);
 
-  /* Error */
-  --color-app-error: var(--color-error);
-  --color-app-error-dark: var(--color-error-dark);
-  --color-app-error-bright: var(--color-error-bright);
-  --color-app-error-light: var(--color-error-light);
-  --color-app-error-background: var(--color-error-background);
-  --color-app-error-transparent: var(--color-error-transparent);
+  /* ========================================
+     Background Colors
+  ======================================== */
+  --color-bg-label: var(--bg-label);
+  --color-bg-light: var(--bg-light);
+  --color-bg-muted: var(--bg-muted);
+  --color-bg-white: var(--white);
 
-  /* Warning */
-  --color-app-warning: var(--color-warning);
-  --color-app-warning-dark: var(--color-warning-dark);
-  --color-app-warning-medium: var(--color-warning-medium);
-  --color-app-warning-light: var(--color-warning-light);
-  --color-app-warning-background: var(--color-warning-background);
+  /* ========================================
+     Support Colors - Green
+  ======================================== */
+  --color-support-green: var(--support-green);
+  --color-support-green-light: var(--support-green-light);
 
-  /* Info */
-  --color-app-info: var(--color-info);
-  --color-app-info-dark: var(--color-info-dark);
-  --color-app-info-muted: var(--color-info-muted);
-  --color-app-info-light: var(--color-info-light);
+  /* Support Colors - Greenish */
+  --color-support-greenish: var(--support-greenish);
+  --color-support-greenish-light: var(--support-greenish-light);
+  --color-support-greenish-transparent: var(--support-greenish-transparent);
 
-  /* Neutral */
-  --color-app-neutral-dark: var(--color-neutral-dark);
-  --color-app-neutral: var(--color-neutral);
-  --color-app-neutral-light: var(--color-neutral-light);
+  /* Support Colors - Red */
+  --color-support-red: var(--support-red);
+  --color-support-red-dark: var(--support-red-dark);
+  --color-support-red-light: var(--support-red-light);
 
-  /* Opacity colors */
-  --color-app-black-80: var(--color-black-80);
-  --color-app-neutral-dark-60: var(--color-neutral-dark-60);
+  /* Support Colors - Yellow */
+  --color-support-yellow: var(--support-yellow);
+  --color-support-yellow-light: var(--support-yellow-light);
 
-  /* Accent */
-  --color-app-accent-peach: var(--color-accent-peach);
-  --color-app-accent-orange: var(--color-accent-orange);
+  /* Support Colors - Dark Orange */
+  --color-support-dark-orange: var(--support-dark-orange);
+  --color-support-dark-orange-light: var(--support-dark-orange-light);
 
-  --color-border-color: var(--border-color);
+  /* Support Colors - Violet */
+  --color-support-violet: var(--support-violet);
+  --color-support-violet-light: var(--support-violet-light);
+
+  /* Support Colors - Blue */
+  --color-support-blue: var(--support-blue);
+
+  /* ========================================
+     Gray Palette
+  ======================================== */
+  --color-gray-03: var(--gray-03);
+  --color-gray-05: var(--gray-05);
+  --color-gray-06: var(--gray-06);
+  --color-gray-30: var(--gray-30);
+  --color-gray-500: var(--gray-500);
+
+  /* Additional Gray Shades */
+  --color-gray-light: var(--gray-light);
+  --color-gray-lighter: var(--gray-lighter);
+  --color-gray-medium: var(--gray-medium);
+  --color-gray-dark: var(--gray-dark);
+  --color-gray-darker: var(--gray-darker);
+  --color-gray-strong: var(--gray-strong);
+
+  /* ========================================
+     Black & White
+  ======================================== */
+  --color-black: var(--black);
+  --color-black-20: var(--black-20);
+  --color-black-75: var(--black-75);
+  --color-black-80: var(--black-80);
+  --color-white: var(--white);
+  --color-white-10: var(--white-10);
+
+  /* ========================================
+     Opacity Colors
+  ======================================== */
+  --color-overlay-dark: var(--overlay-dark);
+  --color-primary-transparent: var(--primary-transparent);
+  --color-greenish-transparent: var(--support-greenish-transparent);
+
+  /* ========================================
+     Gradients
+  ======================================== */
+  --background-image-overlay: var(--gradient-overlay);
+  --background-image-primary: var(--gradient-primary);
+
+  /* ========================================
+     Borders & Shadows
+  ======================================== */
+  --color-border: var(--border-color);
   --shadow-card-shadow: var(--card-shadow);
 
-  /* Shadcn  */
-  --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
+  /* ========================================
+     Typography
+  ======================================== */
+  --font-mono: var(--font-geist-mono, monospace);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-inter);
+  /* ========================================
+     Shadcn UI
+  ======================================== */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -65,29 +126,36 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+
   --color-ring: var(--ring);
   --color-input: var(--input);
-  --color-border: var(--border);
   --color-destructive: var(--destructive);
+
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
+
   --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
+
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
+
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-foreground: var(--foreground);
+
   --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* Radius */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -97,110 +165,203 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ========================================
+   Root Variables - Figma Design System
+======================================== */
+
 :root {
-  /* Primary */
-  --color-primary: #161c36;
-  /* Success */
-  --color-success: #51e247cc;
-  --color-success-dark: #378666;
-  --color-success-medium: #4b9876;
-  --color-success-light: #e6f6ec;
-  --color-success-background: #ecf9f0;
-  /* Error */
-  --color-error: #e80000cc;
-  --color-error-dark: #d14e1f;
-  --color-error-bright: #f83c3c;
-  --color-error-light: #fce8ea;
-  --color-error-background: #fce8eb;
-  --color-error-transparent: #ff000980;
+  /* Brand */
+  --primary: #005afb;
+  --primary-50: #e6efff;
 
-  /* Warning */
-  --color-warning: #eaa360;
-  --color-warning-dark: #dc8540;
-  --color-warning-medium: #e48a4b;
-  --color-warning-light: #fef1e8;
-  --color-warning-background: #feedde0;
+  --secondary: #525256;
+  --secondary-500: #27272b;
+  --secondary-50: #e9e9ea;
 
-  /* Info */
-  --color-info: #6380ce;
-  --color-info-dark: #2841b1;
-  --color-info-muted: #687ea0;
-  --color-info-light: #e7ecfc;
+  /* Text Colors */
+  --text-primary: #000712;
+  --text-body: #718096;
+  --text-secondary: #606c80;
+  --text-muted: #9f9f9f;
+  --text-dark: #252525;
 
-  /* Neutral */
-  --color-neutral-dark: #5e6061;
-  --color-neutral: #d8d8d8;
-  --color-neutral-light: #f2f2f2;
+  /* Background Colors */
+  --bg-label: #f3f4f6;
+  --bg-light: #f6f8fa;
+  --bg-muted: #f2f4f7;
+  --white: #ffffff;
 
-  /* Opacity colors */
-  --color-black-80: #000000cc;
-  --color-neutral-dark-60: #5e606199;
+  /* Support - Green */
+  --support-green: #2ba52e;
+  --support-green-light: #eaf6ea;
 
-  /* Accent */
-  --color-accent-peach: #ef8b70;
-  --color-accent-orange: #f8ae5d;
+  /* Support - Greenish */
+  --support-greenish: #04b5ae;
+  --support-greenish-light: #e6f8f7;
+  --support-greenish-transparent: #04b5ae1f;
 
-  --border-color: #fffbf8;
+  /* Support - Red */
+  --support-red: #db302a;
+  --support-red-dark: #dc1500;
+  --support-red-light: #fbeaea;
+
+  /* Support - Yellow */
+  --support-yellow: #e6ba0e;
+  --support-yellow-light: #fffae7;
+
+  /* Support - Dark Orange */
+  --support-dark-orange: #fa9e00;
+  --support-dark-orange-light: #fff5e6;
+
+  /* Support - Violet */
+  --support-violet: #7d2d7e;
+  --support-violet-light: #f2eaf2;
+
+  /* Support - Blue */
+  --support-blue: #3b82f6;
+
+  /* Gray - Figma Named Colors */
+  --gray-03: #9f9f9f;
+  --gray-05: #e8e8e8;
+  --gray-06: #f3f3f3;
+  --gray-30: #f2f4f7;
+  --gray-500: #606c80;
+
+  /* Additional Gray Shades */
+  --gray-light: #ebebeb;
+  --gray-lighter: #d3d3d3;
+  --gray-medium: #c2c2c2;
+  --gray-dark: #828282;
+  --gray-darker: #636363;
+  --gray-strong: #444444;
+
+  /* Additional Neutral Colors */
+  --neutral-light: #d9d9d9;
+  --neutral-medium: #c0c0c0;
+  --neutral-dark: #b5b5b5;
+  --neutral-strong: #d8d8d8;
+  --neutral-muted: #9a9a9a;
+  --neutral-black: #191919;
+  --neutral-deep: #383838;
+  --neutral-gray: #7a7a7a;
+  --neutral-gray-dark: #808080;
+
+  /* Black & White */
+  --black: #000000;
+  --black-20: #00000033;
+  --black-75: #000000bf;
+  --black-80: #000000cc;
+  --white-10: #ffffff1a;
+
+  /* Opacity Colors */
+  --overlay-dark: #4a4a4acc;
+  --primary-transparent: #005afb1f;
+
+  /* Gradients */
+  --gradient-overlay: linear-gradient(
+    180deg,
+    rgba(9, 30, 66, 0.13) 0%,
+    rgba(9, 30, 66, 0.13) 25%,
+    rgba(9, 30, 66, 0.08) 25.01%,
+    rgba(9, 30, 66, 0) 100%
+  );
+
+  --gradient-primary: linear-gradient(
+    180.02deg,
+    rgba(37, 99, 235, 0.1) 0.01%,
+    rgba(59, 130, 246, 0) 99.95%
+  );
+
+  /* Borders & Shadows */
+  --border-color: #e9e9ea;
   --card-shadow: rgba(0, 0, 0, 0.1) 0px 0.5px 0.5px 0.5px;
-  /* Shadcn */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+
+  /* ========================================
+     Shadcn UI - Light Theme
+  ======================================== */
+
+  --background: #ffffff;
+  --foreground: #000712;
+
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
+
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+
+  --primary-foreground: #ffffff;
+
+  --secondary-foreground: #ffffff;
+
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
+
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
+
+  --destructive: #db302a;
+
+  --border: #e9e9ea;
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: #005afb;
+
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+
   --radius: 0.625rem;
+
+  /* Sidebar */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: #005afb;
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-border: #e9e9ea;
+  --sidebar-ring: #005afb;
 }
+
+/* ========================================
+   Dark Theme - Shadcn UI
+======================================== */
 
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
+
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
+
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
+
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
+
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
+
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
+
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
+
   --destructive: oklch(0.704 0.191 22.216);
+
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
+
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -211,7 +372,28 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-/* Modern Sleek Scrollbar for Tables */
+/* ========================================
+   Base Styles
+======================================== */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    @apply font-sans;
+  }
+}
+
+/* ========================================
+   Custom Table Scrollbar
+======================================== */
+
 .custom-table-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
@@ -237,9 +419,13 @@
   background-color: rgba(107, 114, 128, 0.6);
 }
 
+/* ========================================
+   Settings Sidebar Scrollbar
+======================================== */
+
 .settings-sidebar-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-primary) transparent;
+  scrollbar-color: var(--primary) transparent;
 }
 
 .settings-sidebar-scrollbar::-webkit-scrollbar {
@@ -252,8 +438,12 @@
 
 .settings-sidebar-scrollbar::-webkit-scrollbar-thumb {
   border-radius: 9999px;
-  background-color: var(--color-primary);
+  background-color: var(--primary);
 }
+
+/* ========================================
+   Dark Scrollbars
+======================================== */
 
 .dark .custom-table-scrollbar {
   scrollbar-color: rgba(156, 163, 175, 0.25) transparent;
