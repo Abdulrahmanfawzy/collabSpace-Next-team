@@ -3,7 +3,12 @@ import "@/app/globals.css";
 import { cn } from "@/lib/utils";
 import { Metadata } from "next";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "collabSpace",
@@ -12,11 +17,10 @@ export const metadata: Metadata = {
   description: "collabSpace is a platform for project management.",
 };
 
-// layout
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={cn(inter.className)}>{children}</body>
+      <body className={cn(inter.variable, "font-sans")}>{children}</body>
     </html>
   );
 }
