@@ -37,6 +37,7 @@
      Support Colors - Green
   ======================================== */
   --color-support-green: var(--support-green);
+  --color-support-green-hover: var(--support-green-hover);
   --color-support-green-light: var(--support-green-light);
 
   /* Support Colors - Greenish */
@@ -195,6 +196,7 @@
 
   /* Support - Green */
   --support-green: #2ba52e;
+  --support-green-hover: #279529;
   --support-green-light: #eaf6ea;
 
   /* Support - Greenish */

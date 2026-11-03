@@ -1,6 +1,7 @@
 export interface Project {
   id: number
   name: string
+  slug: string
   startDate: string
   deadline: string
   status: "In Progress" | "Done"
@@ -13,6 +14,7 @@ export const projects: Project[] = [
   {
     id: 1,
     name: "Alpha",
+    slug: "alpha",
     startDate: "2025-12-12",
     deadline: "2025-12-14",
     status: "In Progress",
@@ -23,6 +25,7 @@ export const projects: Project[] = [
   {
     id: 2,
     name: "SepetGo",
+    slug: "sepetgo",
     startDate: "2025-12-12",
     deadline: "2025-12-14",
     status: "Done",

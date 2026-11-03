@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import type { Project } from "./projects-data"
+import Link from "next/link"
 
 interface ProjectsTableProps {
   projects: Project[]
@@ -59,7 +60,9 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
                   <div className="flex size-8 items-center justify-center rounded-full bg-[#F2EAF2]">
                     <FileText size={16} className="text-[#7D2D7E]" />
                   </div>
-                  <span className="text-sm font-medium text-text-primary">{project.name}</span>
+                  <Link href={`/projects/${project.slug}`} className="text-sm font-medium text-text-primary">
+                    {project.name}
+                  </Link>
                 </div>
               </TableCell>
               <TableCell className="text-sm text-text-primary">
