@@ -1,12 +1,5 @@
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { CommonSelect } from "@/components/common/common-select"
 
 const projectOptions = [
   { label: "All Projects", value: "All Projects" },
@@ -15,29 +8,10 @@ const projectOptions = [
 ]
 
 const themeOptions = [
-  { label: "Light", value: "light" },
-  { label: "Dark", value: "dark" },
-  { label: "System", value: "system" },
+  { label: "Newest", value: "Newest" },
+  { label: "Latest", value: "Latest" },
+  
 ]
-
-function FilterSelect({ options }: { options: typeof projectOptions }) {
-  return (
-    <Select>
-      <SelectTrigger className="w-45 rounded-[16px] border border-secondary-500 bg-transparent">
-        <SelectValue placeholder="Theme" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          {options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
-  )
-}
 
 export function ProjectFilters() {
   return (
@@ -47,8 +21,8 @@ export function ProjectFilters() {
         placeholder="Search ..."
       />
       <div className="flex items-center justify-between gap-2">
-        <FilterSelect options={projectOptions} />
-        <FilterSelect options={themeOptions} />
+        <CommonSelect options={projectOptions} placeholder="All projects" />
+        <CommonSelect options={themeOptions} placeholder="Newest" />
       </div>
     </div>
   )
