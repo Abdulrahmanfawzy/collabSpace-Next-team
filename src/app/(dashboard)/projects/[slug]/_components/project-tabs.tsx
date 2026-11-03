@@ -15,13 +15,13 @@ const tabs = ["Overview", "Tasks", "Teams", "Files"];
 
 const ProjectTabs = () => {
   return (
-    <Tabs defaultValue="Overview" className="w-full mt-5">
+    <Tabs defaultValue="overview" className="w-full mt-5">
     {/* -----------------------------------Tabs List ----------------------------------------------------------------------------------------------------- */}
       <TabsList className="h-auto w-full items-center justify-start gap-7 rounded-none border-b border-gray-100 bg-transparent p-0">
         {tabs.map((tab) => (
           <TabsTrigger
             key={tab}
-            value={tab}
+            value={tab.toLowerCase()}
           
           >
             {tab}
