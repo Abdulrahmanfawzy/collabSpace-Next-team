@@ -20,6 +20,8 @@ const buttonVariants = cva(
           "bg-app-error-light text-app-error-dark hover:bg-app-error-background focus-visible:ring-app-error/20",
         success:
           "bg-app-success text-white hover:bg-app-success/90 focus-visible:ring-app-success/30",
+        auth:
+          "bg-primary text-text-white hover:bg-primary/90 focus-visible:ring-primary/30",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
