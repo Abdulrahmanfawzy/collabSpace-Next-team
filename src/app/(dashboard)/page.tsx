@@ -1,11 +1,16 @@
+import Navbar from "@/components/layout/Navbar/Navbar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "collabSpace",
 };
 
-function page() {
-  return <>page</>;
+function Dashboard() {
+  return (
+    <>
+  
+    </>
+  );
 }
 
-export default page;
+export default Dashboard;

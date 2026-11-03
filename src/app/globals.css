@@ -5,10 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Primary */
+  /* Primary */ 
   --color-app-primary: var(--color-primary);
   --color-brand-navy: #111a3e;
   --color-brand-field: #e8eef3;
+  --color-primary-light: var(--color-primary-light);  
 
   /* Success */
   --color-app-success: var(--color-success);
@@ -100,6 +101,7 @@
 :root {
   /* Primary */
   --color-primary: #161c36;
+  --color-primary-light: #005AFB;
   /* Success */
   --color-success: #51e247cc;
   --color-success-dark: #378666;
@@ -265,4 +267,8 @@
 
 .dark .custom-table-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(156, 163, 175, 0.45);
+}
+.app-container {
+  max-width: 95%;
+  margin: auto;
 }
