@@ -34,7 +34,7 @@ export function CommonSelect({
     <Select {...selectProps}>
       <SelectTrigger
         className={cn(
-          "w-45 rounded-[16px] border border-secondary-500 bg-transparent",
+          "w-45 h-10! rounded-2xl p-3 border border-secondary-500 bg-transparent",
           triggerClassName
         )}
       >
