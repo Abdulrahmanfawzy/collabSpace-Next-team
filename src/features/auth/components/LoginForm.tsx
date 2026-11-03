@@ -83,7 +83,12 @@ export function LoginForm() {
           className="h-auto p-0  text-[9px] md:text-sm font-normal leading-3.25 no-underline
            hover:underline"
         >
-          Forget Password?
+           <Link
+          href="/forgot-password"
+          className="font-semibold text-primary hover:underline"
+        >
+            Forget Password?
+        </Link>
         </Button>
       </div>
 
