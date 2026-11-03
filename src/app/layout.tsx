@@ -4,7 +4,12 @@ import { cn } from "@/lib/utils";
 import { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar/Navbar";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "collabSpace",
@@ -13,7 +18,6 @@ export const metadata: Metadata = {
   description: "collabSpace is a platform for project management.",
 };
 
-// layout
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -21,6 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Navbar />
         {children}
       </body>
+      <body className={cn(inter.variable, "font-sans")}>{children}</body>
     </html>
   );
 }
