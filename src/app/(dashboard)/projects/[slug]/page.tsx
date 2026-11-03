@@ -19,7 +19,6 @@ const ProjectDetailsPage = async ({ params }: ProjectDetailsPageProps) => {
      <main className="app-container bg-bg-light min-h-screen mt-15">
       <ProjectHeader projectName={project.name} />
        <ProjectTabs />
-
     </main>
   )
 }

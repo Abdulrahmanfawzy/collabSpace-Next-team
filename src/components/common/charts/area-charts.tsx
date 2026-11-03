@@ -51,10 +51,10 @@ const AreaChart = ({
     : chartData.map((item) => item.index)
 
   return (
-    <section className={cn("w-full rounded-xl bg-white p-4 shadow-sm", className)}>
+    <section className={cn("w-full rounded-xl bg-white p-4 border border-bg-label", className)}>
       {/* Header */}
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-medium text-gray-900">{title}</h2>
+        <h2 className="mb-2 text-lg font-medium text-black">{title}</h2>
 
         <div className="flex items-center gap-4 text-[10px] text-gray-500">
           {filters.map((filter) =>

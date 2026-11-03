@@ -1,5 +1,10 @@
 import { AreaChart } from "@/components/common/charts"
 import ProjectDescription from "../project-description"
+import ProjectDetails from "../project-details"
+
+import TeamMembers from "../project-members"
+import ProjectProgress from "../project-progress"
+
 
 const projectData = [
   12500, 14615, 15769, 15577, 14423, 12308, 10000, 10000, 14231,
@@ -12,12 +17,14 @@ const projectData = [
 
 const OverviewTab = () => {
   return (
-    <section className="mt-6 flex gap-2">
-      <div className="flex flex-col">
+    <section className="my-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+       {/*------------------------ left section------------------------------------------------------ */}
+
+      <div className="lg:col-span-2 flex flex-col gap-4">
         <ProjectDescription
           description="This project focuses on organizing tasks, tracking progress, and coordinating team efforts to ensure timely delivery and clear visibility across all project activities."
         />
-        {/* project overview */}
+         {/* --------------------------------------------------------------------------------------- */}
         <div className="space-y-6">
           <AreaChart
             title="Project overview"
@@ -33,14 +40,15 @@ const OverviewTab = () => {
             ]}
           />
         </div>
-        {/* project details */}
-        <div></div>
+      {/* ------------------------------------------------------------------------------------------ */}
+        <ProjectDetails />
       </div>
-      <div className="flex flex-col">
-        {/* project progress */}
-        <div></div>
-        {/* project members */}
-        <div></div>
+      {/*------------------------ right section------------------------------------------------------ */}
+      <div className="flex flex-col gap-4">
+        
+        <ProjectProgress  />
+        
+        <TeamMembers/>
       </div>
     </section>
   )
