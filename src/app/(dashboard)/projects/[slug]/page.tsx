@@ -1,6 +1,7 @@
 import ProjectHeader from "./_components/project-header"
 import { notFound } from "next/navigation"
 import { projects } from "../_components/projects-data"
+import ProjectTabs from "./_components/project-tabs"
 
 interface ProjectDetailsPageProps {
   params: Promise<{ slug: string }>
@@ -15,8 +16,9 @@ const ProjectDetailsPage = async ({ params }: ProjectDetailsPageProps) => {
   }
 
   return (
-     <main className="app-container mt-15">
+     <main className="app-container bg-bg-light min-h-screen mt-15">
       <ProjectHeader projectName={project.name} />
+       <ProjectTabs />
 
     </main>
   )
