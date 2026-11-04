@@ -1,10 +1,17 @@
-const TeamsTab = () => {
-  return (
-    <section className="mt-6">
-      <h2 className="text-lg font-semibold">Project Teams</h2>
+import { TeamBoard } from "../team-board"
+import { teamsData } from "../teams.data"
 
-      {/* Teams content */}
+
+const TeamsTab = () => {
+   
+  return (
+    
+     <section className="mt-6 overflow-x-auto">
+          <TeamBoard teams={teamsData}/>
     </section>
+
+      
+   
   )
 }
 
