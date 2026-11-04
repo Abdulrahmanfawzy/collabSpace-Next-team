@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { AuthCard } from "@/features/auth/components/auth-card";
-import { VerifyCodeForm } from "@/features/auth/components/verify-code-form";
+import { AuthCard } from "@/features/auth/components/AuthCard";
+import { VerifyCodeForm } from "@/features/auth/components/VerifyCodeForm";
 
 export const metadata: Metadata = {
   title: "Verify Code",
