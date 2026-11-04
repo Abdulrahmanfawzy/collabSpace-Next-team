@@ -12,7 +12,24 @@ import TeamsTab from "./tabs/teams";
 import FilesTab from "./tabs/files";
 
 const tabs = ["Overview", "Tasks", "Teams", "Files"];
-
+const tabContents=[
+  {
+   'value':'overview',
+   'component':<OverviewTab />
+  },
+   {
+   'value':'tasks',
+   'component':<TasksTab />
+  },
+   {
+   'value':'teams',
+   'component':<TeamsTab />
+  },
+   {
+   'value':'files',
+   'component':<FilesTab />
+  },
+]
 const ProjectTabs = () => {
   return (
     <Tabs defaultValue="overview" className="w-full mt-5">
@@ -29,21 +46,12 @@ const ProjectTabs = () => {
         ))}
       </TabsList>
       {/* -----------------------------------Tabs Content----------------------------------------------------------------------------------------------------- */}
-      <TabsContent value="overview">
-        <OverviewTab />
-      </TabsContent>
-
-      <TabsContent value="tasks">
-        <TasksTab />
-      </TabsContent>
-
-      <TabsContent value="teams">
-        <TeamsTab />
-      </TabsContent>
-
-      <TabsContent value="files">
-        <FilesTab />
-      </TabsContent>
+      {tabContents.map((content)=>(
+        <TabsContent key={content.value} value={content.value}>
+          {content.component}
+        </TabsContent>
+      ))}
+  
     </Tabs>
   );
 };
