@@ -27,7 +27,7 @@ export default function MainNav() {
 
 
   return (
-    <NavigationMenu className="w-full max-w-full justify-start">
+    <NavigationMenu className="w-full max-w-5xl justify-start">
       <NavigationMenuList
         className={cn(
           "flex w-full flex-wrap justify-start gap-1",
@@ -57,8 +57,7 @@ export default function MainNav() {
                     active
                       ? "!bg-primary-light !text-white hover:!bg-primary-blue-700"
                       : "!bg-transparent !text-neutral-900 hover:!bg-black/5"
-                  )}
-                >
+                  )}>
                   {label}
                 </Link>
               </NavigationMenuLink>

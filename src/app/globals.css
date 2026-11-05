@@ -6,7 +6,7 @@
 
 @theme inline {
   /* Primary */ 
-  --color-app-primary: var(--color-primary);
+  --color-app-primary-dark: var(--color-primary);
   --color-brand-navy: #111a3e;
   --color-brand-field: #e8eef3;
   --color-primary-light: var(--color-primary-light);  
@@ -175,9 +175,8 @@
 ======================================== */
 
 :root {
-<<<<<<< HEAD
   /* Primary */
-  --color-primary: #161c36;
+  --color-primary-dark: #161c36;
   --color-primary-light: #005AFB;
   /* Success */
   --color-success: #51e247cc;
@@ -192,11 +191,9 @@
   --color-error-light: #fce8ea;
   --color-error-background: #fce8eb;
   --color-error-transparent: #ff000980;
-=======
   /* Brand */
   --primary: #005afb;
   --primary-50: #e6efff;
->>>>>>> 5f473386ee3095f789ad96bdc6261f41c06a6ee0
 
   --secondary: #525256;
   --secondary-500: #27272b;

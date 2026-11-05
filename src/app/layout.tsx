@@ -25,7 +25,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Navbar />
         {children}
       </body>
-      <body className={cn(inter.variable, "font-sans")}>{children}</body>
     </html>
   );
 }
