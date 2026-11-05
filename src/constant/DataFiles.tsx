@@ -25,4 +25,20 @@ export const projects = [
       time: "13:00",
       downloadUrl: "/files/schema.sql",
     },
+  ]; 
+  export const tasks = [
+    { id: "1", title: "Creat Wireframes", priority: "High", due: "due today", progress: 82 },
+    { id: "2", title: "User Research", priority: "Medium", due: "due Dec 18", progress: 52 },
+    { id: "3", title: "Design System Updates", priority: "Low", due: "due Dec 20", progress: 42 },
+  ];
+  
+  export const teams = ["UI/UX", "Frontend", "Backend"];
+  
+  export const members = [
+    { id: "1", name: "Mohamed wahib", isLeader: true, done: 12, total: 14, avatarUrl: "/avatars/1.jpg" },
+    { id: "2", name: "Sara Hassan", done: 10, total: 16 },
+    { id: "3", name: "Ali Mohamed", done: 4, total: 12 },
+    { id: "4", name: "Khalid Mousa", done: 11, total: 16 },
+    { id: "5", name: "Mahmoud Salah", done: 8, total: 14 },
+    { id: "6", name: "Ahmed Mohamed", done: 6, total: 12 },
   ];

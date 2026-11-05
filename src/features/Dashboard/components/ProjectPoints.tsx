@@ -56,7 +56,7 @@ export function ProjectOverview({
   const gradientId = React.useId().replace(/:/g, "")
   const labelFor = (x: number) => ticks.find((t) => t.x === x)?.label ?? ""
   const maxX = Math.max(...data.map((d) => d.x))
-    const onProjectChange =(p)=>{
+    const onProjectChange =(p : any)=>{
         console.log(p);
         
     }

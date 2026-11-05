@@ -4,7 +4,9 @@ import TaskStats from "@/features/Dashboard/components/TasksState";
 import ProjectOverview from "../../features/Dashboard/components/ProjectPoints";
 import { data, ticks } from "@/features/Dashboard/constants/DataState";
 import ProjectsAndFiles from "../../features/Dashboard/components/Items";
-import { files, projects } from "../../constant/DataFiles";
+import { files, members, projects, tasks, teams } from "../../constant/DataFiles";
+import { TasksAndTeams } from "../../features/Dashboard/components/TASKS";
+
 
 export const metadata: Metadata = {
   title: "collabSpace",
@@ -30,6 +32,11 @@ function Dashboard() {
           files={files}
         />
       </div>
+      <TasksAndTeams
+      tasks={tasks}
+      teams={teams}
+      members={members}
+    />
     </div>
   );
 }

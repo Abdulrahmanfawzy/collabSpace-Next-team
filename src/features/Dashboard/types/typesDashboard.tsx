@@ -36,3 +36,28 @@ export type RecentFile = {
   downloadUrl?: string
 }
 export type ProjectColor = "purple" | "teal"
+
+export type TeamMember = {
+  id: string
+  name: string
+  avatarUrl?: string
+  isLeader?: boolean
+  done: number // tasks done
+  total: number // total tasks
+}
+export type Priority = "High" | "Medium" | "Low"
+
+export type Task = {
+  id: string
+  title: string
+  priority: Priority
+  due: string // e.g. "due today", "due Dec 18"
+  progress: number // 0–100
+}
+export type TasksAndTeamsProps = {
+  tasks: Task[]
+  members: TeamMember[]
+  teams?: string[]
+  onTeamChange?: (team: string) => void
+  tasksHref?: string
+}
