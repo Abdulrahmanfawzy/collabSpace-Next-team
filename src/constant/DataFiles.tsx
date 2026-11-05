@@ -42,3 +42,34 @@ export const projects = [
     { id: "5", name: "Mahmoud Salah", done: 8, total: 14 },
     { id: "6", name: "Ahmed Mohamed", done: 6, total: 12 },
   ];
+  export const people = (count: number) =>
+    Array.from({ length: count }, (_, i) => ({
+      id: i + 1,
+      name: `User ${i + 1}`,
+    }));
+  
+    
+  export const meetings = [
+    
+    {
+      id: "1",
+      title: "Design Review",
+      date: "Today",
+      time: "14:00 - 15:00",
+      attendees: people(6),
+    },
+    {
+      id: "2",
+      title: "Sprint Planning Meeting",
+      date: "Dec 12",
+      time: "13:00 - 13:30",
+      attendees: people(7),
+    },
+    {
+      id: "3",
+      title: "UX Feedback Session",
+      date: "Dec 18",
+      time: "14:00 - 15:00",
+      attendees: people(8),
+    },
+  ];
