@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar/Navbar";
 import type { Metadata } from "next";
+import TaskStats from "@/features/Dashboard/components/TasksState";
 
 export const metadata: Metadata = {
   title: "collabSpace",
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
 function Dashboard() {
   return (
     <>
-  
+    <TaskStats/>
     </>
   );
 }

@@ -34,7 +34,7 @@
      Background Colors
   ======================================== */
   --color-bg-label: var(--bg-label);
-  --color-bg-light: var(--bg-light);
+  --color-light: var(--background-light);
   --color-bg-muted: var(--bg-muted);
   --color-bg-white: var(--white);
 
@@ -211,7 +211,7 @@
 
   /* Background Colors */
   --bg-label: #f3f4f6;
-  --bg-light: #f6f8fa;
+  --background-light: #f6f8fa;
   --bg-muted: #f2f4f7;
   --white: #ffffff;
 
