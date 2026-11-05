@@ -33,3 +33,30 @@ export const stats: Stat[] = [
       bar: "[&>div]:bg-green-600",
     },
   ]
+  export const data = [
+    { x: 0, value: 10300 },
+    { x: 0.875, value: 13900 },
+    { x: 1.357, value: 12100 },
+    { x: 1.813, value: 8500 },
+    { x: 2.366, value: 18000 },
+    { x: 2.527, value: 20000 },
+    { x: 2.75, value: 17500 },
+    { x: 2.902, value: 15900 },
+    { x: 3.063, value: 15500 },
+    { x: 3.42, value: 8300 },
+    { x: 3.866, value: 14000 },
+    { x: 4.134, value: 12500 },
+    { x: 4.402, value: 11800 },
+    { x: 4.848, value: 12500 },
+    { x: 5.295, value: 19500 },
+  ]
+  
+  export const ticks = [
+    { x: 0.37, label: "Jan" },
+    { x: 1.36, label: "Feb" },
+    { x: 2.37, label: "Mar" },
+    { x: 3.37, label: "Apr" },
+    { x: 4.37, label: "May" },
+    { x: 5.3, label: "Jun" },
+  ]
+  
