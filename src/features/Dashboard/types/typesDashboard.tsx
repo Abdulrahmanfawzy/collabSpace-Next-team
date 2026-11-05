@@ -61,3 +61,33 @@ export type TasksAndTeamsProps = {
   onTeamChange?: (team: string) => void
   tasksHref?: string
 }
+
+export type Meeting = {
+  id: string
+  title: string
+  date: string // e.g. "Today", "Dec 12"
+  time: string // e.g. "14:00 - 15:00"
+  attendees: Attendee[]
+}
+export type UpcomingMeetingsProps = {
+  meetings: Meeting[]
+  viewAllHref?: string
+}
+export type AskAIProps = {
+  onSend: (message: string) => void | Promise<void>
+  heading?: string
+  placeholder?: string
+  className?: string
+}
+
+export type Attendee = {
+  name: string
+  avatarUrl?: string
+}
+
+export type MeetingsAndAskAIProps = {
+  meetings: Meeting[]
+  onSend: AskAIProps["onSend"]
+  meetingsHref?: string
+}
+ 

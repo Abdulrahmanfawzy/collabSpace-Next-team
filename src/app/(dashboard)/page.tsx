@@ -4,9 +4,9 @@ import TaskStats from "@/features/Dashboard/components/TasksState";
 import ProjectOverview from "../../features/Dashboard/components/ProjectPoints";
 import { data, ticks } from "@/features/Dashboard/constants/DataState";
 import ProjectsAndFiles from "../../features/Dashboard/components/Items";
-import { files, members, projects, tasks, teams } from "../../constant/DataFiles";
+import { files, meetings, members, projects, tasks, teams } from "../../constant/DataFiles";
 import { TasksAndTeams } from "../../features/Dashboard/components/TASKS";
-import MeetingsAndAskAI from "../../features/Dashboard/components/AI ASK/AIASK";
+import MeetingsAndAskAI from "../../features/Dashboard/components/AI ASK";
 
 
 export const metadata: Metadata = {
@@ -42,12 +42,10 @@ function Dashboard() {
           members={members}
         />
         <MeetingsAndAskAI
+          meetings={meetings}
           meetingsHref="/meetings"
-          meetings={[
-            { id: "1", title: "Design Review", date: "Today", time: "14:00 - 15:00", attendees: people(6) },
-            { id: "2", title: "Sprint Planning Meeting", date: "Dec 12", time: "13:00 - 13:30", attendees: people(7) },
-            { id: "3", title: "UX Feedback Session", date: "Dec 18", time: "14:00 - 15:00", attendees: people(8) },
-          ]}
+
+
 
         />
       </div>
