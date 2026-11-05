@@ -10,7 +10,32 @@ import OverviewTab from "./tabs/overview";
 import TasksTab from "./tabs/tasks";
 import TeamsTab from "./tabs/teams";
 import FilesTab from "./tabs/files";
-
+const files = [
+  {
+    id: 1,
+    name: "Design mockups",
+    uploadedBy: "Ahmed Hassan",
+    size: "6.4 MB",
+    uploadedAt: "1h ago",
+    downloadUrl: "/files/design-mockups.pdf",
+  },
+  {
+    id: 2,
+    name: "Project Requirements",
+    uploadedBy: "Ahmed Hassan",
+    size: "2.5 MB",
+    uploadedAt: "2h ago",
+    downloadUrl: "/files/requirements.pdf",
+  },
+   {
+    id: 3,
+    name: "Project Requirements",
+    uploadedBy: "Ahmed Hassan",
+    size: "2.5 MB",
+    uploadedAt: "2h ago",
+    downloadUrl: "/files/requirements.pdf",
+  },
+];
 const tabs = ["Overview", "Tasks", "Teams", "Files"];
 const tabContents=[
   {
@@ -27,7 +52,9 @@ const tabContents=[
   },
    {
    'value':'files',
-   'component':<FilesTab />
+   'component':<FilesTab  files={files}/>
+ 
+  
   },
 ]
 const ProjectTabs = () => {
