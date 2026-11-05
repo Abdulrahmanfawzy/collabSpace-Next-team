@@ -5,6 +5,11 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Primary */ 
+  --color-app-primary-dark: var(--color-primary);
+  --color-brand-navy: #111a3e;
+  --color-brand-field: #e8eef3;
+  --color-primary-light: var(--color-primary-light);  
   /* ========================================
      Brand Colors
   ======================================== */
@@ -13,6 +18,7 @@
   --color-secondary: var(--secondary);
   --color-secondary-500: var(--secondary-500);
   --color-secondary-50: var(--secondary-50);
+  --color-secondary-100: var(--secondary-100);
 
   /* ========================================
      Text Colors
@@ -28,7 +34,7 @@
      Background Colors
   ======================================== */
   --color-bg-label: var(--bg-label);
-  --color-bg-light: var(--bg-light);
+  --color-light: var(--background-light);
   --color-bg-muted: var(--bg-muted);
   --color-bg-white: var(--white);
 
@@ -36,6 +42,7 @@
      Support Colors - Green
   ======================================== */
   --color-support-green: var(--support-green);
+  --color-support-green-hover: var(--support-green-hover);
   --color-support-green-light: var(--support-green-light);
 
   /* Support Colors - Greenish */
@@ -170,6 +177,22 @@
 ======================================== */
 
 :root {
+  /* Primary */
+  --color-primary-dark: #161c36;
+  --color-primary-light: #005AFB;
+  /* Success */
+  --color-success: #51e247cc;
+  --color-success-dark: #378666;
+  --color-success-medium: #4b9876;
+  --color-success-light: #e6f6ec;
+  --color-success-background: #ecf9f0;
+  /* Error */
+  --color-error: #e80000cc;
+  --color-error-dark: #d14e1f;
+  --color-error-bright: #f83c3c;
+  --color-error-light: #fce8ea;
+  --color-error-background: #fce8eb;
+  --color-error-transparent: #ff000980;
   /* Brand */
   --primary: #005afb;
   --primary-50: #e6efff;
@@ -177,6 +200,7 @@
   --secondary: #525256;
   --secondary-500: #27272b;
   --secondary-50: #e9e9ea;
+  --secondary-100: #BCBCBD;
 
   /* Text Colors */
   --text-primary: #000712;
@@ -187,12 +211,13 @@
 
   /* Background Colors */
   --bg-label: #f3f4f6;
-  --bg-light: #f6f8fa;
+  --background-light: #f6f8fa;
   --bg-muted: #f2f4f7;
   --white: #ffffff;
 
   /* Support - Green */
   --support-green: #2ba52e;
+  --support-green-hover: #279529;
   --support-green-light: #eaf6ea;
 
   /* Support - Greenish */
@@ -455,4 +480,8 @@
 
 .dark .custom-table-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(156, 163, 175, 0.45);
+}
+
+.app-container {
+  @apply container max-w-350 mx-auto px-10
 }
