@@ -25,6 +25,7 @@ export type Meeting = {
   project: {
     name: string;
   };
+  keyPoints?: string[];
 };
 
 export const calendarDate: CalendarMonth = {
@@ -113,6 +114,11 @@ export const meetings: Meeting[] = [
     endTime: "10:00",
     color: "bg-white border-border",
     project: { name: "CollabSpace AI" },
+     keyPoints: [
+    "Reviewed the current project progress.",
+    "Discussed completed tasks and pending work.",
+    "Agreed on priorities for the next sprint.",
+  ],
   },
   {
     id: 2,
@@ -126,6 +132,11 @@ export const meetings: Meeting[] = [
     endTime: "11:00",
     color: "bg-white border-border",
     project: { name: "Safarni" },
+    keyPoints: [
+  "Shared daily development updates.",
+  "Discussed current blockers and challenges.",
+  "Assigned priorities for the day.",
+],
   },
   {
     id: 3,
@@ -139,6 +150,11 @@ export const meetings: Meeting[] = [
     endTime: "23:59",
     color: "bg-white border-border",
     project: { name: "CollabSpace AI" },
+    keyPoints: [
+  "Reviewed the team's morning progress.",
+  "Discussed today's development goals.",
+  "Identified important tasks to complete.",
+],
   },
   {
     id: 4,
@@ -152,6 +168,11 @@ export const meetings: Meeting[] = [
     endTime: "09:00",
     color: "bg-white border-border",
     project: { name: "Vesta" },
+    keyPoints: [
+  "Reviewed pending tasks from the previous day.",
+  "Discussed project deadlines.",
+  "Planned the remaining development work.",
+],
   },
   {
     id: 5,
@@ -165,6 +186,11 @@ export const meetings: Meeting[] = [
     endTime: "12:00",
     color: "bg-white border-border",
     project: { name: "CollabSpace AI" },
+    keyPoints: [
+  "Discussed the current project requirements.",
+  "Reviewed proposed solutions.",
+  "Agreed on the next implementation steps.",
+],
   },
   {
     id: 6,
@@ -178,6 +204,11 @@ export const meetings: Meeting[] = [
     endTime: "14:00",
     color: "bg-white border-border",
     project: { name: "Safarni" },
+    keyPoints: [
+  "Reviewed frontend implementation progress.",
+  "Discussed reusable component architecture.",
+  "Identified UI improvements.",
+],
   },
   {
     id: 7,
@@ -191,6 +222,11 @@ export const meetings: Meeting[] = [
     endTime: "16:00",
     color: "bg-white border-border",
     project: { name: "Vesta" },
+    keyPoints: [
+  "Reviewed recently submitted code.",
+  "Identified bugs and potential improvements.",
+  "Discussed coding standards and best practices.",
+],
   },
   {
     id: 8,
@@ -204,6 +240,11 @@ export const meetings: Meeting[] = [
     endTime: "15:00",
     color: "bg-white border-border",
     project: { name: "CollabSpace AI" },
+    keyPoints: [
+  "Reviewed the latest UI designs.",
+  "Discussed layout and responsive behavior.",
+  "Agreed on design improvements.",
+],
   },
   {
     id: 9,
@@ -217,6 +258,11 @@ export const meetings: Meeting[] = [
     endTime: "16:00",
     color: "bg-white border-border",
     project: { name: "Safarni" },
+    keyPoints: [
+  "Brainstormed new product features.",
+  "Collected ideas from team members.",
+  "Selected ideas for further discussion.",
+],
   },
   {
     id: 10,
@@ -230,6 +276,11 @@ export const meetings: Meeting[] = [
     endTime: "19:00",
     color: "bg-white border-border",
     project: { name: "CollabSpace AI" },
+    keyPoints: [
+  "Reviewed product goals and priorities.",
+  "Discussed upcoming features.",
+  "Defined the next development milestones.",
+],
   },
   {
     id: 11,
@@ -243,6 +294,11 @@ export const meetings: Meeting[] = [
     endTime: "11:00",
     color: "bg-white border-border",
     project: { name: "Vesta" },
+    keyPoints: [
+  "Discussed client requirements and feedback.",
+  "Reviewed current deliverables.",
+  "Agreed on requested changes.",
+],
   },
   {
     id: 12,
@@ -256,6 +312,11 @@ export const meetings: Meeting[] = [
     endTime: "18:00",
     color: "bg-white border-border",
     project: { name: "Safarni" },
+    keyPoints: [
+  "Reviewed completed sprint tasks.",
+  "Evaluated team performance.",
+  "Identified improvements for the next sprint.",
+],
   },
   {
     id: 13,
@@ -269,6 +330,11 @@ export const meetings: Meeting[] = [
     endTime: "20:00",
     color: "bg-white border-border",
     project: { name: "CollabSpace AI" },
+    keyPoints: [
+  "Reviewed completed sprint tasks.",
+  "Evaluated team performance.",
+  "Identified improvements for the next sprint.",
+],
   },
   {
     id: 14,
@@ -282,6 +348,11 @@ export const meetings: Meeting[] = [
     endTime: "21:00",
     color: "bg-white border-border",
     project: { name: "Vesta" },
+    keyPoints: [
+  "Reviewed completed sprint tasks.",
+  "Evaluated team performance.",
+  "Identified improvements for the next sprint.",
+],
   },
   {
     id: 15,
@@ -295,6 +366,11 @@ export const meetings: Meeting[] = [
     endTime: "17:00",
     color: "bg-white border-border",
     project: { name: "Safarni" },
+    keyPoints: [
+  "Reviewed completed sprint tasks.",
+  "Evaluated team performance.",
+  "Identified improvements for the next sprint.",
+],
   },
   {
     id: 16,
@@ -308,6 +384,11 @@ export const meetings: Meeting[] = [
     endTime: "22:00",
     color: "bg-white border-border",
     project: { name: "CollabSpace AI" },
+    keyPoints: [
+  "Reviewed completed sprint tasks.",
+  "Evaluated team performance.",
+  "Identified improvements for the next sprint.",
+],
   },
   {
     id: 17,
@@ -321,6 +402,11 @@ export const meetings: Meeting[] = [
     endTime: "23:59",
     color: "bg-white border-border",
     project: { name: "Vesta" },
+    keyPoints: [
+  "Reviewed completed sprint tasks.",
+  "Evaluated team performance.",
+  "Identified improvements for the next sprint.",
+],
   },
 ];
 

@@ -1,5 +1,8 @@
+
 import MeetingHeader from "@/features/meetings/components/details/header/MeetingHeader";
 import ProjectBadge from "@/features/meetings/components/details/header/ProjectBadge";
+import MeetingVideoPlayer from "@/features/meetings/components/details/video/MeetingVideoPlayer";
+import SummaryPanel from "@/features/meetings/components/details/SummaryPanel";
 import { meetings } from "@/features/meetings/data/data";
 
 type Props = {
@@ -8,20 +11,29 @@ type Props = {
 
 export default function MeetingDetailsPage({ meetingId }: Props) {
   const meeting = meetings.find(
-    (meeting) => String(meeting.id) === meetingId
+    (item) => String(item.id) === meetingId
   );
 
   if (!meeting) {
-    return <div>Meeting not found</div>;
+    return (
+      <div className="flex min-h-64 items-center justify-center">
+        <p className="text-muted-foreground">Meeting not found</p>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-4">
+    <main className="space-y-6">
+      {/* Meeting Header */}
       <MeetingHeader
-        data={{ ...meeting, name: meeting.title }}
+        data={{
+          ...meeting,
+          name: meeting.title,
+        }}
       />
 
-      <div className="p-4">
+      {/* Project Information */}
+      <div className="px-4">
         <ProjectBadge
           name={meeting.project.name}
           startTime={meeting.startTime}
@@ -29,6 +41,14 @@ export default function MeetingDetailsPage({ meetingId }: Props) {
           year={meeting.year}
         />
       </div>
-    </div>
+
+      <div className="border-t" />
+
+      {/* Meeting Video */}
+      <MeetingVideoPlayer />
+
+      {/* AI Summary */}
+      <SummaryPanel keyPoints={meeting.keyPoints ?? []} />
+    </main>
   );
 }
