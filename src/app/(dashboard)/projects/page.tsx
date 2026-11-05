@@ -5,7 +5,7 @@ import { projects } from "./_components/projects-data"
 
 export default function ProjectsPage() {
   return (
-    <div className="app-container min-h-screen bg-bg-light py-10">
+    <div className="min-h-screen bg-bg-light py-10">
       <ProjectsHeader />
       <ProjectFilters />
       <ProjectsTable projects={projects} />

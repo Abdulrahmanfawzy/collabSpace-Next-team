@@ -26,7 +26,7 @@ const ProjectHeader = ({ projectName }: ProjectHeaderProps) => {
                 </div>
             </div>
             {/* Due Date Card */}
-            <div className=" md:min-w-81 rounded-xl border border-[#F3F4F6] bg-white p-3 ">
+            <div className=" md:min-w-81 rounded-xl border border-[#F3F4F6] bg-white p-3 mt-1.5 ">
                
                 <span className="text-text-dark text-sm">Due Date</span>
                 <div className="mt-2 h-1.5 w-full  rounded-full bg-gray-100">
