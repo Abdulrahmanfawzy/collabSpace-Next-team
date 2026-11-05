@@ -37,27 +37,38 @@ const files = [
   },
 ];
 const tabs = ["Overview", "Tasks", "Teams", "Files"];
-const tabContents=[
-  {
-   'value':'overview',
-   'component':<OverviewTab />
-  },
-   {
-   'value':'tasks',
-   'component':<TasksTab />
-  },
-   {
-   'value':'teams',
-   'component':<TeamsTab />
-  },
-   {
-   'value':'files',
-   'component':<FilesTab  files={files}/>
- 
-  
-  },
-]
-const ProjectTabs = () => {
+interface ProjectTabsProps {
+  isOverviewLoading?: boolean
+  isTasksLoading?: boolean
+  isTeamsLoading?: boolean
+  isFilesLoading?: boolean
+}
+
+const ProjectTabs = ({
+  isOverviewLoading = false,
+  isTasksLoading = false,
+  isTeamsLoading = false,
+  isFilesLoading = false,
+}: ProjectTabsProps) => {
+  const tabContents = [
+    {
+      value: "overview",
+      component: <OverviewTab isLoading={isOverviewLoading} />,
+    },
+    {
+      value: "tasks",
+      component: <TasksTab isLoading={isTasksLoading} />,
+    },
+    {
+      value: "teams",
+      component: <TeamsTab isLoading={isTeamsLoading} />,
+    },
+    {
+      value: "files",
+      component: <FilesTab files={files} isLoading={isFilesLoading} />,
+    },
+  ]
+
   return (
     <Tabs defaultValue="overview" className="w-full mt-5">
     {/* -----------------------------------Tabs List ----------------------------------------------------------------------------------------------------- */}

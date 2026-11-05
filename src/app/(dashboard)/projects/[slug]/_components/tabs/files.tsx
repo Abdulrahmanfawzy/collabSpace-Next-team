@@ -4,13 +4,14 @@
 import { useRef } from "react";
 import { Upload } from "lucide-react";
 import FileCard, { ProjectFile } from "../file-card";
+import FilesSkeleton from "@/components/skeletons/files-tab-skeleton";
 
 
 
 
 interface FilesTabProps {
   files: ProjectFile[];
-  isLoading?: boolean;
+  isLoading: boolean;
   onUpload?: (files: FileList) => void;
 }
 
@@ -22,6 +23,9 @@ const FilesTab = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const recentFiles = files.slice(0, 3);
+  if (isLoading) {
+    return (<FilesSkeleton/>);
+  }
 
   return (
     <div className="space-y-8">
