@@ -13,7 +13,7 @@ export type TeamsProps = {
 export function Teams({ members, teams = ["UI/UX"] }: TeamsProps) {
     const onTeamChange = (team: string) => { console.log(team) }
     return (
-      <Card className="rounded-2xl border-0 shadow-sm">
+      <Card className="rounded-2xl h-105 pb-5 border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center gap-2 space-y-0 p-5 pb-3">
           <CardTitle className="text-xl font-medium">Teams</CardTitle>
           <Select defaultValue={teams[0]} onValueChange={onTeamChange}>

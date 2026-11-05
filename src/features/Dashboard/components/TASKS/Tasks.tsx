@@ -12,8 +12,8 @@ export type TasksProps = {
 }
 export function Tasks({ tasks, viewAllHref = "/tasks" }: TasksProps) {
   return (
-    <Card className="rounded-2xl border-0 shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-5 pb-3">
+    <Card className="rounded-2xl h-105 border-0 shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0  pb-3">
         <CardTitle className="text-xl font-medium">Tasks</CardTitle>
         <Link href={viewAllHref} className="text-sm text-blue-600 hover:underline">
           View All
@@ -34,9 +34,6 @@ export function Tasks({ tasks, viewAllHref = "/tasks" }: TasksProps) {
 
 
 
-/* ======================================================================
-   Both side by side
-   ====================================================================== */
 
 
 
