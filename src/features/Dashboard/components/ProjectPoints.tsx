@@ -61,8 +61,8 @@ export function ProjectOverview({
         
     }
   return (
-    <Card className="rounded-2xl  border-0 shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 px-5 pb-2 pt-5">
+    <Card className="rounded-2xl h-85  border-0 shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 px-5 pb-2 ">
         <CardTitle className="text-xl font-medium">Project overview</CardTitle>
         <div className="flex items-center gap-4">
           <Filter label="Project" options={projects} onChange={onProjectChange} />
