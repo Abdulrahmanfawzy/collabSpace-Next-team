@@ -42,7 +42,16 @@ export const weekDays = [
   "Fri",
   "Sat",
 ];
+import type { StaticImageData } from "next/image";
 
+export interface Transcript {
+  id: number;
+  timestamp: string;
+  speaker: string;
+  avatar: StaticImageData;
+  text: string;
+ 
+}
 export const month: CalendarDay[][] = [
   [
     { name: "Sun", date: 25, fullDate: "2026-10-25", isCurrentMonth: false },
@@ -410,3 +419,62 @@ export const meetings: Meeting[] = [
   },
 ];
 
+
+
+
+import mohanadAvatar from "@/assets/avatars/mohanad.jpg";
+import mahmoudAvatar from "@/assets/avatars/mahmoud.jpg";
+import ahmedAvatar from "@/assets/avatars/ahmed.jpg";
+import omarAvatar from "@/assets/avatars/omar.jpg";
+import nadirAvatar from "@/assets/avatars/nadir.jpg";
+
+export const transcripts: Transcript[] = [
+  {
+    id: 1,
+    timestamp: "00:01",
+    speaker: "Mohanad Wahib",
+    avatar: mohanadAvatar,
+    text: "Good morning everyone. Thanks for joining on time. Today we'll focus on reviewing the latest design updates and aligning on next steps.",
+   
+  },
+  {
+    id: 2,
+    timestamp: "00:40",
+    speaker: "Ahmed Hassan",
+    avatar: ahmedAvatar,
+    text: "Morning. I went through the new homepage design, and overall it looks cleaner, but I think we still have some usability issues to address.",
+  
+  },
+  {
+    id: 3,
+    timestamp: "01:23",
+    speaker: "Omar Khaled",
+    avatar: omarAvatar,
+    text: "I agree. The layout is better, but the call-to-action isn't very clear, especially for first-time users.",
+    
+  },
+  {
+    id: 4,
+    timestamp: "02:01",
+    speaker: "Mohanad Wahib",
+    avatar: mohanadAvatar,
+    text: "From a UX perspective, the sign-up flow also feels a bit long. Users might drop off before completing the process.",
+  
+  },
+  {
+    id: 5,
+    timestamp: "04:48",
+    speaker: "Mahmoud Ashraf",
+    avatar: mahmoudAvatar,
+    text: "That's a good point. Do you think we should reduce the number of required fields in the first step?",
+   
+  },
+  {
+    id: 6,
+    timestamp: "06:15",
+    speaker: "Nadir Mustafa",
+    avatar: nadirAvatar,
+    text: "Good morning everyone. Let's begin today's meeting by reviewing the project timeline and assigning tasks for the next phase.",
+    
+  },
+];
