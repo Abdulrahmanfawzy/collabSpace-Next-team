@@ -1,75 +1,27 @@
-"use client";
-
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-import SummaryPanel from "./SummaryPanel";
-
-type TabKey = "summary" | "note" | "comments";
-
-const TABS: { key: TabKey; label: string }[] = [
-  { key: "summary", label: "AI Summary" },
-  { key: "note", label: "Note" },
-  { key: "comments", label: "Comments" },
-];
-
-interface MeetingTabsProps {
+interface SummaryPanelProps {
   keyPoints: string[];
-  notes?: React.ReactNode;
-  comments?: React.ReactNode;
+  /** The design reads "AI Generate Summary"; "Generated" is the grammatical form. */
+  title?: string;
 }
 
-export default function MeetingTabs({
+export default function SummaryPanel({
   keyPoints,
-  notes,
-  comments,
-}: MeetingTabsProps) {
-  const [activeTab, setActiveTab] = useState<TabKey>("summary");
-
+  title = "AI Generated Summary",
+}: SummaryPanelProps) {
   return (
-    <div className="w-full">
-      {/* Tab buttons */}
-      <div role="tablist" className="flex items-center gap-2">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.key;
+    <section className="min-h-64 rounded-2xl bg-muted/50 p-5 sm:p-6">
+      <h2 className="text-2xl font-semibold">{title}</h2>
 
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                "rounded-t-md px-3 py-1.5 text-xs transition-colors",
-                isActive
-                  ? "bg-muted/50 font-medium text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
+      <h3 className="mt-4 text-lg font-medium">Key Points</h3>
 
-      {/* Tab content */}
-      <div role="tabpanel" className="mt-0">
-        {activeTab === "summary" && <SummaryPanel keyPoints={keyPoints} />}
-
-        {activeTab === "note" &&
-          (notes ?? (
-            <p className="rounded-2xl bg-muted/50 p-6 text-sm text-muted-foreground">
-              No notes yet.
-            </p>
-          ))}
-
-        {activeTab === "comments" &&
-          (comments ?? (
-            <p className="rounded-2xl bg-muted/50 p-6 text-sm text-muted-foreground">
-              No comments yet.
-            </p>
-          ))}
-      </div>
-    </div>
+      <ul className="mt-3 space-y-3 text-sm">
+        {keyPoints.map((point) => (
+          <li key={point} className="flex gap-2">
+            <span aria-hidden="true">•</span>
+            <span>{point}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

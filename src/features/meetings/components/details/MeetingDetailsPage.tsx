@@ -2,7 +2,7 @@
 import MeetingHeader from "@/features/meetings/components/details/header/MeetingHeader";
 import ProjectBadge from "@/features/meetings/components/details/header/ProjectBadge";
 import MeetingVideoPlayer from "@/features/meetings/components/details/video/MeetingVideoPlayer";
-import SummaryPanel from "@/features/meetings/components/details/SummaryPanel";
+import MeetingTabs from "@/features/meetings/components/details/MeetingTabs";
 import { meetings } from "@/features/meetings/data/data";
 
 type Props = {
@@ -48,7 +48,7 @@ export default function MeetingDetailsPage({ meetingId }: Props) {
       <MeetingVideoPlayer />
 
       {/* AI Summary */}
-      <SummaryPanel keyPoints={meeting.keyPoints ?? []} />
+      <MeetingTabs keyPoints={meeting.keyPoints ?? []} notes={[]} comments={[]} />
     </main>
   );
 }
