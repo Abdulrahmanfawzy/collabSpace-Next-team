@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 
-import TranscriptHeader from "./TranscriptHeader";
-import TranscriptSearch from "./TranscriptSearch";
-
+import TranscriptHeader from "@/features/meetings/components/details/transcripts/TranscriptHeader";
+import TranscriptSearch from "@/features/meetings/components/details/transcripts/TranscriptSearch";
+import TranscriptMeta from "@/features/meetings/components/details/transcripts/TranscriptMeta";
+import {  transcripts } from "@/features/meetings/data/data";
 export default function MeetingTranscripts() {
   const [search, setSearch] = useState("");
 
@@ -16,6 +17,16 @@ export default function MeetingTranscripts() {
         value={search}
         onChange={setSearch}
       />
+      {transcripts.map((transcript) => (
+        <TranscriptMeta
+          key={transcript.id}
+          speaker={transcript.speaker}
+          avatar={transcript.avatar}
+          timestamp={transcript.timestamp}
+          text={transcript.text}
+          
+        />
+      ))}
     </section>
   );
 }
