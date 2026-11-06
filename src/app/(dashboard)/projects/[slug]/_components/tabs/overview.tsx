@@ -4,6 +4,7 @@ import ProjectDetails from "../project-details"
 
 import TeamMembers from "../project-members"
 import ProjectProgress from "../project-progress"
+import OverviewProjectsSkeleton from "@/components/skeletons/overview-projects-skeleton"
 
 
 const projectData = [
@@ -15,7 +16,10 @@ const projectData = [
   value,
 }))
 
-const OverviewTab = () => {
+const OverviewTab = ({ isLoading = false }: { isLoading?: boolean }) => {
+    if(isLoading){
+        return (<OverviewProjectsSkeleton/>);
+    }
   return (
     <section className="my-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
        {/*------------------------ left section------------------------------------------------------ */}

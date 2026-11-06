@@ -11,7 +11,7 @@ const ProjectProgress = () => {
 
         <svg
           viewBox="0 0 200 110"
-          className="w-[180px] h-[100px]"
+          className="w-45 h-45"
         >
           {/* Background Arc */}
           <path
