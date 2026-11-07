@@ -1,13 +1,12 @@
 
-import type { ComponentProps } from "react";
-import ProjectChatItem from "@/features/chats/sidebar/ProjectChatItem";
+"use client";
 
-type ProjectChat = ComponentProps<typeof ProjectChatItem>["project"] & {
-  id?: string | number;
-};
+import { useState } from "react";
+import type { ChatProject } from "@/features/chats/types/chat.types";
+import ProjectChatItem from "./ProjectChatItem";
 
 interface ProjectChatListProps {
-  projects: ProjectChat[];
+  projects: ChatProject[];
   searchQuery?: string;
 }
 
@@ -15,6 +14,24 @@ export default function ProjectChatList({
   projects,
   searchQuery = "",
 }: ProjectChatListProps) {
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(
+    new Set()
+  );
+
+  const toggleProject = (projectId: string) => {
+    setExpandedProjects((prev) => {
+      const next = new Set(prev);
+
+      if (next.has(projectId)) {
+        next.delete(projectId);
+      } else {
+        next.add(projectId);
+      }
+
+      return next;
+    });
+  };
+
   const filteredProjects = projects.filter((project) =>
     project.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -32,6 +49,8 @@ export default function ProjectChatList({
           <ProjectChatItem
             key={project.id}
             project={project}
+            isExpanded={expandedProjects.has(project.id)}
+            onToggle={() => toggleProject(project.id)}
           />
         ))
       ) : (
