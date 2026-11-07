@@ -1,17 +1,9 @@
-import DirectMessageItem from "@/features/chats/sidebar/DirectMessageItem";
 
-export interface DirectMessage {
-  id: string;
-  name: string;
-  avatar: string;
-  message: string;
-  time: string;
-  unreadCount?: number;
-  isOnline?: boolean;
-}
+import DirectMessageItem from "@/features/chats/sidebar/DirectMessageItem";
+import type { ChatConversation } from "@/features/chats/types/chat.types";
 
 interface DirectMessageListProps {
-  messages: DirectMessage[];
+  messages: ChatConversation[];
   searchQuery?: string;
 }
 
@@ -20,9 +12,7 @@ export default function DirectMessageList({
   searchQuery = "",
 }: DirectMessageListProps) {
   const filteredMessages = messages.filter((message) =>
-    message.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
+    message.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -38,7 +28,7 @@ export default function DirectMessageList({
           {filteredMessages.map((message) => (
             <DirectMessageItem
               key={message.id}
-              message={{ ...message, isOnline: message.isOnline ?? false }}
+              message={message}
             />
           ))}
         </div>

@@ -9,6 +9,14 @@ import ChatTabs, {
 } from "@/features/chats/sidebar/ChatTabs";
 import ChatSearch from "@/features/chats/sidebar/ChatSearch";
 
+import DirectMessageList from "@/features/chats/sidebar/DirectMessageList";
+import ProjectChatList from "@/features/chats/sidebar/ProjectChatList";
+
+import {
+  directConversations,
+  chatProjects,
+} from "@/features/chats/data/mockChats";
+
 export default function ChatSidebar() {
   const [activeTab, setActiveTab] =
     useState<ChatTabType>("inbox");
@@ -31,9 +39,18 @@ export default function ChatSidebar() {
 
       <div className="flex-1 overflow-y-auto">
         {activeTab === "inbox" ? (
-          <div>Direct Messages</div>
+          <DirectMessageList
+            messages={directConversations}
+            searchQuery={searchQuery}
+          />
         ) : (
-          <div>Project Chats</div>
+          <ProjectChatList
+            projects={chatProjects.map((project) => ({
+              ...project,
+              time: "",
+            }))}
+            searchQuery={searchQuery}
+          />
         )}
       </div>
     </aside>

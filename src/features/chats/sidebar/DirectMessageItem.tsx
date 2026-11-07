@@ -1,26 +1,24 @@
 
-interface DirectMessage {
-  avatar: string;
-  name: string;
-  isOnline: boolean;
-  time: string;
-  message: string;
-  unreadCount?: number;
-}
+import { format } from "date-fns";
+import type { ChatConversation } from "@/features/chats/types/chat.types";
 
 interface DirectMessageItemProps {
-  message: DirectMessage;
+  message: ChatConversation;
 }
 
 export default function DirectMessageItem({
   message,
 }: DirectMessageItemProps) {
+  const lastMessage = message.lastMessage;
+  const lastMessageTime = lastMessage?.createdAt
+    ? format(new Date(lastMessage.createdAt), "h:mm a")
+    : "";
+
   return (
     <button
       type="button"
       className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted"
     >
-      {/* Avatar */}
       <div className="relative shrink-0">
         <img
           src={message.avatar}
@@ -33,7 +31,6 @@ export default function DirectMessageItem({
         )}
       </div>
 
-      {/* Message Info */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
           <h4 className="truncate text-sm font-semibold text-foreground">
@@ -41,20 +38,20 @@ export default function DirectMessageItem({
           </h4>
 
           <span className="shrink-0 text-xs text-muted-foreground">
-            {message.time}
+            {lastMessageTime}
           </span>
         </div>
 
         <div className="mt-1 flex items-center justify-between gap-2">
           <p className="truncate text-sm text-muted-foreground">
-            {message.message}
+            {lastMessage?.text ?? ""}
           </p>
 
-          {message.unreadCount ? (
-            <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground">
+          {!!message.unreadCount && (
+            <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
               {message.unreadCount}
             </span>
-          ) : null}
+          )}
         </div>
       </div>
     </button>
