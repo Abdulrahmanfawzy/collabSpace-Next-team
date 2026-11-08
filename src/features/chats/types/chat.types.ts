@@ -57,3 +57,14 @@ export interface ChatProject {
   name: string;
   channels: ChatChannel[];
 }
+export type SelectedChat =
+  | {
+      type: "direct";
+      conversation: ChatConversation;
+    }
+  | {
+      type: "channel";
+      channel: ChatChannel;
+      project: ChatProject;
+    }
+  | null;

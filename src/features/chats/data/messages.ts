@@ -1,6 +1,6 @@
-
 export interface Message {
   id: string;
+  chatId: string;
   sender: {
     id: string;
     name: string;
@@ -16,6 +16,7 @@ export interface Message {
 export const messages: Message[] = [
   {
     id: "msg-1",
+    chatId: "conversation-1",
     sender: {
       id: "user-1",
       name: "Mohamed Ahmed",
@@ -30,6 +31,7 @@ export const messages: Message[] = [
   },
   {
     id: "msg-2",
+    chatId: "conversation-1",
     sender: {
       id: "user-2",
       name: "Abdulrahim Elsayed",
@@ -43,6 +45,7 @@ export const messages: Message[] = [
   },
   {
     id: "msg-3",
+    chatId: "conversation-1",
     sender: {
       id: "user-3",
       name: "Ahmed Hassan",
@@ -57,6 +60,7 @@ export const messages: Message[] = [
   },
   {
     id: "msg-4",
+    chatId: "conversation-1",
     sender: {
       id: "user-1",
       name: "Mohamed Ahmed",
@@ -70,6 +74,7 @@ export const messages: Message[] = [
   },
   {
     id: "msg-5",
+    chatId: "conversation-1",
     sender: {
       id: "user-2",
       name: "Abdulrahim Elsayed",

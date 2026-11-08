@@ -4,12 +4,15 @@ import type { ChatConversation } from "@/features/chats/types/chat.types";
 
 interface DirectMessageItemProps {
   message: ChatConversation;
+  onSelect: () => void;
 }
 
 export default function DirectMessageItem({
   message,
+  onSelect,
 }: DirectMessageItemProps) {
   const lastMessage = message.lastMessage;
+
   const lastMessageTime = lastMessage?.createdAt
     ? format(new Date(lastMessage.createdAt), "h:mm a")
     : "";
@@ -17,6 +20,7 @@ export default function DirectMessageItem({
   return (
     <button
       type="button"
+      onClick={onSelect}
       className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted"
     >
       <div className="relative shrink-0">

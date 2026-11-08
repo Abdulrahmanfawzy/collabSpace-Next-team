@@ -1,18 +1,26 @@
-
 "use client";
 
 import { useState } from "react";
-import type { ChatProject } from "@/features/chats/types/chat.types";
+import type {
+  ChatProject,
+  ChatChannel,
+} from "@/features/chats/types/chat.types";
+
 import ProjectChatItem from "./ProjectChatItem";
 
 interface ProjectChatListProps {
   projects: ChatProject[];
   searchQuery?: string;
+  onSelectChannel?: (
+    channel: ChatChannel,
+    project: ChatProject
+  ) => void;
 }
 
 export default function ProjectChatList({
   projects,
   searchQuery = "",
+  onSelectChannel,
 }: ProjectChatListProps) {
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(
     new Set()
@@ -51,6 +59,7 @@ export default function ProjectChatList({
             project={project}
             isExpanded={expandedProjects.has(project.id)}
             onToggle={() => toggleProject(project.id)}
+            onSelectChannel={onSelectChannel}
           />
         ))
       ) : (

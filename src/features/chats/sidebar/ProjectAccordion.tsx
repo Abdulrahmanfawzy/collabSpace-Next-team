@@ -1,15 +1,23 @@
+import type {
+  ChatProject,
+  ChatChannel,
+} from "../types/chat.types";
 
-import type { ChatProject } from "../types/chat.types";
 import ChannelItem from "@/features/chats/sidebar/ChannalItem";
 
 interface ProjectAccordionProps {
   project: ChatProject;
   isExpanded: boolean;
+  onSelectChannel?: (
+    channel: ChatChannel,
+    project: ChatProject
+  ) => void;
 }
 
 export default function ProjectAccordion({
   project,
   isExpanded,
+  onSelectChannel,
 }: ProjectAccordionProps) {
   if (!isExpanded) return null;
 
@@ -19,6 +27,7 @@ export default function ProjectAccordion({
         <ChannelItem
           key={channel.id}
           channel={channel}
+          onSelect={() => onSelectChannel?.(channel, project)}
         />
       ))}
     </div>

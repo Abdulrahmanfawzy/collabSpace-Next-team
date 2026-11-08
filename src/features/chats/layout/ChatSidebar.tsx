@@ -17,11 +17,44 @@ import {
   chatProjects,
 } from "@/features/chats/data/mockChats";
 
-export default function ChatSidebar() {
+import type {
+  SelectedChat,
+  ChatChannel,
+  ChatProject,
+  ChatConversation,
+} from "@/features/chats/types/chat.types";
+
+interface ChatSidebarProps {
+  onSelectChat: (chat: SelectedChat) => void;
+}
+
+export default function ChatSidebar({
+  onSelectChat,
+}: ChatSidebarProps) {
   const [activeTab, setActiveTab] =
     useState<ChatTabType>("inbox");
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSelectDirectMessage = (
+    conversation: ChatConversation
+  ) => {
+    onSelectChat({
+      type: "direct",
+      conversation,
+    });
+  };
+
+  const handleSelectChannel = (
+    channel: ChatChannel,
+    project: ChatProject
+  ) => {
+    onSelectChat({
+      type: "channel",
+      channel,
+      project,
+    });
+  };
 
   return (
     <aside className="flex h-full flex-col">
@@ -37,11 +70,12 @@ export default function ChatSidebar() {
         onTabChange={setActiveTab}
       />
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {activeTab === "inbox" ? (
           <DirectMessageList
-            messages={directConversations}
+            conversations={directConversations}
             searchQuery={searchQuery}
+            onSelectChat={handleSelectDirectMessage}
           />
         ) : (
           <ProjectChatList
@@ -50,6 +84,7 @@ export default function ChatSidebar() {
               time: "",
             }))}
             searchQuery={searchQuery}
+            onSelectChannel={handleSelectChannel}
           />
         )}
       </div>

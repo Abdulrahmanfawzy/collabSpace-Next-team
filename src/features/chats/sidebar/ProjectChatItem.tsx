@@ -1,18 +1,20 @@
-
 import { ChevronDown, ChevronRight, Folder } from "lucide-react";
-import type { ChatProject } from "@/features/chats/types/chat.types";
+import type { ChatProject, ChatChannel } from "@/features/chats/types/chat.types";
 import ProjectAccordion from "@/features/chats/sidebar/ProjectAccordion";
 import { Button } from "@/components/ui/button";
+
 interface ProjectChatItemProps {
   project: ChatProject;
   isExpanded?: boolean;
   onToggle?: () => void;
+  onSelectChannel?: (channel: ChatChannel, project: ChatProject) => void;
 }
 
 export default function ProjectChatItem({
   project,
   isExpanded = false,
   onToggle,
+  onSelectChannel,
 }: ProjectChatItemProps) {
   return (
     <div className="flex flex-col">
@@ -53,6 +55,7 @@ export default function ProjectChatItem({
       <ProjectAccordion
         project={project}
         isExpanded={isExpanded}
+        onSelectChannel={onSelectChannel}
       />
     </div>
   );

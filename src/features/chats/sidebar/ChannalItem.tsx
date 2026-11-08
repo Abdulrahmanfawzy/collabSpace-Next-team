@@ -1,23 +1,28 @@
-
 import type { ChatProject } from "@/features/chats/types/chat.types";
+import { Button } from "@/components/ui/button";
 
 type Channel = ChatProject["channels"][number];
-import {Button} from "@/components/ui/button";
+
 interface ChannelItemProps {
   channel: Channel;
   isActive?: boolean;
   onClick?: () => void;
+  onSelect?: () => void;
 }
 
 export default function ChannelItem({
   channel,
   isActive = false,
   onClick,
+  onSelect,
 }: ChannelItemProps) {
   return (
     <Button
       type="button"
-      onClick={onClick}
+      onClick={() => {
+        onClick?.();
+        onSelect?.();
+      }}
       className={`flex w-full items-center justify-between gap-2 rounded-md px-4 py-2 pl-5 text-left transition-colors hover:bg-muted ${
         isActive ? "bg-muted text-foreground" : "text-muted-foreground"
       }`}
