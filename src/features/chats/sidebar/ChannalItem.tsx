@@ -2,7 +2,7 @@
 import type { ChatProject } from "@/features/chats/types/chat.types";
 
 type Channel = ChatProject["channels"][number];
-
+import {Button} from "@/components/ui/button";
 interface ChannelItemProps {
   channel: Channel;
   isActive?: boolean;
@@ -15,7 +15,7 @@ export default function ChannelItem({
   onClick,
 }: ChannelItemProps) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
       className={`flex w-full items-center justify-between gap-2 rounded-md px-4 py-2 pl-5 text-left transition-colors hover:bg-muted ${
@@ -35,6 +35,6 @@ export default function ChannelItem({
           {channel.unreadCount}
         </span>
       )}
-    </button>
+    </Button>
   );
 }

@@ -2,7 +2,7 @@
 import { ChevronDown, ChevronRight, Folder } from "lucide-react";
 import type { ChatProject } from "@/features/chats/types/chat.types";
 import ProjectAccordion from "@/features/chats/sidebar/ProjectAccordion";
-
+import { Button } from "@/components/ui/button";
 interface ProjectChatItemProps {
   project: ChatProject;
   isExpanded?: boolean;
@@ -16,7 +16,7 @@ export default function ProjectChatItem({
 }: ProjectChatItemProps) {
   return (
     <div className="flex flex-col">
-      <button
+      <Button
         type="button"
         onClick={onToggle}
         aria-expanded={isExpanded}
@@ -48,7 +48,7 @@ export default function ProjectChatItem({
             className="shrink-0 text-muted-foreground"
           />
         )}
-      </button>
+      </Button>
 
       <ProjectAccordion
         project={project}
