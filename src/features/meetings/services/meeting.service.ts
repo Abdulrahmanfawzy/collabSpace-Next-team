@@ -1,6 +1,9 @@
 
 import apiClient from "@/api/apiClient";
-import type { MeetingsResponse } from "../types/meeting.types";
+import type {
+  CreateMeetingValues,
+  MeetingsResponse,
+} from "../types/meeting.types";
 
 export interface GetMeetingsParams {
   project_id?: number;
@@ -16,7 +19,7 @@ const DEFAULT_MEETINGS_PARAMS: GetMeetingsParams = {
 
 export const meetingService = {
   getMeetings: async (
-    params: GetMeetingsParams = {}
+    params: GetMeetingsParams = {},
   ): Promise<MeetingsResponse> => {
     const response = await apiClient.get<MeetingsResponse>(
       "/meetings",
@@ -25,9 +28,14 @@ export const meetingService = {
           ...DEFAULT_MEETINGS_PARAMS,
           ...params,
         },
-      }
+      },
     );
 
+    return response.data;
+  },
+
+  createMeeting: async (data: CreateMeetingValues) => {
+    const response = await apiClient.post("/meetings", data);
     return response.data;
   },
 };

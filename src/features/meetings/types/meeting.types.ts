@@ -64,3 +64,13 @@ export interface MeetingsResponse {
     meta: PaginationMeta;
   };
 }
+export interface CreateMeetingValues {
+  title: string;
+  description: string;
+  meeting_date: string;
+  start_time: string;
+  end_time: string;
+  meeting_link: string;
+  project_id: number;
+  participants: number[];
+}
