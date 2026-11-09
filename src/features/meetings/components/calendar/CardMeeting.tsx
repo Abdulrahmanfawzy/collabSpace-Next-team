@@ -1,4 +1,4 @@
-import type { Meeting } from "@/features/meetings/data/data";
+import type { Meeting } from "@/features/meetings/types/meeting.types";
 
 type CardMeetingProps = {
   meeting: Meeting;
@@ -11,14 +11,15 @@ export default function CardMeeting({
 }: CardMeetingProps) {
   return (
     <div
-      className={`w-full rounded-md border p-2 ${meeting.color} ${className ?? ""}`}
+      className={`w-full rounded-md border border-primary/20 bg-primary/5 p-2 ${className ?? ""}`}
     >
-      <h4 className="text-xs font-semibold">
+      <h4 className="text-xs font-semibold line-clamp-2">
         {meeting.title}
       </h4>
 
-      <p className="mt-1 text-xs">
-        {meeting.startTime} - {meeting.endTime}
+      <p className="mt-1 text-xs text-muted-foreground">
+        {meeting.start_time.slice(0, 5)} -{" "}
+        {meeting.end_time.slice(0, 5)}
       </p>
     </div>
   );
