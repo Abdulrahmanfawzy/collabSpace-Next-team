@@ -26,5 +26,6 @@ export interface AreaChartProps {
   height?: number
   color?: string
   valueFormatter?: (value: number) => string
+  valueLabel?: string
   className?: string
 }

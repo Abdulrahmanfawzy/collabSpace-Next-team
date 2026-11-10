@@ -2,9 +2,10 @@ import { Inter } from "next/font/google";
 import "@/app/globals.css";
 
 import { cn } from "@/lib/utils";
-import type { Metadata } from "next";
-
-import { QueryProvider } from "@/components/providers/QueryProvider";
+import { Metadata } from "next";
+import Navbar from "@/components/layout/Navbar/Navbar";
+import { QueryProvider } from "../providers/query-provider";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,7 +32,9 @@ export default function Layout({
     <html lang="en">
       <body className={cn(inter.className)}>
         <QueryProvider>
-          {children}
+        <Navbar />
+        {children}
+         <Toaster position="top-right" richColors />
         </QueryProvider>
       </body>
     </html>
