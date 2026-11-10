@@ -1,110 +1,161 @@
 "use client";
 
+import { useState } from "react";
+
 import Link from "next/link";
-import { LockKeyhole, Mail, UserRound } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import {
+  LockKeyhole,
+  Mail,
+  UserRound,
+} from "lucide-react";
+
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { FormInput } from "@/components/common/form-input";
 import { Button } from "@/components/ui/button";
 
-type RegisterFormValues = {
-  fullName: string;
-  email: string;
-  password: string;
-};
+import {
+  registerSchema,
+  type RegisterInput,
+} from "@/features/auth/schema/auth.schema";
+
+import {
+  useRegisterMutation,
+} from "@/features/auth/hooks/useAuthMutations";
 
 export function RegisterForm() {
-  const { control, handleSubmit } = useForm<RegisterFormValues>({
+  const router = useRouter();
+
+  const mutation = useRegisterMutation();
+
+  const [serverMessage, setServerMessage] =
+    useState("");
+
+  const form = useForm<RegisterInput>({
+    resolver: zodResolver(registerSchema),
+
     defaultValues: {
-      fullName: "",
+      name: "",
       email: "",
       password: "",
+      password_confirmation: "",
     },
   });
+
+  async function onSubmit(values: RegisterInput) {
+    setServerMessage("");
+
+    const result = await mutation.mutateAsync(values);
+
+    if (!result.success) {
+      setServerMessage(result.message);
+
+      Object.entries(result.errors ?? {}).forEach(
+        ([field, messages]) => {
+          if (field in form.getValues()) {
+            form.setError(
+              field as keyof RegisterInput,
+              {
+                type: "server",
+                message:
+                  messages?.[0] ?? result.message,
+              },
+            );
+          }
+        },
+      );
+
+      return;
+    }
+
+    router.replace("/");
+    router.refresh();
+  }
 
   return (
     <form
       noValidate
-      onSubmit={handleSubmit(() => {
-      })}
+      onSubmit={form.handleSubmit(onSubmit)}
     >
       <div className="space-y-6">
         <FormInput
-          control={control}
-          name="fullName"
+          control={form.control}
+          name="name"
           label="Full Name"
           placeholder="Full Name"
           autoComplete="name"
           required
-          leadingIcon={<UserRound aria-hidden="true" className="" />}
-          rules={{
-            required: "Full name is required.",
-            minLength: {
-              value: 2,
-              message: "Enter at least 2 characters.",
-            },
-          }}
+          disabled={mutation.isPending}
+          leadingIcon={
+            <UserRound aria-hidden="true" />
+          }
         />
 
         <FormInput
-          control={control}
+          control={form.control}
           name="email"
           label="Email"
           type="email"
           placeholder="Your Email"
           autoComplete="email"
           required
-          leadingIcon={<Mail aria-hidden="true" className="" />}
-          rules={{
-            required: "Email is required.",
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Enter a valid email address.",
-            },
-          }}
+          disabled={mutation.isPending}
+          leadingIcon={<Mail aria-hidden="true" />}
         />
 
         <FormInput
-          control={control}
+          control={form.control}
           name="password"
           label="Password"
           type="password"
           placeholder="Password"
           autoComplete="new-password"
           required
+          disabled={mutation.isPending}
           leadingIcon={
-            <LockKeyhole aria-hidden="true" className="" />
+            <LockKeyhole aria-hidden="true" />
           }
-          rules={{
-            required: "Password is required.",
-            minLength: {
-              value: 8,
-              message: "Password must contain at least 8 characters.",
-            },
-          }}
+        />
+
+        <FormInput
+          control={form.control}
+          name="password_confirmation"
+          label="Confirm Password"
+          type="password"
+          placeholder="Confirm Password"
+          autoComplete="new-password"
+          required
+          disabled={mutation.isPending}
+          leadingIcon={
+            <LockKeyhole aria-hidden="true" />
+          }
         />
       </div>
 
-      <label className="mt-6 inline-flex cursor-pointer items-center gap-1.25 text-[9px]
-      md:text-sm leading-3.25 text-text-body">
-        <input
-          type="checkbox"
-          defaultChecked
-          className="size-4.25 cursor-pointer accent-primary"
-        />
-        Remember Me
-      </label>
+      {serverMessage && (
+        <p
+          role="alert"
+          className="mt-4 text-center text-xs text-destructive"
+        >
+          {serverMessage}
+        </p>
+      )}
 
       <Button
         type="submit"
         variant="auth"
-        className="mt-2.75 w-full rounded-full px-3 text-[9px] md:text-[14px] font-medium 
-        shadow-none"
+        disabled={mutation.isPending}
+        className="mt-6 w-full rounded-full px-3 text-[9px] md:text-[14px] font-medium shadow-none"
       >
-        Sign up
+        {mutation.isPending ? "Creating account..." : "Sign up"}
       </Button>
 
-      <p className="mt-6 text-center text-[9px] md:text-sm  leading-3.25 text-text-body">
+      <p className="mt-6 text-center text-[9px] md:text-sm leading-3.25 text-text-body">
         Already have an account?{" "}
+
         <Link
           href="/login"
           className="font-semibold text-primary hover:underline"
