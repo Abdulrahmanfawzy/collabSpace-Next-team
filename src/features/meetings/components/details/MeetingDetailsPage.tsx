@@ -1,28 +1,62 @@
+
+"use client";
+
 import MeetingHeader from "@/features/meetings/components/details/header/MeetingHeader";
 import ProjectBadge from "@/features/meetings/components/details/header/ProjectBadge";
 import MeetingVideoPlayer from "@/features/meetings/components/details/video/MeetingVideoPlayer";
 import MeetingTabs from "@/features/meetings/components/details/MeetingTabs";
 import MeetingTranscripts from "@/features/meetings/components/details/transcripts/MeetingTranscripts";
-import { meetings } from "@/features/meetings/data/data";
+import { useMeetingDetails } from "@/features/meetings/hooks/useMeetingDetails";
 
 type Props = {
   meetingId: string;
 };
 
 export default function MeetingDetailsPage({ meetingId }: Props) {
-  const meeting = meetings.find(
-    (item) => String(item.id) === meetingId
-  );
+  const id = Number(meetingId);
 
-  if (!meeting) {
+  const isValidId = Number.isInteger(id) && id > 0;
+
+  const {
+    data: meeting,
+    isLoading,
+    isError,
+    error,
+  } = useMeetingDetails(id);
+
+  if (!isValidId) {
     return (
       <div className="flex min-h-64 items-center justify-center">
         <p className="text-muted-foreground">
-          Meeting not found
+          Invalid meeting ID.
         </p>
       </div>
     );
   }
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-64 items-center justify-center">
+        <p className="text-muted-foreground">
+          Loading meeting...
+        </p>
+      </div>
+    );
+  }
+
+  if (isError || !meeting) {
+    return (
+      <div className="flex min-h-64 items-center justify-center">
+        <p className="text-muted-foreground">
+          {error instanceof Error
+            ? error.message
+            : "Meeting not found"}
+        </p>
+      </div>
+    );
+  }
+
+  const year = new Date(meeting.meeting_date).getFullYear();
 
   return (
     <div className="space-y-6">
@@ -37,11 +71,12 @@ export default function MeetingDetailsPage({ meetingId }: Props) {
       {/* Project Information */}
       <div className="px-4">
         <ProjectBadge
-          name={meeting.project.name}
-          startTime={meeting.startTime}
-          endTime={meeting.endTime}
-          year={meeting.year}
-        />
+  name={meeting.project.name}
+  startTime={meeting.start_time}
+  endTime={meeting.end_time}
+  year={year}
+  participants={meeting.participants ?? []}
+/>
       </div>
 
       <div className="border-t" />
@@ -54,13 +89,15 @@ export default function MeetingDetailsPage({ meetingId }: Props) {
           <MeetingVideoPlayer />
 
           <MeetingTabs
-            keyPoints={meeting.keyPoints ?? []}
+            keyPoints={meeting.summary?.decisions_made ?? []}
           />
         </section>
 
         {/* Right Section */}
         <aside className="min-w-0">
-          <MeetingTranscripts />
+          <MeetingTranscripts
+            participants={meeting.participants ?? []}
+          />
         </aside>
 
       </div>

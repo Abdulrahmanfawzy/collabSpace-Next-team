@@ -1,8 +1,9 @@
-import Image, { type StaticImageData } from "next/image";
+
+import Image from "next/image";
 
 interface TranscriptMetaProps {
   speaker: string;
-  avatar: StaticImageData;
+  avatar: string | null;
   timestamp: string;
   text: string;
 }
@@ -17,7 +18,7 @@ export default function TranscriptMeta({
     <article className="flex gap-3 border-b border-border pb-5 last:border-0">
       {/* Avatar */}
       <Image
-        src={avatar}
+        src={avatar || "/default-avatar.png"}
         alt={speaker}
         width={40}
         height={40}

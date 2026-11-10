@@ -19,6 +19,20 @@ export interface MeetingParticipant {
   attended: boolean;
 }
 
+export interface MeetingSummary {
+  id: number;
+  meeting_id: number;
+  summary: string;
+  decisions_made: string[];
+  action_items: string[];
+  assigned_tasks: string[];
+  risks: string[];
+  next_steps: string[];
+  generated_by_ai: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Meeting {
   id: number;
   title: string;
@@ -34,7 +48,7 @@ export interface Meeting {
   creator: MeetingCreator;
   participants_count: number;
   participants: MeetingParticipant[];
-  summary: string | null;
+  summary: MeetingSummary | null;
   created_at: string;
   updated_at: string;
 }
@@ -64,6 +78,13 @@ export interface MeetingsResponse {
     meta: PaginationMeta;
   };
 }
+
+export interface MeetingDetailsResponse {
+  success: boolean;
+  message: string;
+  data: Meeting;
+}
+
 export interface CreateMeetingValues {
   title: string;
   description: string;

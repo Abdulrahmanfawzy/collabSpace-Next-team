@@ -3,6 +3,7 @@ import apiClient from "@/api/apiClient";
 import type {
   CreateMeetingValues,
   MeetingsResponse,
+  Meeting,
 } from "../types/meeting.types";
 
 export interface GetMeetingsParams {
@@ -18,6 +19,7 @@ const DEFAULT_MEETINGS_PARAMS: GetMeetingsParams = {
 };
 
 export const meetingService = {
+  // Get all meetings
   getMeetings: async (
     params: GetMeetingsParams = {},
   ): Promise<MeetingsResponse> => {
@@ -34,6 +36,16 @@ export const meetingService = {
     return response.data;
   },
 
+  // Get meeting details by ID
+  getMeetingById: async (id: number): Promise<Meeting> => {
+    const response = await apiClient.get<{ data: Meeting }>(
+      `/meetings/${id}`,
+    );
+
+    return response.data.data;
+  },
+
+  // Create meeting
   createMeeting: async (data: CreateMeetingValues) => {
     const response = await apiClient.post("/meetings", data);
     return response.data;
