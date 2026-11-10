@@ -64,8 +64,8 @@ export default async function DashboardLayout({
       state={dehydrate(queryClient)}
     >
       <div className="bg-light w-full">
+        <NavBar />
         <main className="app-container">
-          <NavBar />
           {children}
         </main>
       </div>
