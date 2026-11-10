@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar/Navbar";
 import { QueryProvider } from "../providers/query-provider";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,6 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <QueryProvider>
         <Navbar />
         {children}
+         <Toaster position="top-right" richColors />
         </QueryProvider>
       </body>
     </html>
