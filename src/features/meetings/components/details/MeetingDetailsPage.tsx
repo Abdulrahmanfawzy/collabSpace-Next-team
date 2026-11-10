@@ -86,7 +86,10 @@ export default function MeetingDetailsPage({ meetingId }: Props) {
 
         {/* Left Section */}
         <section className="min-w-0 space-y-6">
-          <MeetingVideoPlayer />
+         <MeetingVideoPlayer
+  roomName={`collabspace-meeting-${meeting.id}`}
+  displayName={meeting.creator.name}
+/>
 
          <MeetingTabs summary={meeting.summary} />
         </section>

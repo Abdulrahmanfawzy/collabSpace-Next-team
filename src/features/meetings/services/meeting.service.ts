@@ -24,7 +24,7 @@ export const meetingService = {
     params: GetMeetingsParams = {},
   ): Promise<MeetingsResponse> => {
     const response = await apiClient.get<MeetingsResponse>(
-      "/meetings",
+      "/v1/meetings",
       {
         params: {
           ...DEFAULT_MEETINGS_PARAMS,
@@ -39,7 +39,7 @@ export const meetingService = {
   // Get meeting details by ID
   getMeetingById: async (id: number): Promise<Meeting> => {
     const response = await apiClient.get<{ data: Meeting }>(
-      `/meetings/${id}`,
+      `/v1/meetings/${id}`,
     );
 
     return response.data.data;
