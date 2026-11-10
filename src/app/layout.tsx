@@ -1,8 +1,11 @@
 
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
+
 import "@/app/globals.css";
+
 import { cn } from "@/lib/utils";
-import { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar/Navbar";
 import QueryProvider from "@/providers/QueryProvider";
 
@@ -28,10 +31,12 @@ export default function Layout({
   return (
     <html lang="en">
       <body className={cn(inter.className)}>
-        <QueryProvider>
-          <Navbar />
-          {children}
-        </QueryProvider>
+        <SessionProvider>
+          <QueryProvider>
+            <Navbar />
+            {children}
+          </QueryProvider>
+        </SessionProvider>
       </body>
     </html>
   );

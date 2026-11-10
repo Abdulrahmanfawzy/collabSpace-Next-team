@@ -6,6 +6,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 function Dialog(
   props: React.ComponentProps<typeof DialogPrimitive.Root>
@@ -69,12 +70,15 @@ function DialogContent({
         {children}
 
         {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            className="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            <X className="size-4" />
-            <span className="sr-only">Close</span>
+          <DialogPrimitive.Close data-slot="dialog-close" asChild>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="absolute right-2 top-2"
+            >
+              <X className="size-4" />
+              <span className="sr-only">Close</span>
+            </Button>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Content>
@@ -97,8 +101,12 @@ function DialogHeader({
 
 function DialogFooter({
   className,
+  showCloseButton = false,
+  children,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & {
+  showCloseButton?: boolean;
+}) {
   return (
     <div
       data-slot="dialog-footer"
@@ -107,29 +115,42 @@ function DialogFooter({
         className
       )}
       {...props}
-    />
+    >
+      {children}
+
+      {showCloseButton && (
+        <DialogPrimitive.Close asChild>
+          <Button variant="outline">Close</Button>
+        </DialogPrimitive.Close>
+      )}
+    </div>
   );
 }
 
-function DialogTitle(
-  props: React.ComponentProps<typeof DialogPrimitive.Title>
-) {
+function DialogTitle({
+  className,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Title>) {
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className="text-lg font-semibold leading-none tracking-tight"
+      className={cn(
+        "text-lg font-semibold leading-none tracking-tight",
+        className
+      )}
       {...props}
     />
   );
 }
 
-function DialogDescription(
-  props: React.ComponentProps<typeof DialogPrimitive.Description>
-) {
+function DialogDescription({
+  className,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Description>) {
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className="text-sm text-muted-foreground"
+      className={cn("text-sm text-muted-foreground", className)}
       {...props}
     />
   );
