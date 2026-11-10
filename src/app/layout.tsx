@@ -32,9 +32,8 @@ export default function Layout({
     <html lang="en">
       <body className={cn(inter.className)}>
         <QueryProvider>
-        <Navbar />
-        {children}
-         <Toaster position="top-right" richColors />
+          {children}
+          <Toaster position="top-right" richColors />
         </QueryProvider>
       </body>
     </html>
