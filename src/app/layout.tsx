@@ -3,6 +3,7 @@ import "@/app/globals.css";
 
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
+import { SessionProvider } from "next-auth/react";
 
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
@@ -30,9 +31,11 @@ export default function Layout({
   return (
     <html lang="en">
       <body className={cn(inter.className)}>
-        <QueryProvider>
-          {children}
-        </QueryProvider>
+        <SessionProvider>
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+        </SessionProvider>
       </body>
     </html>
   );
