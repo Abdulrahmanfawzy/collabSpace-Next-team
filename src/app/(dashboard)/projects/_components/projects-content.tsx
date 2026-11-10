@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ProjectsTable } from "./projects-table";
 import { ProjectFilters } from "./project-filters";
 import { CommonPagination } from "@/components/common/common-pagination";
+import { ProjectsPageSkeleton } from "@/components/skeletons/projects-page-skeleton";
 import { useGetProjects } from "@/hooks/projects/use-get-projects";
 import type { ProjectFiltersParams } from "@/types/project";
 
@@ -41,11 +42,15 @@ export default function ProjectsContent() {
   };
 
   if (isPending) {
-    return <p>Loading projects...</p>;
+    return <ProjectsPageSkeleton />;
   }
 
   if (isError) {
-    return <p>{error.message}</p>;
+    return (
+      <p role="alert" className="mt-6 text-sm text-destructive">
+        {error.message}
+      </p>
+    );
   }
 
   const projects = data.data.data;
