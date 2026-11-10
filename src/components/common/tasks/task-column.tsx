@@ -11,10 +11,10 @@ interface TaskColumnProps {
 }
 
 const columnStyles = {
-  todo: "bg-[#F9FAFB]",
+  "todo": "bg-[#F9FAFB]",
   "in-progress": "bg-primary-50",
   "in-review": "bg-[#FAECF6]",
-  completed: "bg-[#EAF6EA]",
+  "completed": "bg-[#EAF6EA]",
 }
 
 export const TaskColumn = ({
@@ -27,7 +27,7 @@ export const TaskColumn = ({
 
       {/*---------------- Column Header-------------------- */}
       <div
-        className={`flex items-center justify-between p-3.5 ${columnStyles[column.id]}`}
+        className={`flex items-center justify-between p-2 ${columnStyles[column.id]}`}
       >
        <div className="flex items-center">
          <Dot className="text-[#6837A4] w-10 h-10" />

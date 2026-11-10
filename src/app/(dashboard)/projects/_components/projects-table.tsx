@@ -30,7 +30,7 @@ const PRIORITY_STYLES: Record<Project["priority"], string> = {
 }
 
 const STATUS_STYLES: Record<Project["status"], string> = {
-  Done: "text-[#2BA52E]",
+  "Done": "text-[#2BA52E]",
   "In Progress": "text-[#FA2B75]",
 }
 
@@ -40,6 +40,7 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
   return (
     <div className="settings-sidebar-scrollbar mt-6 w-full overflow-x-auto">
       <Table className="min-w-225">
+
         <TableHeader>
           <TableRow className="border-b border-secondary-100 hover:bg-transparent pt-2 pb-4">
             {TABLE_HEADERS.map((header) => (
@@ -49,6 +50,8 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
             ))}
           </TableRow>
         </TableHeader>
+
+
         <TableBody>
           {projects.map((project) => (
             <TableRow
@@ -65,12 +68,15 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
                   </Link>
                 </div>
               </TableCell>
+
               <TableCell className="text-sm text-text-primary">
                 {project.startDate}
               </TableCell>
+
               <TableCell className="text-sm text-text-primary">
                 {project.deadline}
               </TableCell>
+
               <TableCell>
                 <span
                   className={
@@ -80,12 +86,14 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
                   {project.status}
                 </span>
               </TableCell>
+
               <TableCell>
                 <div className="flex items-center gap-2 text-sm text-text-primary">
                   <File size={16} className="text-orange-400" />
                   <span className="text-text-primary">{project.files} Files</span>
                 </div>
               </TableCell>
+
               <TableCell>
                 <div className="flex items-center -space-x-2">
                   {project.teams.map((team) => (
@@ -98,6 +106,7 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
                   ))}
                 </div>
               </TableCell>
+
               <TableCell>
                 <div className="flex items-center -space-x-2">
                   <div
@@ -107,6 +116,7 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
                   </div>
                 </div>
               </TableCell>
+              
             </TableRow>
           ))}
         </TableBody>
