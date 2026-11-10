@@ -28,6 +28,17 @@ export default function ProjectsContent() {
       page,
     }));
   };
+  
+    const handleFilterChange = (
+    key: "search" | "status" | "priority",
+    value: string
+  ) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value === "all" || value.trim() === "" ? undefined : value,
+      page: 1,
+    }));
+  };
 
   if (isPending) {
     return <p>Loading projects...</p>;
@@ -42,7 +53,14 @@ export default function ProjectsContent() {
 
   return (
     <div>
-      <ProjectFilters />
+      <ProjectFilters
+        search={filters.search ?? ""}
+        status={filters.status ?? "all"}
+        priority={filters.priority ?? "all"}
+        onSearchChange={(value) => handleFilterChange("search", value)}
+        onStatusChange={(value) => handleFilterChange("status", value)}
+        onPriorityChange={(value) => handleFilterChange("priority", value)}
+      />
 
       <ProjectsTable projects={projects} />
 
