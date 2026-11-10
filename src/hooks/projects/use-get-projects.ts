@@ -10,6 +10,5 @@ export function useGetProjects(filters: ProjectFiltersParams) {
   return useQuery({
     queryKey: ["projects", filters],
     queryFn: () => getProjectsAction(filters),
-    placeholderData: (previousData) => previousData,
   });
 }
