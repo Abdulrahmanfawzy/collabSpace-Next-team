@@ -19,7 +19,7 @@ const links: MainNavItem[] = [
   { label: "Tasks", href: "/tasks", active: "Tasks" },
   { label: "Chats", href: "/chats", active: "Chats" },
   { label: "Meetings", href: "/meetings", active: "Meetings" },
-  { label: "Reports", href: "/reports", active: "Reports" },
+  { label: "Reports", href: "/profile", active: "Reports" },
 ];
 
 export default function MainNav() {
