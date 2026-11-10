@@ -1,5 +1,6 @@
 
 import apiClient from "@/api/apiClient";
+import axios from "axios";
 import type {
   CreateMeetingValues,
   MeetingsResponse,
@@ -24,7 +25,7 @@ export const meetingService = {
     params: GetMeetingsParams = {},
   ): Promise<MeetingsResponse> => {
     const response = await apiClient.get<MeetingsResponse>(
-      "/v1/meetings",
+      "/meetings",
       {
         params: {
           ...DEFAULT_MEETINGS_PARAMS,
@@ -39,15 +40,22 @@ export const meetingService = {
   // Get meeting details by ID
   getMeetingById: async (id: number): Promise<Meeting> => {
     const response = await apiClient.get<{ data: Meeting }>(
-      `/v1/meetings/${id}`,
+      `/meetings/${id}`,
     );
 
     return response.data.data;
   },
 
   // Create meeting
-  createMeeting: async (data: CreateMeetingValues) => {
-    const response = await apiClient.post("/meetings", data);
-    return response.data;
-  },
+
+  
+createMeeting: async (data: CreateMeetingValues) => {
+  const response = await apiClient.post(
+    "/meetings",
+    data
+  );
+
+  return response.data;
+},
+
 };

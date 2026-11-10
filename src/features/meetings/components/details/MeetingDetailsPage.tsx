@@ -91,7 +91,7 @@ export default function MeetingDetailsPage({ meetingId }: Props) {
   displayName={meeting.creator.name}
 />
 
-         <MeetingTabs summary={meeting.summary} />
+         <MeetingTabs meetingId={meetingId} summary={meeting.summary} />
         </section>
 
         {/* Right Section */}

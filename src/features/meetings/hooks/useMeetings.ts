@@ -1,7 +1,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { meetingService } from "../services/meeting.service";
-import type { CreateMeetingValues } from "../components/calendar/AddMeetingDialog";
+import type { CreateMeetingValues } from "../types/meeting.types";
 
 export const useCreateMeeting = () => {
   const queryClient = useQueryClient();

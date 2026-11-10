@@ -87,11 +87,11 @@ export interface MeetingDetailsResponse {
 
 export interface CreateMeetingValues {
   title: string;
-  description: string;
+  description?: string;
   meeting_date: string;
   start_time: string;
   end_time: string;
-  meeting_link: string;
+  meeting_link?: string;
   project_id: number;
-  participants: number[];
+  attendee_ids?: number[];
 }

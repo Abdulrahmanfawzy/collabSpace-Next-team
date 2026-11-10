@@ -13,7 +13,7 @@ export interface CreateMeetingValues {
   end_time: string;
   meeting_link: string;
   project_id: number;
-  participants: number[];
+  attendee_ids: number[];
 }
 
 type AddMeetingDialogProps = {
@@ -50,19 +50,19 @@ export default function AddMeetingDialog({
     const form = event.currentTarget;
     const formData = new FormData(form);
 
-    const participantsInput = String(
-      formData.get("participants") || ""
+    const attendeesInput = String(
+      formData.get("attendee_ids") || ""
     );
 
-    const participantValues = participantsInput
+    const attendeeValues = attendeesInput
       .split(",")
       .map((id) => id.trim())
       .filter(Boolean);
 
-    const participants = participantValues.map(Number);
+    const attendee_ids = attendeeValues.map(Number);
 
     if (
-      participants.some(
+      attendee_ids.some(
         (id) => !Number.isInteger(id) || id <= 0
       )
     ) {
@@ -91,7 +91,7 @@ export default function AddMeetingDialog({
         formData.get("meeting_link") || ""
       ).trim(),
       project_id: projectId,
-      participants,
+      attendee_ids,
     };
 
     if (
@@ -233,19 +233,20 @@ export default function AddMeetingDialog({
                   name="project_id"
                   type="number"
                   min="1"
+                  defaultValue={13}
                   required
                   placeholder="Enter project ID"
                 />
               </div>
 
-              {/* Participants */}
+              {/* Attendees */}
               <div className="space-y-2">
-                <label htmlFor="participants" className="text-sm font-medium">
+                <label htmlFor="attendee_ids" className="text-sm font-medium">
                   Participant IDs
                 </label>
                 <Input
-                  id="participants"
-                  name="participants"
+                  id="attendee_ids"
+                  name="attendee_ids"
                   placeholder="2, 3, 4"
                 />
                 <p className="text-xs text-muted-foreground">

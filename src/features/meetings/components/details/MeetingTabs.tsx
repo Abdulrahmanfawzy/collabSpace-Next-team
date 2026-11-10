@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 
 import SummaryPanel from "@/features/meetings/components/details/SummaryPanel";
 import type { MeetingSummary } from "@/features/meetings/types/meeting.types";
+import NotesMeeting from "./NotesMeeting";
 
 type TabKey = "summary" | "note" | "comments";
 
@@ -16,12 +17,14 @@ const TABS: { key: TabKey; label: string }[] = [
 ];
 
 interface MeetingTabsProps {
+  meetingId: string;
   summary: MeetingSummary | null;
   notes?: ReactNode;
   comments?: ReactNode;
 }
 
 export default function MeetingTabs({
+  meetingId,
   summary,
   notes,
   comments,
@@ -69,7 +72,7 @@ export default function MeetingTabs({
         )}
 
         {activeTab === "note" && (
-          notes ?? <p className="p-4 text-sm text-muted-foreground">No notes yet.</p>
+          <NotesMeeting meetingId={Number(meetingId)} />
         )}
 
         {activeTab === "comments" && (
