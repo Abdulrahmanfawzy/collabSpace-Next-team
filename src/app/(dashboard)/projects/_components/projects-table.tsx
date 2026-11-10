@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/table"
 
 import Link from "next/link"
-import { Project } from "@/types/project"
+import type { Project } from "@/types/project"
+import { ProjectRowActions } from "./project-row-actions"
 
 interface ProjectsTableProps {
   projects: Project[]
@@ -22,6 +23,7 @@ const TABLE_HEADERS = [
   "Files",
   "Teams",
   "Priority",
+  "Actions",
 ] as const
 
 const PRIORITY_STYLES: Record<Project["priority"], string> = {
@@ -33,6 +35,7 @@ const PRIORITY_STYLES: Record<Project["priority"], string> = {
 
 const STATUS_STYLES: Record<Project["status"], string> = {
   "Completed": "text-[#2BA52E]",
+  "Planning": "text-[#F5A623]",
   "In Progress": "text-[#FA2B75]",
   "On Hold": "text-[#F5A623]",
   "Pending": "text-[#F5A623]",
@@ -121,6 +124,10 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
                     {project.priority}
                   </div>
                 </div>
+              </TableCell>
+
+              <TableCell>
+                <ProjectRowActions project={project} />
               </TableCell>
               
             </TableRow>

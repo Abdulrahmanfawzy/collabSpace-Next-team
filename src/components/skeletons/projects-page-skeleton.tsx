@@ -16,6 +16,7 @@ const TABLE_HEADERS = [
   "Files",
   "Teams",
   "Priority",
+  "Actions",
 ] as const;
 
 const ROWS = Array.from({ length: 7 }, (_, index) => index);
@@ -82,6 +83,12 @@ export function ProjectsPageSkeleton() {
                 </TableCell>
                 <TableCell>
                   <Skeleton className="h-4 w-16" />
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1">
+                    <Skeleton className="size-8 rounded-md" />
+                    <Skeleton className="size-8 rounded-md" />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
