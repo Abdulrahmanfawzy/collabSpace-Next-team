@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProjectsTable } from "./projects-table";
 import { ProjectFilters } from "./project-filters";
 import { CommonPagination } from "@/components/common/common-pagination";
@@ -12,11 +12,25 @@ import { Button } from "@/components/ui/button";
 import { FolderSearch } from "lucide-react";
 
 export default function ProjectsContent() {
+  const [searchInput, setSearchInput] = useState("");
   const [filters, setFilters] = useState<ProjectFiltersParams>({
     page: 1,
     per_page: 15,
     sort: "newest",
   });
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setFilters((prev) => ({
+        ...prev,
+        search:
+          searchInput.trim() === "" ? undefined : searchInput.trim(),
+        page: 1,
+      }));
+    }, 350);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchInput]);
 
   const {
     data,
@@ -44,6 +58,7 @@ export default function ProjectsContent() {
   };
 
   const handleClearFilters = () => {
+    setSearchInput("");
     setFilters((prev) => ({
       ...prev,
       search: undefined,
@@ -99,10 +114,10 @@ export default function ProjectsContent() {
   return (
     <div>
       <ProjectFilters
-        search={filters.search ?? ""}
+        search={searchInput}
         status={filters.status ?? "all"}
         priority={filters.priority ?? "all"}
-        onSearchChange={(value) => handleFilterChange("search", value)}
+        onSearchChange={setSearchInput}
         onStatusChange={(value) => handleFilterChange("status", value)}
         onPriorityChange={(value) => handleFilterChange("priority", value)}
       />
