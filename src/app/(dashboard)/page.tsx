@@ -18,7 +18,7 @@ function Dashboard() {
     Array.from({ length: n }, (_, i) => ({ name: `Member ${i + 1}`, avatarUrl: `/avatars/${i + 1}.jpg` }))
 
   return (
-    <div className="flex flex-col gap-6 pt-2 ">
+    <div className="flex flex-col gap-6 pt-2 pb-5">
       <TaskStats />
       <div className="grid grid-cols-2 gap-6">
         <ProjectOverview
@@ -44,9 +44,6 @@ function Dashboard() {
         <MeetingsAndAskAI
           meetings={meetings}
           meetingsHref="/meetings"
-
-
-
         />
       </div>
     </div>

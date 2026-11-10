@@ -9,8 +9,8 @@ export default function StatCard({ stat }: { stat: Stat }) {
     const percent = (stat.value / stat.total) * 100
 
     return (
-        <Card className="rounded-2xl h-40 border-0 outline-none shadow-sm">
-            <CardContent className="">
+        <Card className="rounded-2xl h-40 shadow-xs py-5 px-1">
+            <CardContent>
                 <div className="flex items-start justify-between">
                     <h3 className="text-base font-medium text-foreground">{stat.title}</h3>
                     <span
