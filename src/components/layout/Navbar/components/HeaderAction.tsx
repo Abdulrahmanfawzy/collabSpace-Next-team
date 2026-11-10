@@ -31,15 +31,15 @@ export function HeaderActions({
   onSignOut,
 }: HeaderActionsProps) {
   return (
-    <div className="flex items-center gap-4 sm:gap-8">
-      <div className="relative w-full max-w-50">
+    <div className="flex items-center sm:gap-8">
+      <div className="relative w-full max-w-60">
         <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-neutral-900" />
         <Input
           type="search"
           placeholder="Search"
           aria-label="Search"
           onChange={(e) => onSearchChange?.(e.target.value)}
-          className="h-12 rounded-full border-0 bg-[#f6f7fa] pl-12 text-base shadow-none focus-visible:ring-2 focus-visible:ring-[#3b3bf5]"
+          className="h-12 rounded-full border-0 bg-light pl-12 text-base shadow-none focus-visible:ring-2 focus-visible:ring-primary transition-all duration-300"
         />
       </div>
 

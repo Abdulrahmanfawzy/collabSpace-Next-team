@@ -10,6 +10,7 @@ import OverviewTab from "./tabs/overview";
 import TasksTab from "./tabs/tasks";
 import TeamsTab from "./tabs/teams";
 import FilesTab from "./tabs/files";
+import type { ProjectOverview } from "@/types/project";
 const files = [
   {
     id: 1,
@@ -38,14 +39,14 @@ const files = [
 ];
 const tabs = ["Overview", "Tasks", "Teams", "Files"];
 interface ProjectTabsProps {
-  isOverviewLoading?: boolean
+  project: ProjectOverview
   isTasksLoading?: boolean
   isTeamsLoading?: boolean
   isFilesLoading?: boolean
 }
 
 const ProjectTabs = ({
-  isOverviewLoading = false,
+  project,
   isTasksLoading = false,
   isTeamsLoading = false,
   isFilesLoading = false,
@@ -53,7 +54,7 @@ const ProjectTabs = ({
   const tabContents = [
     {
       value: "overview",
-      component: <OverviewTab isLoading={isOverviewLoading} />,
+      component: <OverviewTab project={project} />,
     },
     {
       value: "tasks",

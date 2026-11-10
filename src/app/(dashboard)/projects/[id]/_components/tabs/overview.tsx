@@ -5,6 +5,7 @@ import ProjectDetails from "../project-details"
 import TeamMembers from "../project-members"
 import ProjectProgress from "../project-progress"
 import OverviewProjectsSkeleton from "@/components/skeletons/overview-projects-skeleton"
+import { ProjectOverview } from "@/types/project"
 
 
 const projectData = [
@@ -16,7 +17,11 @@ const projectData = [
   value,
 }))
 
-const OverviewTab = ({ isLoading = false }: { isLoading?: boolean }) => {
+interface OverviewTabProps {
+  isLoading?: boolean;
+  project: ProjectOverview;
+}
+const OverviewTab = ({ isLoading = false, project }: OverviewTabProps) => {
     if(isLoading){
         return (<OverviewProjectsSkeleton/>);
     }
@@ -26,7 +31,7 @@ const OverviewTab = ({ isLoading = false }: { isLoading?: boolean }) => {
 
       <div className="lg:col-span-2 flex flex-col gap-4">
         <ProjectDescription
-          description="This project focuses on organizing tasks, tracking progress, and coordinating team efforts to ensure timely delivery and clear visibility across all project activities."
+          description={project?.description}
         />
          {/* --------------------------------------------------------------------------------------- */}
         <div className="space-y-6">
@@ -45,14 +50,14 @@ const OverviewTab = ({ isLoading = false }: { isLoading?: boolean }) => {
           />
         </div>
       {/* ------------------------------------------------------------------------------------------ */}
-        <ProjectDetails />
+        <ProjectDetails project={project} />
       </div>
       {/*------------------------ right section------------------------------------------------------ */}
       <div className="flex flex-col gap-4">
         
-        <ProjectProgress  />
+        <ProjectProgress project={project} />
         
-        <TeamMembers/>
+        <TeamMembers teams={project.teams} members={project.direct_members} />
       </div>
     </section>
   )
