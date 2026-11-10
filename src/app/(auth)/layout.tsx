@@ -31,7 +31,7 @@ export default function AuthLayout({
         </Button>
       </header>
 
-      <main className="flex  flex-1 items-center justify-center px-4 py-16">
+      <main className="flex flex-1 bg-light items-center justify-center px-4 py-16">
         {children}
       </main>
     </div>

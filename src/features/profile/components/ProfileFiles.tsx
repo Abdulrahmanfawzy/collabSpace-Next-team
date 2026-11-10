@@ -5,7 +5,7 @@ import { profileFiles } from "../data/mock-profile";
 
 export function ProfileFiles() {
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 ">
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
 
       </div>

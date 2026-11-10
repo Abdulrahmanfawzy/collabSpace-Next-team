@@ -47,9 +47,6 @@ async function Dashboard() {
         <MeetingsAndAskAI
           meetings={meetings}
           meetingsHref="/meetings"
-
-
-
         />
       </div>
     </div>

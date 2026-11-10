@@ -63,7 +63,7 @@ export function ProfileHeader() {
   const icons = [CheckCircle2, Clock3, FolderKanban];
 
   return (
-    <section className="rounded-xl border border-border p-5 md:p-7">
+    <section className=" p-5 md:p-7">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
         <div className="relative w-fit">
           <Avatar className="size-23 border-2 border-primary/10 md:size-24">
