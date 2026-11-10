@@ -1,45 +1,57 @@
 import {
-  BriefcaseBusiness,
+  CircleDot,
   CalendarDays,
   Flag,
   ListTodo,
   Clock3,
 } from "lucide-react";
+import type { ProjectOverview } from "@/types/project";
 
-const details = [
-  {
-    title: "Project Type",
-    value: "SaaS",
-    icon: BriefcaseBusiness,
-    color: "bg-blue-50 text-blue-500",
-  },
-  {
-    title: "Start Date",
-    value: "Oct 12",
-    icon: CalendarDays,
-    color: "bg-pink-50 text-pink-500",
-  },
-  {
-    title: "Deadline",
-    value: "Dec 25",
-    icon: Clock3,
-    color: "bg-orange-50 text-orange-500",
-  },
-  {
-    title: "Priority",
-    value: "High",
-    icon: Flag,
-    color: "bg-red-50 text-red-500",
-  },
-  {
-    title: "Total Tasks",
-    value: "140",
-    icon: ListTodo,
-    color: "bg-purple-50 text-purple-500",
-  },
-];
+interface ProjectDetailsProps {
+  project: ProjectOverview;
+}
 
-const ProjectDetails = () => {
+const formatDate = (date: string) =>
+  new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${date}T00:00:00Z`));
+
+const ProjectDetails = ({ project }: ProjectDetailsProps) => {
+  const details = [
+    {
+      title: "Status",
+      value: project.status,
+      icon: CircleDot,
+      color: "bg-blue-50 text-blue-500",
+    },
+    {
+      title: "Start Date",
+      value: formatDate(project.due_date_indicator.start_date),
+      icon: CalendarDays,
+      color: "bg-pink-50 text-pink-500",
+    },
+    {
+      title: "Deadline",
+      value: formatDate(project.due_date_indicator.deadline),
+      icon: Clock3,
+      color: "bg-orange-50 text-orange-500",
+    },
+    {
+      title: "Priority",
+      value: project.priority,
+      icon: Flag,
+      color: "bg-red-50 text-red-500",
+    },
+    {
+      title: "Total Tasks",
+      value: String(project.tasks_statistics.total),
+      icon: ListTodo,
+      color: "bg-purple-50 text-purple-500",
+    },
+  ];
+
   return (
     <section className="rounded-xl bg-white p-4 border border-bg-label">
       <h2 className="mb-2 text-lg font-medium text-black">

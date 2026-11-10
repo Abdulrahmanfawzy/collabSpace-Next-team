@@ -3,6 +3,8 @@ import "server-only";
 
 
 import type {
+  ProjectOverview,
+  ProjectOverviewResponse,
   ProjectsResponse,
   ProjectFiltersParams,
 } from "@/types/project";
@@ -39,4 +41,37 @@ export async function getProjects(
   }
 
   return response.json();
+}
+
+export async function getProjectOverview(
+  id: number
+): Promise<ProjectOverview | null> {
+  const token = process.env.token;
+  const response = await fetch(
+    `${API_URL}/api/v1/projects/${id}/overview`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch project overview");
+  }
+
+  const result: ProjectOverviewResponse = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.message || "Failed to fetch project overview");
+  }
+
+  return result.data;
 }

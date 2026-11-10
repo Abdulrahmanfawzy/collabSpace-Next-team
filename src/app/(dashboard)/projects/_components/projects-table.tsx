@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table"
 
 import Link from "next/link"
-import { Project } from "../../../../types/project"
+import { Project } from "@/types/project"
 
 interface ProjectsTableProps {
   projects: Project[]

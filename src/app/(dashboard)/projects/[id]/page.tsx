@@ -1,8 +1,7 @@
 
 import { notFound } from "next/navigation"
-import { projects } from "../_components/projects-data"
-import ProjectTabs from "./_components/project-tabs"
-import ProjectHeader from "./_components/project-header"
+import ProjectPageContent from "./_components/project-page-content"
+
 
 interface ProjectDetailsPageProps {
   params: Promise<{ id: string }>
@@ -10,17 +9,14 @@ interface ProjectDetailsPageProps {
 
 const ProjectDetailsPage = async ({ params }: ProjectDetailsPageProps) => {
   const { id } = await params
-  const project = projects.find((project) => project.id === Number(id))
+  const projectId = Number(id)
 
-  if (!project) {
+  if (!Number.isInteger(projectId) || projectId <= 0) {
     notFound()
   }
 
   return (
-     <main className=" bg-bg-light min-h-screen ">
-      <ProjectHeader projectName={project.name} />
-       <ProjectTabs />
-    </main>
+    <ProjectPageContent projectId={projectId} />
   )
 }
 
