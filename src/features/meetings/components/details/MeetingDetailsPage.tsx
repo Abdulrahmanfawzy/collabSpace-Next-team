@@ -88,9 +88,7 @@ export default function MeetingDetailsPage({ meetingId }: Props) {
         <section className="min-w-0 space-y-6">
           <MeetingVideoPlayer />
 
-          <MeetingTabs
-            keyPoints={meeting.summary?.decisions_made ?? []}
-          />
+         <MeetingTabs summary={meeting.summary} />
         </section>
 
         {/* Right Section */}
