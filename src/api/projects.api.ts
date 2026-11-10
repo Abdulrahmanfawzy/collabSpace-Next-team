@@ -7,10 +7,12 @@ import type {
   ProjectOverviewResponse,
   ProjectsResponse,
   ProjectFiltersParams,
+  CreateProjectPayload,
+  CreateProjectResponse,
 } from "@/types/project";
 
 const API_URL = process.env.API
-
+// ---------------- get projects ----------------
 export async function getProjects(
   filters: ProjectFiltersParams = {}
 ): Promise<ProjectsResponse> {
@@ -42,7 +44,7 @@ export async function getProjects(
 
   return response.json();
 }
-
+// ---------------- get project overview ----------------
 export async function getProjectOverview(
   id: number
 ): Promise<ProjectOverview | null> {
@@ -75,3 +77,32 @@ export async function getProjectOverview(
 
   return result.data;
 }
+// ---------------- create project ----------------
+export async function createProject(
+  payload: CreateProjectPayload
+): Promise<CreateProjectResponse> {
+  const token = process.env.token;
+
+  const response = await fetch(
+    `${process.env.API}/api/v1/projects`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to create project");
+  }
+
+  return result;
+}
+// ---------------- ----------------

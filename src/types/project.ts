@@ -45,7 +45,7 @@ export interface ProjectsResponse {
   message: string;
   data: ProjectsPayload;
 }
-
+// ------------------- overview -------------------
 export interface ProjectOverviewTeam {
   id: number;
   name: string;
@@ -120,4 +120,25 @@ export interface ProjectFiltersParams {
   status?: string;
   priority?: string;
   sort?: string;
+}
+// ---------------- add project ----------------
+
+export interface CreateProjectPayload {
+  name: string;
+  description: string;
+  start_date: string;
+  deadline: string;
+  priority: "Low" | "Medium" | "High" | "Critical";
+  status: "Planning" | "In Progress" | "On Hold" | "Completed";
+  teams: number[];
+  members: {
+    user_id: number;
+    role: string;
+  }[];
+}
+
+export interface CreateProjectResponse {
+  success: boolean;
+  message: string;
+  data: ProjectOverview;
 }
