@@ -10,7 +10,7 @@ export interface Project {
   description: string;
   start_date: string;
   deadline: string;
-  status: "Pending" | "In Progress" | "On Hold" | "Completed" | "Cancelled";
+  status: "Planning" | "Pending" | "In Progress" | "On Hold" | "Completed" | "Cancelled";
   priority: "Low" | "Medium" | "High" | "Critical";
   progress_percentage: number;
   files_count: number;
@@ -113,6 +113,7 @@ export interface ProjectOverviewResponse {
   data: ProjectOverview;
 }
 
+
 export interface ProjectFiltersParams {
   page?: number;
   per_page?: number;
@@ -129,7 +130,7 @@ export interface CreateProjectPayload {
   start_date: string;
   deadline: string;
   priority: "Low" | "Medium" | "High" | "Critical";
-  status: "Planning" | "In Progress" | "On Hold" | "Completed";
+  status: Project["status"];
   teams: number[];
   members: {
     user_id: number;
@@ -141,4 +142,31 @@ export interface CreateProjectResponse {
   success: boolean;
   message: string;
   data: ProjectOverview;
+}
+
+export type UpdateProjectPayload = Pick<
+  CreateProjectPayload,
+  "name" | "description" | "start_date" | "deadline" | "status" | "priority"
+>;
+
+export interface ProjectMutationResponse {
+  success: boolean;
+  message: string;
+}
+
+// -------------update project----------------
+
+export interface UpdatedProject extends Omit<ProjectOverview, "tasks_statistics"> {
+  tasks_statistics: ProjectOverview["tasks_statistics"] & {
+    pending_percentage: number;
+    in_progress_percentage: number;
+    in_review_percentage: number;
+    completed_percentage: number;
+  };
+}
+
+export interface UpdateProjectResponse {
+  success: boolean;
+  message: string;
+  data: UpdatedProject;
 }

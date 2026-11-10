@@ -1,8 +1,18 @@
 
 "use server";
 
-import { createProject, getProjectOverview, getProjects } from "@/api/projects.api";
-import type { CreateProjectPayload, ProjectFiltersParams } from "@/types/project";
+import {
+  createProject,
+  deleteProject,
+  getProjectOverview,
+  getProjects,
+  updateProject,
+} from "@/api/projects.api";
+import type {
+  CreateProjectPayload,
+  ProjectFiltersParams,
+  UpdateProjectPayload,
+} from "@/types/project";
 // ---------------- get projects ----------------
 export async function getProjectsAction(
   filters: ProjectFiltersParams
@@ -18,4 +28,15 @@ export async function createProjectAction(
   payload: CreateProjectPayload
 ) {
   return await createProject(payload);
+}
+// ---------------- update project ----------------
+export async function updateProjectAction(
+  id: number,
+  payload: UpdateProjectPayload
+) {
+  return await updateProject(id, payload);
+}
+// ---------------- delete project ----------------
+export async function deleteProjectAction(id: number) {
+  return await deleteProject(id);
 }

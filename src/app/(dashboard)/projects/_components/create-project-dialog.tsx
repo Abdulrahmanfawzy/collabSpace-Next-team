@@ -9,6 +9,7 @@ import {
   Flag,
   FolderPlus,
   LoaderCircle,
+  Pencil,
   Plus,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -32,11 +33,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCreateProject } from "@/hooks/projects/use-create-project";
+import { useUpdateProject } from "@/hooks/projects/use-update-project";
 import {
   createProjectSchema,
   type CreateProjectFormValues,
 } from "@/schemas/projects/create-project.schema";
-import type { CreateProjectPayload } from "@/types/project";
+import type {
+  CreateProjectPayload,
+  Project,
+  UpdateProjectPayload,
+} from "@/types/project";
 
 const fieldClassName =
   "h-11 rounded-lg border-gray-200 bg-white px-3 text-sm shadow-none placeholder:text-gray-400 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10";
@@ -49,14 +55,18 @@ function FieldError({ message }: { message?: string }) {
 
 interface CreateProjectDialogProps {
   trigger: ReactNode;
+  project?: Project;
 }
 
 export function CreateProjectDialog({
   trigger,
+  project,
 }: CreateProjectDialogProps) {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
-  const { mutate: createProject, isPending } = useCreateProject();
+  const { mutate: createProject, isPending: isCreating } = useCreateProject();
+  const { mutate: updateProject, isPending: isUpdating } = useUpdateProject();
+  const isPending = isCreating || isUpdating;
 
   const form = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
@@ -73,10 +83,36 @@ export function CreateProjectDialog({
   const handleOpenChange = (nextOpen: boolean) => {
     if (isPending) return;
     setOpen(nextOpen);
-    if (!nextOpen) form.reset();
+    if (nextOpen && project) {
+      form.reset({
+        name: project.name,
+        description: project.description ?? "",
+        start_date: project.start_date,
+        deadline: project.deadline,
+        status: project.status,
+        priority: project.priority,
+      });
+    } else if (!nextOpen) {
+      form.reset();
+    }
   };
 
   const handleSubmit = (values: CreateProjectFormValues) => {
+    if (project) {
+      const payload: UpdateProjectPayload = values;
+
+      updateProject(
+        { id: project.id, payload },
+        {
+          onSuccess: () => {
+            form.reset();
+            setOpen(false);
+          },
+        }
+      );
+      return;
+    }
+
     const payload: CreateProjectPayload = {
       ...values,
       teams: [],
@@ -102,15 +138,20 @@ export function CreateProjectDialog({
         <DialogHeader className="border-b border-gray-100 px-6 py-5 text-left sm:px-7">
           <div className="flex items-start gap-4">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <FolderPlus aria-hidden="true" size={21} />
+              {project ? (
+                <Pencil aria-hidden="true" size={20} />
+              ) : (
+                <FolderPlus aria-hidden="true" size={21} />
+              )}
             </div>
             <div className="space-y-1.5">
               <DialogTitle className="text-xl font-semibold tracking-tight text-gray-900">
-                Create a new project
+                {project ? "Edit project" : "Create a new project"}
               </DialogTitle>
               <DialogDescription className="text-sm leading-5 text-gray-500">
-                Set up the project details, timeline, and priorities to get
-                your team started.
+                {project
+                  ? "Update the project details, timeline, and priority."
+                  : "Set up the project details, timeline, and priorities to get your team started."}
               </DialogDescription>
             </div>
           </div>
@@ -270,9 +311,11 @@ export function CreateProjectDialog({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Planning">Planning</SelectItem>
+                        <SelectItem value="Pending">Pending</SelectItem>
                         <SelectItem value="In Progress">In Progress</SelectItem>
                         <SelectItem value="On Hold">On Hold</SelectItem>
                         <SelectItem value="Completed">Completed</SelectItem>
+                        <SelectItem value="Cancelled">Cancelled</SelectItem>
                       </SelectContent>
                     </Select>
                     <FieldError message={fieldState.error?.message} />
@@ -340,12 +383,12 @@ export function CreateProjectDialog({
                       className="animate-spin"
                       size={16}
                     />
-                    Creating…
+                    {project ? "Saving…" : "Creating…"}
                   </>
                 ) : (
                   <>
                     <Plus aria-hidden="true" size={16} />
-                    Create project
+                    {project ? "Save changes" : "Create project"}
                   </>
                 )}
               </Button>
