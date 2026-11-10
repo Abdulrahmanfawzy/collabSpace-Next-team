@@ -2,7 +2,6 @@ import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import { cn } from "@/lib/utils";
 import { Metadata } from "next";
-import Navbar from "@/components/layout/Navbar/Navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={cn(inter.className)}>
-        <Navbar />
+   
         {children}
       </body>
     </html>

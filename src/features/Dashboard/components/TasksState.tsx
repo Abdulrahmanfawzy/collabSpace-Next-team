@@ -1,15 +1,10 @@
 // components/task-stats.tsx
 
-import { stats } from "../constants/DataState"
+import { getStates } from "../constants/DataState"
 import CompletionRateCard from "./CompletionCard"
 import StatCard from "./StateCard"
-
-
-
-
-
-
-function TaskStats() {
+function TaskStats({items}) {
+    const stats = getStates(items)
     return (
         <section
             aria-label="Task overview"

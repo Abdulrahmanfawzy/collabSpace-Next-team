@@ -1,7 +1,11 @@
+import Navbar from "../../components/layout/Navbar/Navbar";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="bg-light w-full ">
-      <main className="app-container ">{children}</main>
+      <main className="app-container ">
+      <Navbar />
+        {children}</main>
     </div>
   );
 }

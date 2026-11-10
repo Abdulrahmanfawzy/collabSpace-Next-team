@@ -45,18 +45,18 @@ function FileItem({ file }: { file: RecentFile }) {
         )
       }
     return (
-      <li className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
+      <li className="flex min-w-0 items-center gap-3 py-4 first:pt-0 last:pb-0 sm:gap-4">
         <FileTypeIcon fileName={file.name} />
   
         <div className="min-w-0 flex-1">
-          <p className="truncate text-base font-medium">{file.name}</p>
+          <p className="truncate text-sm font-medium sm:text-base" title={file.name}>{file.name}</p>
           <p className="mt-0.5 truncate text-sm text-muted-foreground">
             By {file.author} • {file.time}
           </p>
         </div>
   
         {file.downloadUrl ? (
-          <Button variant="ghost" size="icon" asChild aria-label={`Download ${file.name}`}>
+          <Button variant="ghost" size="icon" asChild aria-label={`Download ${file.name}`} title={`Download ${file.name}`}>
             <a href={file.downloadUrl} download>
               <Download className="size-5" />
             </a>

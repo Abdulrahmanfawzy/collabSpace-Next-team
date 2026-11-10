@@ -1,16 +1,37 @@
 import { LucideIcon } from "lucide-react"
 
-export type Stat = {
-    title: string
-    value: number
-    total: number
-    change: number
-    icon: LucideIcon
-    badge: string // icon badge background + icon color
-    track: string // progress track color
-    bar: string // progress indicator color
-  }
-  
+export interface DashboardData {
+  overview: {
+    projects: {
+      total: number;
+      active: number;
+      completed: number;
+      average_progress: number;
+    };
+    tasks: {
+      total: number;
+      pending: number;
+      in_progress: number;
+      in_review: number;
+      completed: number;
+      overdue: number;
+      assigned_to_me: number;
+      completion_rate: number;
+      by_priority: {
+        low: number;
+        medium: number;
+        high: number;
+        critical: number;
+      };
+    };
+    meetings: {
+      upcoming_count: number;
+    };
+    teams: {
+      total: number;
+    };
+  };
+}
 export type RecentFilesProps = {
   files: RecentFile[]
   viewAllHref?: string
@@ -90,4 +111,3 @@ export type MeetingsAndAskAIProps = {
   onSend: AskAIProps["onSend"]
   meetingsHref?: string
 }
- 
