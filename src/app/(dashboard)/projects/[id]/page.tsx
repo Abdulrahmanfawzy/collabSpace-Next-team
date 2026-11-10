@@ -1,7 +1,8 @@
-import ProjectHeader from "./_components/project-header"
+
 import { notFound } from "next/navigation"
 import { projects } from "../_components/projects-data"
 import ProjectTabs from "./_components/project-tabs"
+import ProjectHeader from "./_components/project-header"
 
 interface ProjectDetailsPageProps {
   params: Promise<{ id: string }>
