@@ -16,7 +16,7 @@ const ProjectDetailsPage = async ({ params }: ProjectDetailsPageProps) => {
   }
 
   return (
-     <main className="app-container bg-bg-light min-h-screen mt-15">
+     <main className=" bg-bg-light min-h-screen ">
       <ProjectHeader projectName={project.name} />
        <ProjectTabs />
     </main>
