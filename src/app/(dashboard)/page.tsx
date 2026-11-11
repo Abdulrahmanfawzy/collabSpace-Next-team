@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
-import { AUTH_TOKEN_COOKIE } from "@/features/auth/constants/auth.constants";
+import { getBackendToken } from "@/auth";
 import TaskStats from "@/features/Dashboard/components/TasksState";
 import ProjectOverview from "../../features/Dashboard/components/ProjectPoints";
 import ProjectsAndFiles from "../../features/Dashboard/components/Items";
@@ -14,8 +13,8 @@ export const metadata: Metadata = {
 };
 
 async function Dashboard() {
-  if (!token) throw new Error("No authenticated session was found for the dashboard.");
-  
+  const token = await getBackendToken();
+  if (!token) throw new Error("No authenticated backend token was found for the dashboard.");
 
   const items = await getDashboard(token);
   const chartData = items.project_overview.data.map((point) => ({
@@ -25,7 +24,7 @@ async function Dashboard() {
   const chartTicks = items.project_overview.data
     .filter((point) => point.month_number % 2 === 1)
     .map((point) => ({ x: point.month_number - 1, label: point.month }));
-  
+
 
   return (
     <div className="flex flex-col gap-6 pt-2 ">

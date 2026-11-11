@@ -35,7 +35,22 @@ const getDashboard = async (token: string): Promise<DashboardData> => {
   
     const dashboard = payload?.data ?? payload;
     if (!dashboard?.overview?.tasks) {
-      throw new Error("Invalid dashboard response: expected data.overview.tasks.");
+      throw new Error(
+        `Invalid dashboard response from ${response.url}: expected data.overview.tasks.`,
+      );
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      console.info("Dashboard API response summary", {
+        status: response.status,
+        projectsTotal: dashboard.overview.projects?.total ?? null,
+        tasksTotal: dashboard.overview.tasks.total ?? null,
+        activeProjects: dashboard.active_projects?.items?.length ?? null,
+        tasks: dashboard.tasks?.items?.length ?? null,
+        teams: dashboard.teams?.items?.length ?? null,
+        meetings: dashboard.upcoming_meetings?.items?.length ?? null,
+        recentFiles: dashboard.recent_files?.items?.length ?? null,
+      });
     }
 
     return dashboard as DashboardData;
