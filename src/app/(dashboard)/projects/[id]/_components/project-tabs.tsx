@@ -90,7 +90,13 @@ const ProjectTabs = ({
     },
     {
       value: "teams",
-      component: <TeamsTab isLoading={isTeamsLoading} />,
+      component: (
+        <TeamsTab
+          teams={teams}
+          isLoading={areTeamsLoading || isTeamsLoading}
+          error={teamsError}
+        />
+      ),
     },
     {
       value: "files",
