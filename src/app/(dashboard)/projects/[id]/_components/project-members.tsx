@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import {
   Select,
@@ -9,22 +9,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type {
-  ProjectOverviewMember,
-  ProjectOverviewTeam,
-} from "@/types/project";
+import type { ProjectAssignedTeam } from "@/types/project";
 
 interface TeamMembersProps {
-  teams: ProjectOverviewTeam[];
-  members: ProjectOverviewMember[];
+  teams: ProjectAssignedTeam[];
+  isLoading: boolean;
+  error: Error | null;
 }
 
-const TeamMembers = ({ teams, members }: TeamMembersProps) => {
-  const [selectedTeamId, setSelectedTeamId] = useState(
-    teams[0] ? String(teams[0].id) : ""
-  );
-  const selectedTeam =
-    teams.find((team) => String(team.id) === selectedTeamId) ?? teams[0];
+const TeamMembers = ({ teams, isLoading, error }: TeamMembersProps) => {
+  const [selectedTeamId, setSelectedTeamId] = useState("");
+  const selectedTeam = teams.find(
+    (team) => String(team.id) === selectedTeamId
+  ) ?? teams[0];
+
+  useEffect(() => {
+    if (selectedTeam && !teams.some((team) => String(team.id) === selectedTeamId)) {
+      setSelectedTeamId(String(selectedTeam.id));
+    }
+  }, [selectedTeam, selectedTeamId, teams]);
 
   return (
     <section className="w-full rounded-xl bg-white p-4 shadow-sm">
@@ -43,8 +46,9 @@ const TeamMembers = ({ teams, members }: TeamMembersProps) => {
           <SelectTrigger
             aria-label="Select team"
             className="h-auto w-auto gap-1 border-0 bg-transparent p-0 text-[10px] text-gray-500 shadow-none focus-visible:ring-0"
+            disabled={isLoading}
           >
-            <SelectValue placeholder="Select team" />
+            <SelectValue placeholder={isLoading ? "Loading teams..." : "Select team"} />
           </SelectTrigger>
           <SelectContent align="start">
             {teams.map((team) => (
@@ -56,10 +60,28 @@ const TeamMembers = ({ teams, members }: TeamMembersProps) => {
         </Select>
       </div>
 
+      {selectedTeam && (
+        <div className="mb-3 flex items-center justify-between text-[10px] text-gray-500">
+          <span>
+            {selectedTeam.completed_tasks}/{selectedTeam.total_tasks} tasks
+          </span>
+          <span>{selectedTeam.completion_percentage}% complete</span>
+        </div>
+      )}
+
       {/* Members List */}
       <div className="flex flex-col gap-3">
+        {isLoading && (
+          <p className="text-[11px] text-gray-500">Loading team members...</p>
+        )}
 
-        {members.map((member) => (
+        {error && (
+          <p role="alert" className="text-[11px] text-destructive">
+            {error.message}
+          </p>
+        )}
+
+        {selectedTeam?.members.map((member) => (
           <div
             key={member.id}
             className="flex items-center gap-2"
@@ -78,9 +100,9 @@ const TeamMembers = ({ teams, members }: TeamMembersProps) => {
                 </span>
               )}
 
-              {member.role.toLowerCase().includes("owner") && (
+              {member.is_leader && (
                 <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-white">
-                  <Check size={10} />
+                  <Check aria-label="Team leader" size={10} />
                 </span>
               )}
             </div>
@@ -90,25 +112,24 @@ const TeamMembers = ({ teams, members }: TeamMembersProps) => {
               <span className="block truncate text-[11px] font-medium text-gray-700">
                 {member.name}
               </span>
-              {member.job_title && (
-                <span className="block truncate text-[9px] text-gray-500">
-                  {member.job_title}
-                </span>
-              )}
+              <span className="block truncate text-[9px] text-gray-500">
+                {member.role_in_team}
+                {member.is_leader ? " · Team Lead" : ""}
+              </span>
             </div>
 
             {/* Role */}
-            {member.role && (
-              <span className="ml-auto text-right text-[9px] text-gray-500">
-                {member.role}
-              </span>
-            )}
+            <span className="ml-auto shrink-0 text-right text-[9px] text-gray-500">
+              {member.tasks_ratio}
+            </span>
           </div>
         ))}
 
-        {members.length === 0 && (
+        {!isLoading && !error && !selectedTeam?.members.length && (
           <p className="text-[11px] text-gray-500">
-            No project members are available.
+            {teams.length === 0
+              ? "No teams are assigned to this project."
+              : "No members are assigned to this team."}
           </p>
         )}
       </div>

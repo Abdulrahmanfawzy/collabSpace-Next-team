@@ -9,6 +9,14 @@ import type {
   ProjectFiltersParams,
   CreateProjectPayload,
   CreateProjectResponse,
+  ProjectMutationResponse,
+  UpdateProjectResponse,
+  UpdateProjectPayload,
+  ProjectOverviewParams,
+  ProjectTeamsResponse,
+  ProjectAssignedTeam,
+  AssignProjectTeamsPayload,
+  AssignProjectTeamsResponse,
 } from "@/types/project";
 
 const API_URL = process.env.API
@@ -45,12 +53,20 @@ export async function getProjects(
   return response.json();
 }
 // ---------------- get project overview ----------------
-export async function getProjectOverview(
-  id: number
-): Promise<ProjectOverview | null> {
+
+export async function getProjectOverview({
+  id,
+  period,
+  year,
+}: ProjectOverviewParams): Promise<ProjectOverview | null> {
   const token = process.env.token;
+   const params = new URLSearchParams({
+    period,
+    year: String(year),
+  });
+
   const response = await fetch(
-    `${API_URL}/api/v1/projects/${id}/overview`,
+    `${API_URL}/api/v1/projects/${id}/overview?${params.toString()}`,
     {
       method: "GET",
       headers: {
@@ -77,6 +93,88 @@ export async function getProjectOverview(
 
   return result.data;
 }
+
+export async function getProjectTeams(
+  projectId: number
+): Promise<ProjectAssignedTeam[]> {
+  const token = process.env.token;
+  const response = await fetch(
+    `${API_URL}/api/v1/projects/${projectId}/teams`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch project teams");
+  }
+
+  const result: ProjectTeamsResponse = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.message || "Failed to fetch project teams");
+  }
+
+  return result.data;
+}
+
+export async function assignProjectTeams(
+  projectId: number,
+  payload: AssignProjectTeamsPayload
+): Promise<AssignProjectTeamsResponse> {
+  const token = process.env.token;
+  const response = await fetch(
+    `${API_URL}/api/v1/projects/${projectId}/teams`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    }
+  );
+  const result: AssignProjectTeamsResponse = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to assign teams to project");
+  }
+
+  return result;
+}
+
+export async function deleteProjectTeam(
+  projectId: number,
+  teamId: number
+): Promise<ProjectMutationResponse> {
+  const token = process.env.token;
+  const response = await fetch(
+    `${API_URL}/api/v1/projects/${projectId}/teams/${teamId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }
+  );
+  const result: ProjectMutationResponse = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to remove team from project");
+  }
+
+  return result;
+}
+
 // ---------------- create project ----------------
 export async function createProject(
   payload: CreateProjectPayload
@@ -105,4 +203,51 @@ export async function createProject(
 
   return result;
 }
-// ---------------- ----------------
+// ---------------- update project ----------------
+export async function updateProject(
+  id: number,
+  payload: UpdateProjectPayload
+): Promise<UpdateProjectResponse> {
+  const token = process.env.token;
+  const response = await fetch(`${API_URL}/api/v1/projects/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
+  const result: UpdateProjectResponse = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to update project");
+  }
+
+  return result;
+}
+// ---------------- delete project ----------------
+export async function deleteProject(
+  id: number
+): Promise<ProjectMutationResponse> {
+  const token = process.env.token;
+  const response = await fetch(`${API_URL}/api/v1/projects/${id}`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  const result = response.status === 204
+    ? { success: true, message: "Project deleted successfully." }
+    : (await response.json()) as ProjectMutationResponse;
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to delete project");
+  }
+
+  return result;
+}

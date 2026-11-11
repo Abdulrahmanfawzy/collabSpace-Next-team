@@ -10,7 +10,7 @@ import OverviewTab from "./tabs/overview";
 import TasksTab from "./tabs/tasks";
 import TeamsTab from "./tabs/teams";
 import FilesTab from "./tabs/files";
-import type { ProjectOverview } from "@/types/project";
+import type { ProjectAssignedTeam, ProjectOverview } from "@/types/project";
 const files = [
   {
     id: 1,
@@ -39,7 +39,15 @@ const files = [
 ];
 const tabs = ["Overview", "Tasks", "Teams", "Files"];
 interface ProjectTabsProps {
-  project: ProjectOverview
+  project: ProjectOverview;
+  teams: ProjectAssignedTeam[];
+  areTeamsLoading: boolean;
+  teamsError: Error | null;
+  progressPercentage: number;
+  completedTasks: number;
+  totalTasks: number;
+  year: number;
+  onYearChange: (year: number) => void;
   isTasksLoading?: boolean
   isTeamsLoading?: boolean
   isFilesLoading?: boolean
@@ -47,6 +55,14 @@ interface ProjectTabsProps {
 
 const ProjectTabs = ({
   project,
+  teams,
+  areTeamsLoading,
+  teamsError,
+  progressPercentage,
+  completedTasks,
+  totalTasks,
+  year,
+  onYearChange,
   isTasksLoading = false,
   isTeamsLoading = false,
   isFilesLoading = false,
@@ -54,7 +70,19 @@ const ProjectTabs = ({
   const tabContents = [
     {
       value: "overview",
-      component: <OverviewTab project={project} />,
+      component: (
+        <OverviewTab
+          project={project}
+          teams={teams}
+          areTeamsLoading={areTeamsLoading}
+          teamsError={teamsError}
+          progressPercentage={progressPercentage}
+          completedTasks={completedTasks}
+          totalTasks={totalTasks}
+          year={year}
+          onYearChange={onYearChange}
+        />
+      ),
     },
     {
       value: "tasks",
@@ -62,7 +90,13 @@ const ProjectTabs = ({
     },
     {
       value: "teams",
-      component: <TeamsTab isLoading={isTeamsLoading} />,
+      component: (
+        <TeamsTab
+          teams={teams}
+          isLoading={areTeamsLoading || isTeamsLoading}
+          error={teamsError}
+        />
+      ),
     },
     {
       value: "files",

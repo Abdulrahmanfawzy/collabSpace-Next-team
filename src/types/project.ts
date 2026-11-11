@@ -10,7 +10,7 @@ export interface Project {
   description: string;
   start_date: string;
   deadline: string;
-  status: "Pending" | "In Progress" | "On Hold" | "Completed" | "Cancelled";
+  status: "Planning" | "Pending" | "In Progress" | "On Hold" | "Completed" | "Cancelled";
   priority: "Low" | "Medium" | "High" | "Critical";
   progress_percentage: number;
   files_count: number;
@@ -105,6 +105,7 @@ export interface ProjectOverview {
   };
   created_at: string;
   updated_at: string;
+  chart: ProjectChart;
 }
 
 export interface ProjectOverviewResponse {
@@ -112,7 +113,55 @@ export interface ProjectOverviewResponse {
   message: string;
   data: ProjectOverview;
 }
+// ------------------- project teams -------------------
 
+export interface ProjectAssignedTeamMember {
+  id: number;
+  name: string;
+  avatar_url: string | null;
+  role_in_team: string;
+  is_leader: boolean;
+  tasks_completed: number;
+  tasks_total: number;
+  tasks_ratio: string;
+  progress_percentage: number;
+}
+
+export interface ProjectAssignedTeam {
+  id: number;
+  name: string;
+  completion_percentage: number;
+  total_tasks: number;
+  completed_tasks: number;
+  members: ProjectAssignedTeamMember[];
+}
+
+export interface ProjectTeamsResponse {
+  success: boolean;
+  message: string;
+  data: ProjectAssignedTeam[];
+}
+
+export interface AssignProjectTeamsPayload {
+  team_ids: number[];
+}
+
+export interface AssignProjectTeamsResponseData extends Omit<ProjectOverview, "chart"> {
+  tasks_statistics: ProjectOverview["tasks_statistics"] & {
+    pending_percentage: number;
+    in_progress_percentage: number;
+    in_review_percentage: number;
+    completed_percentage: number;
+  };
+}
+
+export interface AssignProjectTeamsResponse {
+  success: boolean;
+  message: string;
+  data: AssignProjectTeamsResponseData;
+}
+
+// ----------------------------------------
 export interface ProjectFiltersParams {
   page?: number;
   per_page?: number;
@@ -120,6 +169,30 @@ export interface ProjectFiltersParams {
   status?: string;
   priority?: string;
   sort?: string;
+}
+type OverviewPeriod = "month" | "year";
+export interface ProjectOverviewParams {
+  id: number;
+  period: OverviewPeriod;
+  year: number;
+}
+//--chart overview
+export interface ProjectChartData {
+  month: string;
+  month_number: number;
+  year: number;
+  label: string;
+  created_tasks: number;
+  completed_tasks: number;
+  progress_percentage: number;
+  is_future: boolean;
+}
+
+export interface ProjectChart {
+  period: string;
+  year: number;
+  group_by: string;
+  data: ProjectChartData[];
 }
 // ---------------- add project ----------------
 
@@ -129,7 +202,7 @@ export interface CreateProjectPayload {
   start_date: string;
   deadline: string;
   priority: "Low" | "Medium" | "High" | "Critical";
-  status: "Planning" | "In Progress" | "On Hold" | "Completed";
+  status: Project["status"];
   teams: number[];
   members: {
     user_id: number;
@@ -141,4 +214,49 @@ export interface CreateProjectResponse {
   success: boolean;
   message: string;
   data: ProjectOverview;
+}
+
+export type UpdateProjectPayload = Pick<
+  CreateProjectPayload,
+  "name" | "description" | "start_date" | "deadline" | "status" | "priority"
+>;
+
+export interface ProjectMutationResponse {
+  success: boolean;
+  message: string;
+}
+
+// -------------update project----------------
+
+export interface UpdatedProject extends Omit<ProjectOverview, "tasks_statistics"> {
+  tasks_statistics: ProjectOverview["tasks_statistics"] & {
+    pending_percentage: number;
+    in_progress_percentage: number;
+    in_review_percentage: number;
+    completed_percentage: number;
+  };
+}
+
+export interface UpdateProjectResponse {
+  success: boolean;
+  message: string;
+  data: UpdatedProject;
+}
+
+
+// -------------update project----------------
+
+export interface UpdatedProject extends Omit<ProjectOverview, "tasks_statistics"> {
+  tasks_statistics: ProjectOverview["tasks_statistics"] & {
+    pending_percentage: number;
+    in_progress_percentage: number;
+    in_review_percentage: number;
+    completed_percentage: number;
+  };
+}
+
+export interface UpdateProjectResponse {
+  success: boolean;
+  message: string;
+  data: UpdatedProject;
 }

@@ -9,6 +9,7 @@ import { auth } from "@/auth";
 import { authQueryKeys } from "@/features/auth/constants/auth.query-keys";
 import { authService, AuthApiError } from "@/features/auth/services/auth.service";
 import NavBar from "@/components/layout/Navbar/Navbar";
+import { Toaster } from "sonner";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -42,6 +43,7 @@ export default async function DashboardLayout({
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="bg-light w-full">
         <NavBar />
+        <Toaster top-right richColors />
         <main className="app-container">
           {children}
         </main>
