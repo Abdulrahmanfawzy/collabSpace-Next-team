@@ -3,10 +3,11 @@ import type { ProjectOverview } from "@/types/project"
 
 interface ProjectHeaderProps {
   project: ProjectOverview
+  progressPercentage: number
 }
 
-const ProjectHeader = ({ project }: ProjectHeaderProps) => {
-    const progress = Math.min(Math.max(project.progress_percentage, 0), 100)
+const ProjectHeader = ({ project, progressPercentage }: ProjectHeaderProps) => {
+    const progress = Math.min(Math.max(progressPercentage, 0), 100)
 
     return (
 
@@ -24,7 +25,7 @@ const ProjectHeader = ({ project }: ProjectHeaderProps) => {
                         {project.name}
                     </h1>
                     <span className="rounded-[100px] bg-support-green-light p-2 text-sm text-support-green-hover">
-                        {project.progress_percentage}% Completed
+                        {progress}% Completed
                     </span>
                 </div>
             </div>

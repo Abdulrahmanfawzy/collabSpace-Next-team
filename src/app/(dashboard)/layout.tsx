@@ -1,24 +1,15 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import NavBar from "@/components/layout/Navbar/Navbar";
 import {
   QueryClient,
   dehydrate,
   HydrationBoundary,
 } from "@tanstack/react-query";
 
-import {
-  AUTH_TOKEN_COOKIE,
-} from "@/features/auth/constants/auth.constants";
-
-import {
-  authQueryKeys,
-} from "@/features/auth/constants/auth.query-keys";
-
-import {
-  authService,
-  AuthApiError,
-} from "@/features/auth/services/auth.service";
+import { auth } from "@/auth";
+import { authQueryKeys } from "@/features/auth/constants/auth.query-keys";
+import { authService, AuthApiError } from "@/features/auth/services/auth.service";
+import NavBar from "@/components/layout/Navbar/Navbar";
+import { Toaster } from "sonner";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -27,32 +18,21 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
-  const cookieStore = await cookies();
+  const session = await auth();
 
-  const token = cookieStore.get(
-    AUTH_TOKEN_COOKIE,
-  )?.value;
-
-  if (!token) {
+  if (!session?.backendToken) {
     redirect("/login");
   }
 
   const queryClient = new QueryClient();
 
   try {
-    const response = await authService.me(token);
+   
+    const response = await authService.me(session.backendToken);
 
-    queryClient.setQueryData(
-      authQueryKeys.currentUser,
-      response.data,
-    );
+    queryClient.setQueryData(authQueryKeys.currentUser, response.data);
   } catch (error) {
-    if (
-      error instanceof AuthApiError &&
-      error.status === 401
-    ) {
-      cookieStore.delete(AUTH_TOKEN_COOKIE);
-
+    if (error instanceof AuthApiError && error.status === 401) {
       redirect("/login");
     }
 
@@ -60,11 +40,10 @@ export default async function DashboardLayout({
   }
 
   return (
-    <HydrationBoundary
-      state={dehydrate(queryClient)}
-    >
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="bg-light w-full">
         <NavBar />
+        <Toaster top-right richColors />
         <main className="app-container">
           {children}
         </main>

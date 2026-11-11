@@ -10,7 +10,14 @@ export const createProjectSchema = z
     description: z.string().trim().min(1, "Enter a project description"),
     start_date: z.string().min(1, "Choose a start date"),
     deadline: z.string().min(1, "Choose a deadline"),
-    status: z.enum(["Planning", "In Progress", "On Hold", "Completed"]),
+    status: z.enum([
+      "Planning",
+      "Pending",
+      "In Progress",
+      "On Hold",
+      "Completed",
+      "Cancelled",
+    ]),
     priority: z.enum(["Low", "Medium", "High", "Critical"]),
   })
   .superRefine((values, context) => {
