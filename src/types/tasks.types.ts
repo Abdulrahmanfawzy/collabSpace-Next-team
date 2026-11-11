@@ -133,6 +133,22 @@ export interface TaskStatusUpdateResponse {
   message: string;
   data: ApiTask;
 }
+
+export interface CreateTaskPayload {
+  project_id: number;
+  name: string;
+  description?: string;
+  priority: "Low" | "Medium" | "High" | "Critical";
+  status?: ApiTaskStatus;
+  assigned_to?: number;
+  due_date?: string;
+}
+
+export interface CreateTaskResponse {
+  success: boolean;
+  message: string;
+  data: ApiTask;
+}
 // ------------------------Kanaban board for project -----------------------------------------------------------
 export interface ApiKanbanColumn {
   name: string;

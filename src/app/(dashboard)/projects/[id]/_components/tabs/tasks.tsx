@@ -1,10 +1,12 @@
 
 "use client";
 
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import TasksTabSkeleton from "@/components/skeletons/tasks-tab-skeleton";
 import type { ProjectKanban, Task, TaskStatus } from "@/types/tasks.types";
 import { TaskBoard } from "@/components/common/tasks/task-board";
+import { CreateTaskDialog } from "@/components/common/tasks/create-task-dialog";
 import { useGetProjectKanban } from "@/hooks/tasks/use-get-project-kanban";
 import { useUpdateTaskStatus } from "@/hooks/tasks/use-update-task-status";
 import { moveTaskInColumns } from "@/lib/task-board";
@@ -15,6 +17,8 @@ interface TasksTabProps {
 }
 
 const TasksTab = ({ projectId, isLoading: isExternallyLoading = false }: TasksTabProps) => {
+  const [createTaskStatus, setCreateTaskStatus] = useState<TaskStatus>("todo");
+  const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const queryClient = useQueryClient();
   const queryKey = ["project-kanban", projectId];
   const { data, isPending, error } = useGetProjectKanban(projectId);
@@ -33,7 +37,8 @@ const TasksTab = ({ projectId, isLoading: isExternallyLoading = false }: TasksTa
   }
 
   const handleAddTask = (status: TaskStatus) => {
-    console.log("Add task to:", status);
+    setCreateTaskStatus(status);
+    setCreateTaskOpen(true);
   };
 
   const handleTaskClick = (task: Task) => {
@@ -80,6 +85,12 @@ const TasksTab = ({ projectId, isLoading: isExternallyLoading = false }: TasksTa
         onAddTask={handleAddTask}
         onTaskClick={handleTaskClick}
         onTaskMove={handleTaskMove}
+      />
+      <CreateTaskDialog
+        open={createTaskOpen}
+        onOpenChange={setCreateTaskOpen}
+        projectId={projectId}
+        defaultStatus={createTaskStatus}
       />
     </section>
   );

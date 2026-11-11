@@ -5,6 +5,7 @@ import { Filter, Plus, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { CommonSelect } from "@/components/common/common-select";
 import { Button } from "@/components/ui/button";
+import { CreateTaskDialog } from "@/components/common/tasks/create-task-dialog";
 import {
   Dialog,
   DialogContent,
@@ -62,6 +63,12 @@ const TasksHeader = ({
   onReset,
 }: TasksHeaderProps) => {
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [createTaskOpen, setCreateTaskOpen] = useState(false);
+  const selectedProjectId = Number(values.projectId);
+  const projectId =
+    Number.isInteger(selectedProjectId) && selectedProjectId > 0
+      ? selectedProjectId
+      : undefined;
   const activeFilterCount = [
     values.projectId,
     values.status !== "all",
@@ -112,11 +119,23 @@ const TasksHeader = ({
           </Button>
         </div>
 
-        <Button variant="default" size="default" className="shrink-0 rounded-3xl">
+        <Button
+          type="button"
+          variant="default"
+          size="default"
+          className="shrink-0 rounded-3xl"
+          onClick={() => setCreateTaskOpen(true)}
+        >
           Create Task
           <Plus />
         </Button>
       </header>
+
+      <CreateTaskDialog
+        open={createTaskOpen}
+        onOpenChange={setCreateTaskOpen}
+        projectId={projectId}
+      />
 
       <Dialog open={filtersOpen} onOpenChange={setFiltersOpen}>
         <DialogContent

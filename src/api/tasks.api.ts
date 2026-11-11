@@ -4,6 +4,8 @@ import type {
   ApiTaskStatus,
   ProjectKanban,
   ProjectKanbanResponse,
+  CreateTaskPayload,
+  CreateTaskResponse,
   TaskFilters,
   Task,
   TaskStatus,
@@ -12,12 +14,12 @@ import type {
   TasksResponse,
 } from "@/types/tasks.types";
 import { mapApiTask } from "../lib/tasks/task-mapper";
+import { getAccessToken } from "@/auth";
 
 const API_URL = process.env.API;
 
 async function getAuthHeaders(): Promise<HeadersInit> {
-//   const token = await getAccessToken();
-const token = process.env.token;
+  const token = await getAccessToken();
   if (!token) {
     throw new Error("You must be signed in to access tasks.");
   }
@@ -33,7 +35,31 @@ const apiStatusByTaskStatus: Record<TaskStatus, ApiTaskStatus> = {
   "in-progress": "In Progress",
   "in-review": "In Review",
   completed: "Completed",
-};
+}
+
+export async function createTask(
+  payload: CreateTaskPayload
+): Promise<{ task: Task; message: string }> {
+  const response = await fetch(`${API_URL}/api/v1/tasks`, {
+    method: "POST",
+    headers: {
+      ...(await getAuthHeaders()),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
+
+  const result = (await response.json()) as CreateTaskResponse;
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to create task");
+  }
+
+  return {
+    task: mapApiTask(result.data),
+    message: result.message,
+  };
+}
 
 // ----------- list tasks with filters------------------------------------------
 export async function getTasks(

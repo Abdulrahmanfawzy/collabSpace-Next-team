@@ -1,11 +1,16 @@
 "use server";
 
 import {
+  createTask,
   getProjectKanban,
   getTasks,
   updateTaskStatus,
 } from "@/api/tasks.api";
-import type { TaskFilters, TaskStatus } from "@/types/tasks.types";
+import type {
+  CreateTaskPayload,
+  TaskFilters,
+  TaskStatus,
+} from "@/types/tasks.types";
 // -----------------------tasks with filter-------------------------------
 export async function getTasksAction(filters: TaskFilters = {}) {
   return getTasks(filters);
@@ -20,4 +25,8 @@ export async function updateTaskStatusAction(
   status: TaskStatus
 ) {
   return updateTaskStatus(taskId, status);
+}
+
+export async function createTaskAction(payload: CreateTaskPayload) {
+  return createTask(payload);
 }
