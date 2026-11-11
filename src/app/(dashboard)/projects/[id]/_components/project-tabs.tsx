@@ -86,7 +86,9 @@ const ProjectTabs = ({
     },
     {
       value: "tasks",
-      component: <TasksTab isLoading={isTasksLoading} />,
+      component: (
+        <TasksTab projectId={project.id} isLoading={isTasksLoading} />
+      ),
     },
     {
       value: "teams",
