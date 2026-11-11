@@ -29,6 +29,7 @@ import {
 import type {
   AuthActionResult,
   AuthUser,
+  AuthSessionData,
   ForgotPasswordData,
   GoogleRedirectData,
 } from "@/features/auth/types/auth.types";
@@ -64,6 +65,33 @@ function handleFailure(error: unknown): AuthActionResult<never> {
         ? error.message
         : "Something went wrong. Please try again.",
   };
+}
+
+function hasAuthSessionData(value: unknown): value is AuthSessionData {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const session = value as Partial<AuthSessionData>;
+
+  return (
+    typeof session.token === "string" &&
+    session.token.trim() !== "" &&
+    !!session.user &&
+    typeof session.user.id === "number"
+  );
+}
+
+function getSignInError(signInUrl: unknown): string | null {
+  if (typeof signInUrl !== "string") {
+    return "Auth.js did not return a sign-in result.";
+  }
+
+  try {
+    return new URL(signInUrl, "http://localhost").searchParams.get("error");
+  } catch {
+    return "Auth.js returned an invalid sign-in result.";
+  }
 }
 
 function cookieOptions() {
@@ -128,11 +156,27 @@ export async function loginAction(
   try {
     const response = await authService.login(validation.data);
 
-    await signIn("credentials", {
+    if (!hasAuthSessionData(response.data)) {
+      return {
+        success: false,
+        message: "The login API did not return a valid user and token.",
+      };
+    }
+
+    const signInUrl = await signIn("credentials", {
       backendToken: response.data.token,
       backendUser: JSON.stringify(response.data.user),
       redirect: false,
     });
+
+    const signInError = getSignInError(signInUrl);
+
+    if (signInError) {
+      return {
+        success: false,
+        message: "Auth.js could not create a login session. Check AUTH_SECRET and restart the app.",
+      };
+    }
 
     return {
       success: true,
@@ -157,11 +201,27 @@ export async function registerAction(
   try {
     const response = await authService.register(validation.data);
 
-    await signIn("credentials", {
+    if (!hasAuthSessionData(response.data)) {
+      return {
+        success: false,
+        message: "The registration API did not return a valid user and token.",
+      };
+    }
+
+    const signInUrl = await signIn("credentials", {
       backendToken: response.data.token,
       backendUser: JSON.stringify(response.data.user),
       redirect: false,
     });
+
+    const signInError = getSignInError(signInUrl);
+
+    if (signInError) {
+      return {
+        success: false,
+        message: "Auth.js could not create a login session. Check AUTH_SECRET and restart the app.",
+      };
+    }
 
     return {
       success: true,
