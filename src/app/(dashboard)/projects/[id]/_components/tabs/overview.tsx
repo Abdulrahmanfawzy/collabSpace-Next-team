@@ -5,7 +5,7 @@ import ProjectDetails from "../project-details"
 import TeamMembers from "../project-members"
 import ProjectProgress from "../project-progress"
 import OverviewProjectsSkeleton from "@/components/skeletons/overview-projects-skeleton"
-import {  ProjectOverview } from "@/types/project"
+import type { ProjectAssignedTeam, ProjectOverview } from "@/types/project"
 
 
 
@@ -13,10 +13,27 @@ import {  ProjectOverview } from "@/types/project"
 interface OverviewTabProps {
   isLoading?: boolean;
   project: ProjectOverview;
+  teams: ProjectAssignedTeam[];
+  areTeamsLoading: boolean;
+  teamsError: Error | null;
+  progressPercentage: number;
+  completedTasks: number;
+  totalTasks: number;
   year:number,
   onYearChange: (year: number) => void;
 }
-const OverviewTab = ({ isLoading = false, project,year,onYearChange }: OverviewTabProps) => {
+const OverviewTab = ({
+  isLoading = false,
+  project,
+  teams,
+  areTeamsLoading,
+  teamsError,
+  progressPercentage,
+  completedTasks,
+  totalTasks,
+  year,
+  onYearChange,
+}: OverviewTabProps) => {
     if(isLoading){
         return (<OverviewProjectsSkeleton/>);
     }
@@ -70,9 +87,18 @@ const OverviewTab = ({ isLoading = false, project,year,onYearChange }: OverviewT
       {/*------------------------ right section------------------------------------------------------ */}
       <div className="flex flex-col gap-4">
         
-        <ProjectProgress project={project} />
+        <ProjectProgress
+          project={project}
+          progressPercentage={progressPercentage}
+          completedTasks={completedTasks}
+          totalTasks={totalTasks}
+        />
         
-        <TeamMembers projectId={project.id} />
+        <TeamMembers
+          teams={teams}
+          isLoading={areTeamsLoading}
+          error={teamsError}
+        />
       </div>
     </section>
   )

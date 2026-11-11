@@ -113,6 +113,7 @@ export interface ProjectOverviewResponse {
   message: string;
   data: ProjectOverview;
 }
+// ------------------- project teams -------------------
 
 export interface ProjectAssignedTeamMember {
   id: number;
@@ -141,7 +142,7 @@ export interface ProjectTeamsResponse {
   data: ProjectAssignedTeam[];
 }
 
-
+// ----------------------------------------
 export interface ProjectFiltersParams {
   page?: number;
   per_page?: number;

@@ -9,15 +9,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useGetProjectTeams } from "@/hooks/projects/use-get-project-teams";
+import type { ProjectAssignedTeam } from "@/types/project";
 
 interface TeamMembersProps {
-  projectId: number;
+  teams: ProjectAssignedTeam[];
+  isLoading: boolean;
+  error: Error | null;
 }
 
-const TeamMembers = ({ projectId }: TeamMembersProps) => {
+const TeamMembers = ({ teams, isLoading, error }: TeamMembersProps) => {
   const [selectedTeamId, setSelectedTeamId] = useState("");
-  const { data: teams = [], isPending, error } = useGetProjectTeams(projectId);
   const selectedTeam = teams.find(
     (team) => String(team.id) === selectedTeamId
   ) ?? teams[0];
@@ -45,8 +46,9 @@ const TeamMembers = ({ projectId }: TeamMembersProps) => {
           <SelectTrigger
             aria-label="Select team"
             className="h-auto w-auto gap-1 border-0 bg-transparent p-0 text-[10px] text-gray-500 shadow-none focus-visible:ring-0"
+            disabled={isLoading}
           >
-            <SelectValue placeholder={isPending ? "Loading teams..." : "Select team"} />
+            <SelectValue placeholder={isLoading ? "Loading teams..." : "Select team"} />
           </SelectTrigger>
           <SelectContent align="start">
             {teams.map((team) => (
@@ -69,7 +71,7 @@ const TeamMembers = ({ projectId }: TeamMembersProps) => {
 
       {/* Members List */}
       <div className="flex flex-col gap-3">
-        {isPending && (
+        {isLoading && (
           <p className="text-[11px] text-gray-500">Loading team members...</p>
         )}
 
@@ -123,7 +125,7 @@ const TeamMembers = ({ projectId }: TeamMembersProps) => {
           </div>
         ))}
 
-        {!isPending && !error && !selectedTeam?.members.length && (
+        {!isLoading && !error && !selectedTeam?.members.length && (
           <p className="text-[11px] text-gray-500">
             {teams.length === 0
               ? "No teams are assigned to this project."
