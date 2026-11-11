@@ -76,7 +76,7 @@ export default function CardMeeting({
         )}
 
         {/* Actions */}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex flex-col items-center gap-2">
           {/* Edit Meeting */}
           <AddMeetingDialog
             meeting={meeting}
