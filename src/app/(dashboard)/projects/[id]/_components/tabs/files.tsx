@@ -1,30 +1,39 @@
 
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Upload } from "lucide-react";
-import FileCard, { ProjectFile } from "../file-card";
+import FileCard from "../file-card";
 import FilesSkeleton from "@/components/skeletons/files-tab-skeleton";
-
-
-
+import { CommonPagination } from "@/components/common/common-pagination";
+import { useGetProjectFiles } from "@/hooks/files/use-get-project-files";
 
 interface FilesTabProps {
-  files: ProjectFile[];
-  isLoading: boolean;
+  projectId: number;
+  isLoading?: boolean;
   onUpload?: (files: FileList) => void;
 }
 
 const FilesTab = ({
-  files,
-  isLoading,
+  projectId,
+  isLoading = false,
   onUpload,
 }: FilesTabProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const [page, setPage] = useState(1);
+  const { data, isPending, error } = useGetProjectFiles(projectId, page);
+  const files = data?.files ?? [];
   const recentFiles = files.slice(0, 3);
-  if (isLoading) {
-    return (<FilesSkeleton/>);
+  if (isLoading || isPending) {
+    return <FilesSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <p role="alert" className="py-6 text-sm text-destructive">
+        Failed to load project files: {error.message}
+      </p>
+    );
   }
 
   return (
@@ -88,6 +97,13 @@ const FilesTab = ({
           </p>
         )}
 
+        {data && (
+          <CommonPagination
+            currentPage={data.pagination.current_page}
+            lastPage={data.pagination.last_page}
+            onPageChange={setPage}
+          />
+        )}
       </section>
     </div>
   );

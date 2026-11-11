@@ -1,14 +1,6 @@
 
 import { FileText, Download } from "lucide-react";
-
-export interface ProjectFile {
-  id: number;
-  name: string;
-  uploadedBy: string;
-  size: string;
-  uploadedAt: string;
-  downloadUrl?: string;
-}
+import type { ProjectFile } from "@/types/files.types";
 
 interface FileCardProps {
   file: ProjectFile;
@@ -45,7 +37,7 @@ const FileCard = ({ file }: FileCardProps) => {
 
       {/* Download */}
       <a
-        href={file.downloadUrl || "#"}
+        href={file.downloadUrl}
         download
         aria-label={`Download ${file.name}`}
         className="shrink-0 text-gray-700 transition-colors hover:text-blue-600"
