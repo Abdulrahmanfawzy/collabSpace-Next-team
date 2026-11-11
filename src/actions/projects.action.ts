@@ -2,6 +2,7 @@
 "use server";
 
 import {
+  assignProjectTeams,
   createProject,
   deleteProject,
   getProjectOverview,
@@ -12,6 +13,7 @@ import {
 } from "@/api/projects.api";
 import type {
   CreateProjectPayload,
+  AssignProjectTeamsPayload,
   ProjectFiltersParams,
   ProjectOverviewParams,
   UpdateProjectPayload,
@@ -30,6 +32,13 @@ export async function getProjectOverviewAction( params: ProjectOverviewParams) {
 export async function getProjectTeamsAction(projectId: number) {
   return await getProjectTeams(projectId);
 }
+// ---------------- assign teams to project ----------------
+export async function assignProjectTeamsAction(
+  projectId: number,
+  payload: AssignProjectTeamsPayload
+) {
+  return await assignProjectTeams(projectId, payload);
+}
 // ---------------- create project ----------------
 export async function createProjectAction(
   payload: CreateProjectPayload
@@ -47,4 +56,3 @@ export async function updateProjectAction(
 export async function deleteProjectAction(id: number) {
   return await deleteProject(id);
 }
-

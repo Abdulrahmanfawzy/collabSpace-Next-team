@@ -15,6 +15,8 @@ import type {
   ProjectOverviewParams,
   ProjectTeamsResponse,
   ProjectAssignedTeam,
+  AssignProjectTeamsPayload,
+  AssignProjectTeamsResponse,
 } from "@/types/project";
 
 const API_URL = process.env.API
@@ -119,6 +121,33 @@ export async function getProjectTeams(
   }
 
   return result.data;
+}
+
+export async function assignProjectTeams(
+  projectId: number,
+  payload: AssignProjectTeamsPayload
+): Promise<AssignProjectTeamsResponse> {
+  const token = process.env.token;
+  const response = await fetch(
+    `${API_URL}/api/v1/projects/${projectId}/teams`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    }
+  );
+  const result: AssignProjectTeamsResponse = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to assign teams to project");
+  }
+
+  return result;
 }
 
 // ---------------- create project ----------------

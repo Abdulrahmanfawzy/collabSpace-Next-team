@@ -142,6 +142,25 @@ export interface ProjectTeamsResponse {
   data: ProjectAssignedTeam[];
 }
 
+export interface AssignProjectTeamsPayload {
+  team_ids: number[];
+}
+
+export interface AssignProjectTeamsResponseData extends Omit<ProjectOverview, "chart"> {
+  tasks_statistics: ProjectOverview["tasks_statistics"] & {
+    pending_percentage: number;
+    in_progress_percentage: number;
+    in_review_percentage: number;
+    completed_percentage: number;
+  };
+}
+
+export interface AssignProjectTeamsResponse {
+  success: boolean;
+  message: string;
+  data: AssignProjectTeamsResponseData;
+}
+
 // ----------------------------------------
 export interface ProjectFiltersParams {
   page?: number;

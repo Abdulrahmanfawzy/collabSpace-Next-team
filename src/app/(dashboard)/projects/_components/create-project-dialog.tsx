@@ -11,6 +11,7 @@ import {
   LoaderCircle,
   Pencil,
   Plus,
+  X,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -33,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCreateProject } from "@/hooks/projects/use-create-project";
+import { useAssignProjectTeams } from "@/hooks/projects/use-assign-project-teams";
 import { useUpdateProject } from "@/hooks/projects/use-update-project";
 import {
   createProjectSchema,
@@ -63,10 +65,15 @@ export function CreateProjectDialog({
   project,
 }: CreateProjectDialogProps) {
   const [open, setOpen] = useState(false);
+  const [teamIds, setTeamIds] = useState<number[]>([]);
+  const [teamIdInput, setTeamIdInput] = useState("");
+  const [teamIdError, setTeamIdError] = useState("");
   const queryClient = useQueryClient();
   const { mutate: createProject, isPending: isCreating } = useCreateProject();
   const { mutate: updateProject, isPending: isUpdating } = useUpdateProject();
-  const isPending = isCreating || isUpdating;
+  const { mutate: assignProjectTeams, isPending: isAssigningTeams } =
+    useAssignProjectTeams();
+  const isPending = isCreating || isUpdating || isAssigningTeams;
 
   const form = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
@@ -84,6 +91,9 @@ export function CreateProjectDialog({
     if (isPending) return;
     setOpen(nextOpen);
     if (nextOpen && project) {
+      setTeamIds(project.teams.map((team) => team.id));
+      setTeamIdInput("");
+      setTeamIdError("");
       form.reset({
         name: project.name,
         description: project.description ?? "",
@@ -92,9 +102,32 @@ export function CreateProjectDialog({
         status: project.status,
         priority: project.priority,
       });
+    } else if (nextOpen) {
+      setTeamIds([]);
+      setTeamIdInput("");
+      setTeamIdError("");
     } else if (!nextOpen) {
       form.reset();
+      setTeamIds([]);
+      setTeamIdInput("");
+      setTeamIdError("");
     }
+  };
+
+  const handleAddTeam = () => {
+    const teamId = Number(teamIdInput);
+    if (!Number.isInteger(teamId) || teamId <= 0) {
+      setTeamIdError("Enter a valid team ID.");
+      return;
+    }
+    if (teamIds.includes(teamId)) {
+      setTeamIdError("This team is already selected.");
+      return;
+    }
+
+    setTeamIds((current) => [...current, teamId]);
+    setTeamIdInput("");
+    setTeamIdError("");
   };
 
   const handleSubmit = (values: CreateProjectFormValues) => {
@@ -105,8 +138,21 @@ export function CreateProjectDialog({
         { id: project.id, payload },
         {
           onSuccess: () => {
-            form.reset();
-            setOpen(false);
+            if (teamIds.length === 0) {
+              form.reset();
+              setOpen(false);
+              return;
+            }
+
+            assignProjectTeams(
+              { projectId: project.id, payload: { team_ids: teamIds } },
+              {
+                onSuccess: () => {
+                  form.reset();
+                  setOpen(false);
+                },
+              }
+            );
           },
         }
       );
@@ -120,8 +166,28 @@ export function CreateProjectDialog({
     };
 
     createProject(payload, {
-      onSuccess: async () => {
+      onSuccess: async (response) => {
         await queryClient.invalidateQueries({ queryKey: ["projects"] });
+        if (teamIds.length > 0) {
+          assignProjectTeams(
+            {
+              projectId: response.data.id,
+              payload: { team_ids: teamIds },
+            },
+            {
+              onSuccess: () => {
+                form.reset();
+                setOpen(false);
+              },
+              onError: () => {
+                form.reset();
+                setOpen(false);
+              },
+            }
+          );
+          return;
+        }
+
         form.reset();
         setOpen(false);
       },
@@ -355,6 +421,89 @@ export function CreateProjectDialog({
                 )}
               />
             </div>
+          </section>
+
+          <section className="space-y-4 border-t border-gray-100 pt-5">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900">
+                Assign teams
+              </h3>
+              <p className="mt-1 text-xs text-gray-500">
+                Add one or more team IDs to this project.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <div className="flex-1">
+                <Input
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={teamIdInput}
+                  onChange={(event) => {
+                    setTeamIdInput(event.target.value);
+                    setTeamIdError("");
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      handleAddTeam();
+                    }
+                  }}
+                  disabled={isPending}
+                  aria-label="Team ID"
+                  aria-invalid={Boolean(teamIdError)}
+                  placeholder="Enter a team ID"
+                  className={fieldClassName}
+                />
+                <FieldError message={teamIdError} />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 shrink-0 gap-2 rounded-lg"
+                onClick={handleAddTeam}
+                disabled={isPending}
+              >
+                <Plus aria-hidden="true" size={16} />
+                Add team
+              </Button>
+            </div>
+
+            {teamIds.length > 0 && (
+              <ul className="flex flex-wrap gap-2">
+                {teamIds.map((teamId) => {
+                  const teamName = project?.teams.find(
+                    (team) => team.id === teamId
+                  )?.name;
+
+                  return (
+                    <li
+                      key={teamId}
+                      className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"
+                    >
+                      <span>{teamName ?? `Team ${teamId}`}</span>
+                      {(!project ||
+                        !project.teams.some((team) => team.id === teamId)) && (
+                        <button
+                          type="button"
+                          aria-label={`Remove ${teamName ?? `team ${teamId}`}`}
+                          className="rounded-full hover:bg-primary/10"
+                          onClick={() =>
+                            setTeamIds((current) =>
+                              current.filter((id) => id !== teamId)
+                            )
+                          }
+                          disabled={isPending}
+                        >
+                          <X aria-hidden="true" size={14} />
+                        </button>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </section>
 
           <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
