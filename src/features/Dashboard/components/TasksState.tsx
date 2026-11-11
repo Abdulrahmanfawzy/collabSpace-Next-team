@@ -3,7 +3,9 @@
 import { getStates } from "../constants/DataState"
 import CompletionRateCard from "./CompletionCard"
 import StatCard from "./StateCard"
-function TaskStats({items}) {
+import type { DashboardData } from "../types/typesDashboard"
+
+function TaskStats({ items }: { items?: DashboardData | null }) {
     const stats = getStates(items)
     return (
         <section
@@ -13,7 +15,7 @@ function TaskStats({items}) {
             {stats.map((s) => (
                 <StatCard key={s.title} stat={s} />
             ))}
-            <CompletionRateCard rate={33} change={22} />
+            <CompletionRateCard rate={33} change={items?.overview.tasks.completed_percentage} />
         </section>
     )
 }

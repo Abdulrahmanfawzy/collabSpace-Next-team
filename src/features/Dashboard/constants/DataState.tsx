@@ -1,11 +1,13 @@
 import { ClipboardCheck, ClipboardClock, ClipboardList } from "lucide-react";
 import { DashboardData } from "../types/typesDashboard";
-const TOTAL = 94
-export const getStates = (data: DashboardData) => [{
+export const getStates = (data?: DashboardData | null) => {
+  const tasks = data?.overview?.tasks;
+  const total = tasks?.total ?? 0;
+  return [{
   title: "Pending ",
-  value: data.overview.tasks.pending,
-  total: data.overview.tasks.total,
-  change: 9,
+  value: tasks?.pending ?? 0,
+  total,
+  change:tasks?.pending_percentage,
   icon: ClipboardClock,
   badge: "bg-amber-100 text-amber-500",
   track: "bg-amber-100/70",
@@ -13,9 +15,9 @@ export const getStates = (data: DashboardData) => [{
 },
 {
   title: "In Progress",
-  value: data.overview.tasks.in_progress,
-  total: data.overview.tasks.total,
-  change: 12,
+  value: tasks?.in_progress ?? 0,
+  total,
+  change: tasks?.in_progress_percentage,
   icon: ClipboardList,
   badge: "bg-blue-100 text-blue-600",
   track: "bg-blue-100/70",
@@ -23,15 +25,15 @@ export const getStates = (data: DashboardData) => [{
 },
 {
   title: "Completed",
-  value: data.overview.tasks.completed,
-  total: data.overview.tasks.total,
-  change: 16,
+  value: tasks?.completed ?? 0,
+  total,
+  change: tasks?.in_review_percentage,
   icon: ClipboardCheck,
   badge: "bg-green-100 text-green-600",
   track: "bg-green-100/70",
   bar: "[&>div]:bg-green-600",
 },
-]
+]}
 export const data = [
   { x: 0, value: 10300 },
   { x: 0.875, value: 13900 },

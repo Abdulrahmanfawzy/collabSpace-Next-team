@@ -1,9 +1,7 @@
 "use client"
-
 // components/project-overview.tsx
 import * as React from "react"
 import { Area, AreaChart, XAxis, YAxis } from "recharts"
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   ChartContainer,
@@ -12,19 +10,15 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import Filter from "./FilterChart"
-
 /* ---------- Props ---------- */
-
 export type ProjectPoint = {
   x: number 
   value: number 
 }
-
 export type AxisTick = {
   x: number 
   label: string 
 }
-
 export type ProjectOverviewProps = {
   data: ProjectPoint[]
   ticks: AxisTick[]
@@ -33,19 +27,12 @@ export type ProjectOverviewProps = {
   onProjectChange?: (project: string) => void
   onPeriodChange?: (period: string) => void
 }
-
 /* ---------- Config ---------- */
-
 const chartConfig = {
   value: { label: "Projects", color: "#4f6bff" },
 } satisfies ChartConfig
-
 const Y_TICKS = [0, 5000, 10000, 15000, 20000, 25000]
-
 const formatK = (v: number) => `${v / 1000}k`
-
-
-
 export function ProjectOverview({
   data,
   ticks,
@@ -58,7 +45,6 @@ export function ProjectOverview({
   const maxX = Math.max(...data.map((d) => d.x))
     const onProjectChange =(p : any)=>{
         console.log(p);
-        
     }
   return (
     <Card className="rounded-2xl h-85  border-0 shadow-sm">
@@ -69,7 +55,6 @@ export function ProjectOverview({
           <Filter label="Period" options={periods} onChange={onPeriodChange} />
         </div>
       </CardHeader>
-
       <CardContent className="px-2 pb-3 sm:px-4">
         <ChartContainer config={chartConfig} className="h-[260px] w-full">
           <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -100,7 +85,6 @@ export function ProjectOverview({
               tickMargin={8}
               tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }}
             />
-
             <ChartTooltip
               cursor={false}
               content={
@@ -114,7 +98,6 @@ export function ProjectOverview({
                 />
               }
             />
-
             <Area
               type="natural"
               dataKey="value"
