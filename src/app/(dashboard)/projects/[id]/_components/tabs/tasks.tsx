@@ -1,13 +1,13 @@
 
 "use client";
 
-import { useState } from "react";
-import TasksTabSkeleton from "@/components/skeletons/tasks-tab-skeleton"
-import type { Task } from "@/types/tasks.types"
-import { TaskBoard } from "@/components/common/tasks/task-board"
-import { useGetProjectTasks } from "@/hooks/tasks/use-get-project-tasks"
-import { createTaskColumns } from "@/lib/task-board"
-import { CommonPagination } from "@/components/common/common-pagination"
+import { useQueryClient } from "@tanstack/react-query";
+import TasksTabSkeleton from "@/components/skeletons/tasks-tab-skeleton";
+import type { ProjectKanban, Task, TaskStatus } from "@/types/tasks.types";
+import { TaskBoard } from "@/components/common/tasks/task-board";
+import { useGetProjectKanban } from "@/hooks/tasks/use-get-project-kanban";
+import { useUpdateTaskStatus } from "@/hooks/tasks/use-update-task-status";
+import { moveTaskInColumns } from "@/lib/task-board";
 
 interface TasksTabProps {
   projectId: number;
@@ -15,12 +15,13 @@ interface TasksTabProps {
 }
 
 const TasksTab = ({ projectId, isLoading: isExternallyLoading = false }: TasksTabProps) => {
-  const [page, setPage] = useState(1);
-  const { data, isPending, error } = useGetProjectTasks(projectId, page);
-  const tasks = data?.tasks ?? [];
+  const queryClient = useQueryClient();
+  const queryKey = ["project-kanban", projectId];
+  const { data, isPending, error } = useGetProjectKanban(projectId);
+  const updateTaskStatus = useUpdateTaskStatus();
 
   if (isExternallyLoading || isPending) {
-    return <TasksTabSkeleton />
+    return <TasksTabSkeleton />;
   }
 
   if (error) {
@@ -31,29 +32,57 @@ const TasksTab = ({ projectId, isLoading: isExternallyLoading = false }: TasksTa
     );
   }
 
-  const handleAddTask = (status: string) => {
-    console.log("Add task to:", status)
-  }
+  const handleAddTask = (status: TaskStatus) => {
+    console.log("Add task to:", status);
+  };
 
   const handleTaskClick = (task: Task) => {
-    console.log("Selected task:", task)
-  }
+    console.log("Selected task:", task);
+  };
+
+  const handleTaskMove = (
+    taskId: string,
+    status: TaskStatus,
+    targetIndex: number
+  ) => {
+    const currentKanban =
+      queryClient.getQueryData<ProjectKanban>(queryKey);
+    const sourceColumn = currentKanban?.columns.find((column) =>
+      column.tasks.some((task) => task.id === taskId)
+    );
+    if (!currentKanban || !sourceColumn) return;
+
+    if (sourceColumn.id === status) {
+      queryClient.setQueryData<ProjectKanban>(queryKey, {
+        ...currentKanban,
+        columns: moveTaskInColumns(
+          currentKanban.columns,
+          taskId,
+          status,
+          targetIndex
+        ),
+      });
+      return;
+    }
+
+    updateTaskStatus.mutate({
+      projectId,
+      taskId,
+      status,
+      targetIndex,
+    });
+  };
+
   return (
     <section className="mt-6 overflow-x-auto">
       <TaskBoard
-        columns={createTaskColumns(tasks)}
+        columns={data?.columns ?? []}
         onAddTask={handleAddTask}
         onTaskClick={handleTaskClick}
+        onTaskMove={handleTaskMove}
       />
-      {data && (
-        <CommonPagination
-          currentPage={data.pagination.current_page}
-          lastPage={data.pagination.last_page}
-          onPageChange={setPage}
-        />
-      )}
     </section>
-  )
-}
+  );
+};
 
-export default TasksTab
+export default TasksTab;

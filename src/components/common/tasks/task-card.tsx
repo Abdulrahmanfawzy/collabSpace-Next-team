@@ -1,30 +1,69 @@
-import { CalendarDays, MessageSquare, Users } from "lucide-react"
+import { CalendarDays, GripVertical, MessageSquare } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 
 import { TaskPriorityBadge } from "./task-priority"
-import { Task } from "../../../types/tasks.types"
+import type { Task } from "../../../types/tasks.types"
 
 interface TaskCardProps {
     task: Task
     onClick?: (task: Task) => void
+    draggable?: boolean
+    index: number
 }
 
 export const TaskCard = ({
     task,
     onClick,
+    draggable = false,
+    index,
 }: TaskCardProps) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
+        id: task.id,
+        disabled: !draggable,
+        data: { type: "task", status: task.status, index },
+    })
+
     return (
         <article
+            ref={setNodeRef}
             onClick={() => onClick?.(task)}
+            style={{
+                transform: CSS.Transform.toString(transform),
+                transition,
+                opacity: isDragging ? 0.5 : undefined,
+            }}
             className="cursor-pointer rounded-xl bg-bg-light p-4 flex flex-col
         transition hover:bg-gray-100  border border-bg-label"
         >
             <div className="flex flex-col gap-2">
                 {/*----------------------Title and Priority----------------- */}
                 <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-xs font-bold text-text-dark">
-                        {task.name}
-                    </h3>
+                    <div className="flex min-w-0 items-start gap-1">
+                        {draggable && (
+                            <button
+                                type="button"
+                                aria-label={`Drag ${task.name}`}
+                                className="mt-0.5 shrink-0 cursor-grab text-gray-400 active:cursor-grabbing"
+                                onClick={(event) => event.stopPropagation()}
+                                {...attributes}
+                                {...listeners}
+                            >
+                                <GripVertical size={14} />
+                            </button>
+                        )}
+                        <h3 className="text-xs font-bold text-text-dark">
+                            {task.name}
+                        </h3>
+                    </div>
 
                     <TaskPriorityBadge priority={task.priority} />
                 </div>

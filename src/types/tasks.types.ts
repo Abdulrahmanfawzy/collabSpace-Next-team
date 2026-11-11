@@ -6,12 +6,18 @@ export type TaskStatus =
   | "in-review"
   | "completed"
 
+export type ApiTaskStatus =
+  | "Pending"
+  | "In Progress"
+  | "In Review"
+  | "Completed"
+
 export type TaskPriority = "critical" | "high" | "medium" | "low"
 
 export interface TaskFilters {
   page?: number;
   project_id?: number;
-  status?: "Pending" | "In Progress" | "In Review" | "Completed";
+  status?: ApiTaskStatus;
   priority?: "Low" | "Medium" | "High" | "Critical";
   assigned_to?: number;
   due_date?: string;
@@ -49,6 +55,11 @@ export interface TaskBoardProps {
   columns: TaskColumn[]
   onAddTask?: (status: TaskStatus) => void
   onTaskClick?: (task: Task) => void
+  onTaskMove?: (
+    taskId: string,
+    status: TaskStatus,
+    targetIndex: number
+  ) => void
 }
 
 export interface ApiTaskAssignee {
@@ -116,3 +127,41 @@ export interface TasksResponse {
   message: string;
   data: ApiTask[] | TasksPage;
 }
+
+export interface TaskStatusUpdateResponse {
+  success: boolean;
+  message: string;
+  data: ApiTask;
+}
+// ------------------------Kanaban board for project -----------------------------------------------------------
+export interface ApiKanbanColumn {
+  name: string;
+  count: number;
+  tasks: ApiTask[];
+}
+
+export interface ProjectKanbanResponse {
+  success: boolean;
+  message: string;
+  data: {
+    project: {
+      id: number;
+      name: string;
+      progress_percentage: number;
+    };
+    total_tasks: number;
+    columns: {
+      Pending: ApiKanbanColumn;
+      "In Progress": ApiKanbanColumn;
+      "In Review": ApiKanbanColumn;
+      Completed: ApiKanbanColumn;
+    };
+  };
+}
+
+export interface ProjectKanban {
+  project: ProjectKanbanResponse["data"]["project"];
+  totalTasks: number;
+  columns: TaskColumn[];
+}
+// ----------------------------------------------------------------------------------------
