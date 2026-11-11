@@ -1,13 +1,16 @@
 import { Dot, MoreVertical } from "lucide-react"
+import { useDroppable } from "@dnd-kit/core"
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 
 import { AddTaskButton } from "./add-task-button"
 import { TaskCard } from "./task-card"
-import type{TaskColumn as TaskColumnType, Task } from "../../../types/tasks.types"
+import type { TaskColumn as TaskColumnType, Task } from "../../../types/tasks.types"
 
 interface TaskColumnProps {
   column: TaskColumnType
   onAddTask?: (status: TaskColumnType["id"]) => void
   onTaskClick?: (task: Task) => void
+  enableDragAndDrop: boolean
 }
 
 const columnStyles = {
@@ -21,9 +24,19 @@ export const TaskColumn = ({
   column,
   onAddTask,
   onTaskClick,
+  enableDragAndDrop,
 }: TaskColumnProps) => {
+  const { setNodeRef } = useDroppable({
+    id: `column:${column.id}`,
+    data: { type: "column", status: column.id },
+    disabled: !enableDragAndDrop,
+  })
+
   return (
-    <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white">
+    <div
+      ref={setNodeRef}
+      className="min-w-0 self-start overflow-hidden rounded-xl border border-gray-100 bg-white"
+    >
 
       {/*---------------- Column Header-------------------- */}
       <div
@@ -48,13 +61,20 @@ export const TaskColumn = ({
           onClick={() => onAddTask?.(column.id)}
         />
 
-        {column.tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onClick={onTaskClick}
-          />
-        ))}
+        <SortableContext
+          items={column.tasks.map((task) => task.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {column.tasks.map((task, index) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onClick={onTaskClick}
+              draggable={enableDragAndDrop}
+              index={index}
+            />
+          ))}
+        </SortableContext>
 
       </div>
     </div>

@@ -1,17 +1,22 @@
+
+"use client";
+
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 export default function TranscriptHeader() {
+  const [language, setLanguage] = useState("en");
+
   return (
     <div className="flex items-center justify-between gap-4">
-      {/* Title */}
       <h2 className="text-lg font-semibold text-foreground">
         Meeting Transcripts
       </h2>
 
-      {/* Language Selector */}
       <div className="relative">
         <select
-          defaultValue="en"
+          value={language}
+          onChange={(event) => setLanguage(event.target.value)}
           aria-label="Transcript language"
           className="h-9 appearance-none rounded-full border border-border bg-background py-1 pl-3 pr-8 text-xs text-muted-foreground outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
         >

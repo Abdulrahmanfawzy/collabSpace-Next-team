@@ -1,17 +1,7 @@
-
-import TasksHeader from "./_components/tasks-header"
-
-import TasksContent from "./_components/tasks-content"
+import TasksPageContent from "./_components/tasks-page-content";
 
 const TasksPage = () => {
-    
-    return (
-        <div className=" min-h-screen bg-bg-light py-10 ">
-            <TasksHeader />
-            <TasksContent />
-        
-        </div>
-    )
-}
+  return <TasksPageContent />;
+};
 
-export default TasksPage
+export default TasksPage;
