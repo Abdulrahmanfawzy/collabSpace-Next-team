@@ -15,7 +15,7 @@ function TaskStats({ items }: { items?: DashboardData | null }) {
             {stats.map((s) => (
                 <StatCard key={s.title} stat={s} />
             ))}
-            <CompletionRateCard rate={33} change={items?.overview.tasks.completed_percentage} />
+            <CompletionRateCard rate={items?.overview.tasks.completion_rate ?? 0} change={items?.overview.tasks.completed_percentage ?? 0} />
         </section>
     )
 }

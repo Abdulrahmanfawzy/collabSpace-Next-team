@@ -2,12 +2,10 @@ import { Card, CardContent } from "../../../components/ui/card"
 import { cn } from "@/utils/cn"
 import { Progress } from "@/components/ui/progress"
 import { Stat } from "../types/typesDashboard"
-import { TrendingDown } from "lucide-react"
 
 export default function StatCard({ stat }: { stat: Stat }) {
     const Icon = stat.icon
-    const percent = (stat.value / stat.total) * 100
-    console.log(stat);
+    const percent = stat.total ? (stat.value / stat.total) * 100 : 0
 
     return (
         <Card className="rounded-2xl h-40 shadow-xs py-5 px-1">
@@ -26,8 +24,7 @@ export default function StatCard({ stat }: { stat: Stat }) {
 
                 <div className="mt-2 flex items-center gap-3">
                     <span className="text-3xl font-semibold tabular-nums">{stat.value}</span>
-                    <TrendingDown change={stat.change} />
-                    - {stat.change}  from last month
+                    <span className="text-xs text-muted-foreground">{stat.change}% of tasks</span>
 
                 </div>
 

@@ -51,13 +51,13 @@ function FileItem({ file }: { file: RecentFile }) {
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium sm:text-base" title={file.name}>{file.name}</p>
           <p className="mt-0.5 truncate text-sm text-muted-foreground">
-            By {file.author} • {file.time}
+            By {file.uploaded_by.name} • {file.file_size_formatted}
           </p>
         </div>
   
-        {file.downloadUrl ? (
+        {file.download_url ? (
           <Button variant="ghost" size="icon" asChild aria-label={`Download ${file.name}`} title={`Download ${file.name}`}>
-            <a href={file.downloadUrl} download>
+            <a href={file.download_url} download>
               <Download className="size-5" />
             </a>
           </Button>

@@ -20,8 +20,8 @@ export default function ProjectItem({ project }: { project: ActiveProject }) {
       }
       
       
-    const c = projectColors[project.color ?? "purple"]
-    const percent = project.total > 0 ? Math.min(100, (project.done / project.total) * 100) : 0
+    const c = projectColors[project.progress > 50 ? "teal" : "purple"]
+    const percent = Math.min(100, Math.max(0, project.progress))
   
     return (
       <li className="min-w-0 rounded-xl border border-border/60 p-3">
@@ -34,11 +34,11 @@ export default function ProjectItem({ project }: { project: ActiveProject }) {
   
         <Progress
           value={percent}
-          aria-label={`${project.name}: ${project.done} of ${project.total} tasks`}
+          aria-label={`${project.name}: ${project.progress}% complete`}
           className={cn("mt-3 h-2", c.track, c.bar)}
         />
         <p className="mt-2 text-sm tabular-nums text-muted-foreground">
-          {project.total > 0 ? `${project.done} of ${project.total} tasks` : "No tasks yet"}
+          {project.tasks_total == null ? `${project.progress}% complete` : `${project.tasks_completed ?? 0} of ${project.tasks_total} tasks`}
         </p>
       </li>
     )
