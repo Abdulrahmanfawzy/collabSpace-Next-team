@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -13,12 +15,15 @@ import { Button } from "@/components/ui/button";
 import { CommonSelect } from "@/components/common/common-select";
 import { useUpdateTask } from "@/hooks/tasks/use-update-task";
 import { useAssignTask } from "@/hooks/tasks/use-assign-task";
-import type {
-  ApiTaskStatus,
-  Task,
-  UpdateTaskAssignmentPayload,
-  UpdateTaskPayload,
-} from "@/types/tasks.types";
+import {
+  assignTaskSchema,
+  type AssignTaskFormValues,
+} from "@/schemas/tasks/assign-task.schema";
+import {
+  updateTaskSchema,
+  type UpdateTaskFormValues,
+} from "@/schemas/tasks/update-task.schema";
+import type { Task, UpdateTaskAssignmentPayload } from "@/types/tasks.types";
 
 interface UpdateTaskDialogProps {
   task: Task;
@@ -31,16 +36,19 @@ const priorityOptions = [
   { label: "Medium", value: "Medium" },
   { label: "High", value: "High" },
   { label: "Critical", value: "Critical" },
-] satisfies { label: string; value: UpdateTaskPayload["priority"] }[];
+] satisfies { label: string; value: UpdateTaskFormValues["priority"] }[];
 
 const statusOptions = [
   { label: "Pending", value: "Pending" },
   { label: "In Progress", value: "In Progress" },
   { label: "In Review", value: "In Review" },
   { label: "Completed", value: "Completed" },
-] satisfies { label: string; value: ApiTaskStatus }[];
+] satisfies { label: string; value: UpdateTaskFormValues["status"] }[];
 
-const statusByTaskStatus: Record<Task["status"], ApiTaskStatus> = {
+const statusByTaskStatus: Record<
+  Task["status"],
+  UpdateTaskFormValues["status"]
+> = {
   todo: "Pending",
   "in-progress": "In Progress",
   "in-review": "In Review",
@@ -49,7 +57,7 @@ const statusByTaskStatus: Record<Task["status"], ApiTaskStatus> = {
 
 const priorityByTaskPriority: Record<
   Task["priority"],
-  UpdateTaskPayload["priority"]
+  UpdateTaskFormValues["priority"]
 > = {
   low: "Low",
   medium: "Medium",
@@ -65,65 +73,55 @@ export function UpdateTaskDialog({
   projectId,
   onOpenChange,
 }: UpdateTaskDialogProps) {
-  const { mutate, isPending } = useUpdateTask();
-  const {
-    mutate: assignTask,
-    isPending: isAssigning,
-  } = useAssignTask();
-  const [name, setName] = useState(task.name);
-  const [priority, setPriority] = useState<UpdateTaskPayload["priority"]>(
-    priorityByTaskPriority[task.priority]
-  );
-  const [status, setStatus] = useState<ApiTaskStatus>(
-    statusByTaskStatus[task.status]
-  );
-  const [formError, setFormError] = useState("");
-  const [assigneeId, setAssigneeId] = useState(
-    task.assignees[0]?.id ?? ""
-  );
-  const [assignmentError, setAssignmentError] = useState("");
+  const { mutate: updateTask, isPending: isUpdating } = useUpdateTask();
+  const { mutate: assignTask, isPending: isAssigning } = useAssignTask();
+  const taskForm = useForm<UpdateTaskFormValues>({
+    resolver: zodResolver(updateTaskSchema),
+    defaultValues: {
+      name: task.name,
+      priority: priorityByTaskPriority[task.priority],
+      status: statusByTaskStatus[task.status],
+    },
+  });
+  const assignmentForm = useForm<AssignTaskFormValues>({
+    resolver: zodResolver(assignTaskSchema),
+    defaultValues: { assignedTo: task.assignees[0]?.id ?? "" },
+  });
+  const projectIdForTask = projectId ?? task.projectId;
+  const isPending = isUpdating || isAssigning;
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const trimmedName = name.trim();
-    if (!trimmedName) {
-      setFormError("Task name is required.");
-      return;
-    }
-
-    mutate(
-      {
-        taskId: task.id,
-        projectId: projectId ?? task.projectId,
-        payload: { name: trimmedName, priority, status },
-      },
-      { onSuccess: () => onOpenChange(false) }
-    );
+  const handleOpenChange = (open: boolean) => {
+    if (isPending) return;
+    onOpenChange(open);
   };
 
-  const handleAssign = () => {
-    const parsedAssigneeId = Number(assigneeId);
-    if (!Number.isInteger(parsedAssigneeId) || parsedAssigneeId <= 0) {
-      setAssignmentError("Enter a valid team member ID.");
-      return;
-    }
+  const handleUpdate = taskForm.handleSubmit((values) => {
+    updateTask(
+      {
+        taskId: task.id,
+        projectId: projectIdForTask,
+        payload: values,
+      },
+      { onSuccess: () => handleOpenChange(false) }
+    );
+  });
 
-    setAssignmentError("");
+  const handleAssign = assignmentForm.handleSubmit(({ assignedTo }) => {
     const payload: UpdateTaskAssignmentPayload = {
-      assigned_to: parsedAssigneeId,
+      assigned_to: Number(assignedTo),
     };
     assignTask(
       {
         taskId: task.id,
-        projectId: projectId ?? task.projectId,
+        projectId: projectIdForTask,
         payload,
       },
-      { onSuccess: () => onOpenChange(false) }
+      { onSuccess: () => handleOpenChange(false) }
     );
-  };
+  });
 
   return (
-    <Dialog open onOpenChange={onOpenChange}>
+    <Dialog open onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Update Task</DialogTitle>
@@ -132,7 +130,10 @@ export function UpdateTaskDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <section className="flex flex-col gap-3 rounded-lg border border-gray-100 p-4">
+        <form
+          className="flex flex-col gap-4 rounded-lg border border-gray-100 p-4"
+          onSubmit={handleAssign}
+        >
           <h3 className="text-sm font-medium text-gray-800">
             {task.assignees.length ? "Reassign task" : "Assign task"}
           </h3>
@@ -142,110 +143,86 @@ export function UpdateTaskDialog({
               type="number"
               min={1}
               step={1}
-              value={assigneeId}
-              onChange={(event) => {
-                setAssigneeId(event.target.value);
-                setAssignmentError("");
-              }}
+              {...assignmentForm.register("assignedTo")}
               className={fieldClassName}
             />
+            {assignmentForm.formState.errors.assignedTo && (
+              <span role="alert" className="text-xs text-destructive">
+                {assignmentForm.formState.errors.assignedTo.message}
+              </span>
+            )}
           </label>
-          {assignmentError && (
-            <p role="alert" className="text-sm text-destructive">
-              {assignmentError}
-            </p>
-          )}
-          <Button
-            type="button"
-            variant="outline"
-            disabled={isAssigning || isPending}
-            onClick={handleAssign}
-          >
+          <Button type="submit" variant="outline" disabled={isPending}>
             {isAssigning
               ? "Assigning..."
               : task.assignees.length
                 ? "Reassign"
                 : "Assign"}
           </Button>
-        </section>
+        </form>
 
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-4" onSubmit={handleUpdate}>
           <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
             Task name
             <Input
-              required
               maxLength={255}
-              value={name}
-              onChange={(event) => setName(event.target.value)}
+              {...taskForm.register("name")}
               className={fieldClassName}
             />
+            {taskForm.formState.errors.name && (
+              <span role="alert" className="text-xs text-destructive">
+                {taskForm.formState.errors.name.message}
+              </span>
+            )}
           </label>
 
           <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
             Priority
-            <CommonSelect
-              options={priorityOptions}
-              value={priority}
-              onValueChange={(value) => {
-                if (isPriority(value)) setPriority(value);
-              }}
-              triggerClassName="h-10! w-full rounded-lg"
+            <Controller
+              control={taskForm.control}
+              name="priority"
+              render={({ field }) => (
+                <CommonSelect
+                  options={priorityOptions}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  triggerClassName="h-10! w-full rounded-lg"
+                />
+              )}
             />
           </label>
 
           <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
             Status
-            <CommonSelect
-              options={statusOptions}
-              value={status}
-              onValueChange={(value) => {
-                if (isApiTaskStatus(value)) setStatus(value);
-              }}
-              triggerClassName="h-10! w-full rounded-lg"
+            <Controller
+              control={taskForm.control}
+              name="status"
+              render={({ field }) => (
+                <CommonSelect
+                  options={statusOptions}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  triggerClassName="h-10! w-full rounded-lg"
+                />
+              )}
             />
           </label>
 
-          {formError && (
-            <p role="alert" className="text-sm text-destructive">
-              {formError}
-            </p>
-          )}
-
-          <div className="flex justify-end gap-3 pt-2">
+          <DialogFooter>
             <Button
               type="button"
               variant="outline"
               disabled={isPending}
-              onClick={() => onOpenChange(false)}
+              onClick={() => handleOpenChange(false)}
             >
               Cancel
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Updating..." : "Update Task"}
+              {isUpdating ? "Updating..." : "Update Task"}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function isPriority(
-  value: string
-): value is UpdateTaskPayload["priority"] {
-  return (
-    value === "Low" ||
-    value === "Medium" ||
-    value === "High" ||
-    value === "Critical"
-  );
-}
-
-function isApiTaskStatus(value: string): value is ApiTaskStatus {
-  return (
-    value === "Pending" ||
-    value === "In Progress" ||
-    value === "In Review" ||
-    value === "Completed"
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
@@ -13,11 +14,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { CommonSelect } from "@/components/common/common-select";
 import { useCreateTask } from "@/hooks/tasks/use-create-task";
-import type {
-  ApiTaskStatus,
-  CreateTaskPayload,
-  TaskStatus,
-} from "@/types/tasks.types";
+import {
+  createTaskSchema,
+  type CreateTaskFormValues,
+} from "@/schemas/tasks/create-task.schema";
+import type { CreateTaskPayload, TaskStatus } from "@/types/tasks.types";
 
 interface CreateTaskDialogProps {
   open: boolean;
@@ -38,9 +39,9 @@ const statusOptions = [
   { label: "In Progress", value: "In Progress" },
   { label: "In Review", value: "In Review" },
   { label: "Completed", value: "Completed" },
-] satisfies { label: string; value: ApiTaskStatus }[];
+] satisfies { label: string; value: CreateTaskFormValues["status"] }[];
 
-const apiStatusByTaskStatus: Record<TaskStatus, ApiTaskStatus> = {
+const statusByTaskStatus: Record<TaskStatus, CreateTaskFormValues["status"]> = {
   todo: "Pending",
   "in-progress": "In Progress",
   "in-review": "In Review",
@@ -50,6 +51,16 @@ const apiStatusByTaskStatus: Record<TaskStatus, ApiTaskStatus> = {
 const fieldClassName =
   "h-10 rounded-lg border-gray-200 bg-white shadow-none focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10";
 
+const emptyValues: CreateTaskFormValues = {
+  projectId: "",
+  name: "",
+  description: "",
+  priority: "Medium",
+  status: "Pending",
+  assignedTo: "",
+  dueDate: "",
+};
+
 export function CreateTaskDialog({
   open,
   onOpenChange,
@@ -57,78 +68,43 @@ export function CreateTaskDialog({
   defaultStatus = "todo",
 }: CreateTaskDialogProps) {
   const { mutate, isPending } = useCreateTask();
-  const [projectIdValue, setProjectIdValue] = useState(
-    projectId ? String(projectId) : ""
-  );
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [priority, setPriority] =
-    useState<CreateTaskPayload["priority"]>("Medium");
-  const [status, setStatus] = useState<ApiTaskStatus>(
-    apiStatusByTaskStatus[defaultStatus]
-  );
-  const [assignedTo, setAssignedTo] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [formError, setFormError] = useState("");
-
-  const resetForm = () => {
-    setProjectIdValue(projectId ? String(projectId) : "");
-    setName("");
-    setDescription("");
-    setPriority("Medium");
-    setStatus(apiStatusByTaskStatus[defaultStatus]);
-    setAssignedTo("");
-    setDueDate("");
-    setFormError("");
-  };
+  const form = useForm<CreateTaskFormValues>({
+    resolver: zodResolver(createTaskSchema),
+    defaultValues: emptyValues,
+  });
+  const { errors } = form.formState;
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (isPending) return;
     if (nextOpen) {
-      setProjectIdValue(projectId ? String(projectId) : "");
-      setStatus(apiStatusByTaskStatus[defaultStatus]);
-      setFormError("");
+      form.reset({
+        ...emptyValues,
+        projectId: projectId ? String(projectId) : "",
+        status: statusByTaskStatus[defaultStatus],
+      });
     } else {
-      resetForm();
+      form.reset(emptyValues);
     }
     onOpenChange(nextOpen);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const parsedProjectId = Number(projectId ?? projectIdValue);
-    const parsedAssignee = assignedTo ? Number(assignedTo) : undefined;
-
-    if (!name.trim()) {
-      setFormError("Task name is required.");
-      return;
-    }
-    if (!Number.isInteger(parsedProjectId) || parsedProjectId <= 0) {
-      setFormError("Enter a valid project ID.");
-      return;
-    }
-    if (
-      parsedAssignee !== undefined &&
-      (!Number.isInteger(parsedAssignee) || parsedAssignee <= 0)
-    ) {
-      setFormError("Assignee ID must be a positive whole number.");
-      return;
-    }
-
+  const handleSubmit = form.handleSubmit((values) => {
     const payload: CreateTaskPayload = {
-      project_id: parsedProjectId,
-      name: name.trim(),
-      priority,
-      status,
-      ...(description.trim() ? { description: description.trim() } : {}),
-      ...(parsedAssignee !== undefined ? { assigned_to: parsedAssignee } : {}),
-      ...(dueDate ? { due_date: dueDate } : {}),
+      project_id: projectId ?? Number(values.projectId),
+      name: values.name,
+      priority: values.priority,
+      status: values.status,
+      ...(values.description ? { description: values.description } : {}),
+      ...(values.assignedTo
+        ? { assigned_to: Number(values.assignedTo) }
+        : {}),
+      ...(values.dueDate ? { due_date: values.dueDate } : {}),
     };
 
     mutate(payload, {
       onSuccess: () => handleOpenChange(false),
     });
-  };
+  });
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -150,30 +126,35 @@ export function CreateTaskDialog({
                 type="number"
                 min={1}
                 step={1}
-                required
-                value={projectIdValue}
-                onChange={(event) => setProjectIdValue(event.target.value)}
+                {...form.register("projectId")}
                 className={fieldClassName}
               />
+              {errors.projectId && (
+                <span role="alert" className="text-xs text-destructive">
+                  {errors.projectId.message}
+                </span>
+              )}
             </label>
           )}
 
           <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
-              <span> Task name <span className="text-destructive">*</span></span>
+            <span>Task name <span className="text-destructive">*</span></span>
             <Input
-              required
               maxLength={255}
-              value={name}
-              onChange={(event) => setName(event.target.value)}
+              {...form.register("name")}
               className={fieldClassName}
             />
+            {errors.name && (
+              <span role="alert" className="text-xs text-destructive">
+                {errors.name.message}
+              </span>
+            )}
           </label>
 
           <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
             Description
             <Textarea
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
+              {...form.register("description")}
               className="min-h-24 rounded-lg border-gray-200 shadow-none"
             />
           </label>
@@ -181,25 +162,33 @@ export function CreateTaskDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
               <span>Priority <span className="text-destructive">*</span></span>
-              <CommonSelect
-                options={priorityOptions}
-                value={priority}
-                onValueChange={(value) => {
-                  if (isPriority(value)) setPriority(value);
-                }}
-                triggerClassName="h-10! w-full rounded-lg"
+              <Controller
+                control={form.control}
+                name="priority"
+                render={({ field }) => (
+                  <CommonSelect
+                    options={priorityOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    triggerClassName="h-10! w-full rounded-lg"
+                  />
+                )}
               />
             </label>
 
             <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
               Status
-              <CommonSelect
-                options={statusOptions}
-                value={status}
-                onValueChange={(value) => {
-                  if (isApiTaskStatus(value)) setStatus(value);
-                }}
-                triggerClassName="h-10! w-full rounded-lg"
+              <Controller
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <CommonSelect
+                    options={statusOptions}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    triggerClassName="h-10! w-full rounded-lg"
+                  />
+                )}
               />
             </label>
           </div>
@@ -211,28 +200,30 @@ export function CreateTaskDialog({
                 type="number"
                 min={1}
                 step={1}
-                value={assignedTo}
-                onChange={(event) => setAssignedTo(event.target.value)}
+                {...form.register("assignedTo")}
                 className={fieldClassName}
               />
+              {errors.assignedTo && (
+                <span role="alert" className="text-xs text-destructive">
+                  {errors.assignedTo.message}
+                </span>
+              )}
             </label>
 
             <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
               Due date
               <Input
                 type="date"
-                value={dueDate}
-                onChange={(event) => setDueDate(event.target.value)}
+                {...form.register("dueDate")}
                 className={fieldClassName}
               />
+              {errors.dueDate && (
+                <span role="alert" className="text-xs text-destructive">
+                  {errors.dueDate.message}
+                </span>
+              )}
             </label>
           </div>
-
-          {formError && (
-            <p role="alert" className="text-sm text-destructive">
-              {formError}
-            </p>
-          )}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button
@@ -250,25 +241,5 @@ export function CreateTaskDialog({
         </form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function isPriority(
-  value: string
-): value is CreateTaskPayload["priority"] {
-  return (
-    value === "Low" ||
-    value === "Medium" ||
-    value === "High" ||
-    value === "Critical"
-  );
-}
-
-function isApiTaskStatus(value: string): value is ApiTaskStatus {
-  return (
-    value === "Pending" ||
-    value === "In Progress" ||
-    value === "In Review" ||
-    value === "Completed"
   );
 }
