@@ -1,6 +1,7 @@
-import AddMeetingDialog, {
-  type CreateMeetingValues,
-} from "@/features/meetings/components/calendar/AddMeetingDialog";
+
+import AddMeetingDialog from "@/features/meetings/components/calendar/AddMeetingDialog";
+
+import type { CreateMeetingValues } from "@/features/meetings/types/meeting.types";
 
 type MeetingsHeaderProps = {
   onCreateMeeting: (values: CreateMeetingValues) => Promise<void>;
