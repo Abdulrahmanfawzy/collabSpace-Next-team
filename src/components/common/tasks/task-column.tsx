@@ -23,7 +23,7 @@ export const TaskColumn = ({
   onTaskClick,
 }: TaskColumnProps) => {
   return (
-    <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white">
+    <div className="min-w-0 self-start overflow-hidden rounded-xl border border-gray-100 bg-white">
 
       {/*---------------- Column Header-------------------- */}
       <div

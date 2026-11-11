@@ -3,7 +3,6 @@ import { Progress } from "@/components/ui/progress"
 
 import { TaskPriorityBadge } from "./task-priority"
 import { Task } from "../../../types/tasks.types"
-import Image from "next/image"
 
 interface TaskCardProps {
     task: Task
@@ -24,7 +23,7 @@ export const TaskCard = ({
                 {/*----------------------Title and Priority----------------- */}
                 <div className="flex items-start justify-between gap-2">
                     <h3 className="text-xs font-bold text-text-dark">
-                        {task.title}
+                        {task.name}
                     </h3>
 
                     <TaskPriorityBadge priority={task.priority} />
@@ -61,13 +60,17 @@ export const TaskCard = ({
                 <div className="flex items-center gap-2">
                     {task.reviewer && (
                         <>
-                            <Image
-                                src={task.reviewer.avatar}
-                                alt={task.reviewer.name}
-                                width={24}
-                                height={24}
-                                className="size-6 rounded-full object-cover"
-                            />
+                            {task.reviewer.avatar ? (
+                                <img
+                                    src={typeof task.reviewer.avatar === "string" ? task.reviewer.avatar : task.reviewer.avatar.src}
+                                    alt={task.reviewer.name}
+                                    className="size-6 rounded-full object-cover"
+                                />
+                            ) : (
+                                <span className="flex size-6 items-center justify-center rounded-full bg-gray-200 text-[9px] font-medium text-gray-600">
+                                    {task.reviewer.name.charAt(0).toUpperCase()}
+                                </span>
+                            )}
 
                             <span className="text-[10px] text-text-dark">
                                 {task.reviewer.name}
@@ -86,16 +89,24 @@ export const TaskCard = ({
             <div className="flex items-center justify-between">
                 {/* --------------------Assignees-------------------- */}
                 <div className="flex -space-x-2">
-                    {task.assignees.map((user) => (
-                        <Image
-                            key={user.id}
-                            src={user.avatar}
-                            alt={user.name}
-                            width={24}
-                            height={24}
-                            className="size-6 rounded-full border-2 border-white object-cover"
-                        />
-                    ))}
+                    {task.assignees.map((user) =>
+                        user.avatar ? (
+                            <img
+                                key={user.id}
+                                src={typeof user.avatar === "string" ? user.avatar : user.avatar.src}
+                                alt={user.name}
+                                className="size-6 rounded-full border-2 border-white object-cover"
+                            />
+                        ) : (
+                            <span
+                                key={user.id}
+                                title={user.name}
+                                className="flex size-6 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-[9px] font-medium text-gray-600"
+                            >
+                                {user.name.charAt(0).toUpperCase()}
+                            </span>
+                        )
+                    )}
                 </div>
 
                 {/*---------------------- Task Metadata---------------------- */}
