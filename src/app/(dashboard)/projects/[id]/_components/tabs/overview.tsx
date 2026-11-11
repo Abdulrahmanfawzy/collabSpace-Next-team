@@ -72,7 +72,7 @@ const OverviewTab = ({ isLoading = false, project,year,onYearChange }: OverviewT
         
         <ProjectProgress project={project} />
         
-        <TeamMembers teams={project.teams} members={project.direct_members} />
+        <TeamMembers projectId={project.id} />
       </div>
     </section>
   )

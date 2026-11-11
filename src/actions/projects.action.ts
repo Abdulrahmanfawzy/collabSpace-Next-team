@@ -5,6 +5,7 @@ import {
   createProject,
   deleteProject,
   getProjectOverview,
+  getProjectTeams,
   getProjects,
  
   updateProject,
@@ -24,6 +25,10 @@ export async function getProjectsAction(
 // ---------------- get project overview ----------------
 export async function getProjectOverviewAction( params: ProjectOverviewParams) {
   return await getProjectOverview(params);
+}
+// ---------------- get project teams ----------------
+export async function getProjectTeamsAction(projectId: number) {
+  return await getProjectTeams(projectId);
 }
 // ---------------- create project ----------------
 export async function createProjectAction(

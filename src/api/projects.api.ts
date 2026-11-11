@@ -13,6 +13,8 @@ import type {
   UpdateProjectResponse,
   UpdateProjectPayload,
   ProjectOverviewParams,
+  ProjectTeamsResponse,
+  ProjectAssignedTeam,
 } from "@/types/project";
 
 const API_URL = process.env.API
@@ -89,6 +91,36 @@ export async function getProjectOverview({
 
   return result.data;
 }
+
+export async function getProjectTeams(
+  projectId: number
+): Promise<ProjectAssignedTeam[]> {
+  const token = process.env.token;
+  const response = await fetch(
+    `${API_URL}/api/v1/projects/${projectId}/teams`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch project teams");
+  }
+
+  const result: ProjectTeamsResponse = await response.json();
+
+  if (!result.success) {
+    throw new Error(result.message || "Failed to fetch project teams");
+  }
+
+  return result.data;
+}
+
 // ---------------- create project ----------------
 export async function createProject(
   payload: CreateProjectPayload

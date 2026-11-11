@@ -114,6 +114,33 @@ export interface ProjectOverviewResponse {
   data: ProjectOverview;
 }
 
+export interface ProjectAssignedTeamMember {
+  id: number;
+  name: string;
+  avatar_url: string | null;
+  role_in_team: string;
+  is_leader: boolean;
+  tasks_completed: number;
+  tasks_total: number;
+  tasks_ratio: string;
+  progress_percentage: number;
+}
+
+export interface ProjectAssignedTeam {
+  id: number;
+  name: string;
+  completion_percentage: number;
+  total_tasks: number;
+  completed_tasks: number;
+  members: ProjectAssignedTeamMember[];
+}
+
+export interface ProjectTeamsResponse {
+  success: boolean;
+  message: string;
+  data: ProjectAssignedTeam[];
+}
+
 
 export interface ProjectFiltersParams {
   page?: number;
