@@ -5,10 +5,12 @@ import type {
   ProjectFile,
   ProjectFilesListResult,
   ProjectFilesResponse,
+  UploadProjectFileResponse,
 } from "@/types/files.types";
 
 const API_URL = process.env.API;
 const FILES_PER_PAGE = 15;
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 function mapProjectFile(file: ApiProjectFile): ProjectFile {
   const uploadedAt = new Date(file.created_at);
@@ -67,5 +69,54 @@ export async function getProjectFiles(
   return {
     files: result.data.data.map(mapProjectFile),
     pagination: result.data.meta,
+  };
+}
+
+export async function uploadProjectFile(
+  projectId: number,
+  uploadData: FormData
+): Promise<{ file: ProjectFile; message: string }> {
+  if (!Number.isInteger(projectId) || projectId <= 0) {
+    throw new Error("A valid project ID is required to upload a file.");
+  }
+  const file = uploadData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    throw new Error("Choose a file to upload.");
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error("Files must be 20 MB or smaller.");
+  }
+
+  const token = process.env.token;
+  if (!token) {
+    throw new Error("You must be signed in to upload project files.");
+  }
+
+  const formData = new FormData();
+  formData.append("file", file, file.name);
+  formData.append("project_id", String(projectId));
+  const name = uploadData.get("name");
+  if (typeof name === "string" && name.trim()) {
+    formData.append("name", name.trim());
+  }
+
+  const response = await fetch(`${API_URL}/api/v1/files`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    body: formData,
+    cache: "no-store",
+  });
+
+  const result = (await response.json()) as UploadProjectFileResponse;
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to upload project file");
+  }
+
+  return {
+    file: mapProjectFile(result.data),
+    message: result.message,
   };
 }

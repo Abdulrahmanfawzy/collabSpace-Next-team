@@ -49,3 +49,9 @@ export interface ProjectFilesResponse {
     meta: ProjectFilesPagination;
   };
 }
+
+export interface UploadProjectFileResponse {
+  success: boolean;
+  message: string;
+  data: ApiProjectFile;
+}
