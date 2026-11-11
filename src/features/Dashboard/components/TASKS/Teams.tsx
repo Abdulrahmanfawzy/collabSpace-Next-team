@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle  } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import MemberRow from "./MemberRow";
 import { TeamMember } from "../../types/typesDashboard";
+import { ScrollArea } from "@/components/ui/scroll-area";
 export type TeamsProps = {
   members: TeamMember[]
   teams?: string[] // dropdown options, first item is the default
@@ -33,16 +34,18 @@ export function Teams({ members, teams = ["UI/UX"] }: TeamsProps) {
           </Select>
         </CardHeader>
   
-        <CardContent className="p-5 pt-0">
+        <CardContent className="flex min-h-0 flex-1 flex-col p-5 pt-0">
           <div className="mb-4 flex justify-between text-xs text-muted-foreground">
             <span>Name</span>
             <span>Tasks</span>
           </div>
-          <ul className="space-y-5">
-            {members.map((m) => (
-              <MemberRow key={m.id} member={m} />
-            ))}
-          </ul>
+          <ScrollArea className="min-h-0 flex-1 pr-3">
+            <ul className="space-y-5">
+              {members.map((m) => (
+                <MemberRow key={m.id} member={m} />
+              ))}
+            </ul>
+          </ScrollArea>
         </CardContent>
       </Card>
     )
