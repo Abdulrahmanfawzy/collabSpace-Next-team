@@ -22,6 +22,8 @@ interface ProjectTabsProps {
   totalTasks: number;
   year: number;
   onYearChange: (year: number) => void;
+  isChartLoading?: boolean;
+  chartError?: Error | null;
   isTasksLoading?: boolean
   isTeamsLoading?: boolean
   isFilesLoading?: boolean
@@ -37,6 +39,8 @@ const ProjectTabs = ({
   totalTasks,
   year,
   onYearChange,
+  isChartLoading = false,
+  chartError = null,
   isTasksLoading = false,
   isTeamsLoading = false,
   isFilesLoading = false,
@@ -55,6 +59,8 @@ const ProjectTabs = ({
           totalTasks={totalTasks}
           year={year}
           onYearChange={onYearChange}
+          isChartLoading={isChartLoading}
+          chartError={chartError}
         />
       ),
     },

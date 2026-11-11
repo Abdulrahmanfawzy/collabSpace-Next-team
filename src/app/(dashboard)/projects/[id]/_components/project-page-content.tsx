@@ -5,7 +5,8 @@ import { useGetProjectOverview } from "@/hooks/projects/use-get-project-overview
 import { useGetProjectTeams } from "@/hooks/projects/use-get-project-teams";
 import ProjectHeader from "./project-header";
 import ProjectTabs from "./project-tabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { ProjectOverview } from "@/types/project";
 
 interface ProjectPageContentProps {
   projectId: number;
@@ -16,12 +17,28 @@ export default function ProjectPageContent({
 }: ProjectPageContentProps) {
   const [year, setYear] = useState(2025);
   const [period, setPeriod] = useState<"year">("year");
+  const [lastProject, setLastProject] = useState<{
+    id: number;
+    project: ProjectOverview;
+  } | null>(null);
 
-  const { data: project, isLoading, error } = useGetProjectOverview({
+  const {
+    data: project,
+    isLoading,
+    isFetching,
+    error,
+  } = useGetProjectOverview({
     id: projectId,
     period,
     year,
   });
+  useEffect(() => {
+    if (project) {
+      setLastProject({ id: projectId, project });
+    }
+  }, [project, projectId]);
+  const displayedProject =
+    project ?? (lastProject?.id === projectId ? lastProject.project : undefined);
   const {
     data: teams = [],
     isPending: areTeamsLoading,
@@ -29,11 +46,11 @@ export default function ProjectPageContent({
   } = useGetProjectTeams(projectId);
 
 
-  if (isLoading) {
+  if (isLoading && !displayedProject) {
     return <OverviewProjectsSkeleton />;
   }
 
-  if (error) {
+  if (error && !displayedProject) {
     return (
       <p className="py-6 text-sm text-red-600">
         Failed to load project overview: {error.message}
@@ -41,7 +58,7 @@ export default function ProjectPageContent({
     );
   }
 
-  if (!project) {
+  if (!displayedProject) {
     return <p className="py-6 text-sm text-gray-600">Project not found.</p>;
   }
 
@@ -52,18 +69,18 @@ export default function ProjectPageContent({
   const totalTasks = teams.reduce((total, team) => total + team.total_tasks, 0);
   const progressPercentage =
     areTeamsLoading || teamsError
-      ? project.progress_percentage
+      ? displayedProject.progress_percentage
       : totalTasks > 0
         ? Math.round((completedTasks / totalTasks) * 1000) / 10
         : teams.length > 0
           ? 0
-          : project.progress_percentage;
+          : displayedProject.progress_percentage;
 
   return (
     <main className="min-h-screen bg-bg-light">
-      <ProjectHeader project={project} progressPercentage={progressPercentage} />
+      <ProjectHeader project={displayedProject} progressPercentage={progressPercentage} />
       <ProjectTabs 
-          project={project}
+          project={displayedProject}
           teams={teams}
           areTeamsLoading={areTeamsLoading}
           teamsError={teamsError}
@@ -71,7 +88,10 @@ export default function ProjectPageContent({
           completedTasks={completedTasks}
           totalTasks={totalTasks}
           year={year}
-          onYearChange={setYear} />
+          onYearChange={setYear}
+          isChartLoading={isFetching}
+          chartError={error}
+        />
     </main>
   );
 }

@@ -27,5 +27,6 @@ export interface AreaChartProps {
   color?: string
   valueFormatter?: (value: number) => string
   valueLabel?: string
+  isLoading?: boolean
   className?: string
 }
