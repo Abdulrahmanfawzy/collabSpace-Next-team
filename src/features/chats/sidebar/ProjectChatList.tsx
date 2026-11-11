@@ -22,23 +22,23 @@ export default function ProjectChatList({
   searchQuery = "",
   onSelectChannel,
 }: ProjectChatListProps) {
-  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(
-    new Set()
-  );
+const [expandedProjects, setExpandedProjects] = useState<Set<number>>(
+  new Set()
+);
 
-  const toggleProject = (projectId: string) => {
-    setExpandedProjects((prev) => {
-      const next = new Set(prev);
+const toggleProject = (projectId: number) => {
+  setExpandedProjects((prev) => {
+    const next = new Set(prev);
 
-      if (next.has(projectId)) {
-        next.delete(projectId);
-      } else {
-        next.add(projectId);
-      }
+    if (next.has(projectId)) {
+      next.delete(projectId);
+    } else {
+      next.add(projectId);
+    }
 
-      return next;
-    });
-  };
+    return next;
+  });
+};
 
   const filteredProjects = projects.filter((project) =>
     project.name.toLowerCase().includes(searchQuery.toLowerCase())

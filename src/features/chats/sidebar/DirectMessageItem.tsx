@@ -12,10 +12,12 @@ export default function DirectMessageItem({
   onSelect,
 }: DirectMessageItemProps) {
   const lastMessage = message.lastMessage;
-
-  const lastMessageTime = lastMessage?.createdAt
-    ? format(new Date(lastMessage.createdAt), "h:mm a")
-    : "";
+  const lastMessageText =
+    typeof lastMessage === "string" ? lastMessage : lastMessage?.text ?? "";
+  const lastMessageTime =
+    typeof lastMessage === "string" || !lastMessage?.createdAt
+      ? ""
+      : format(new Date(lastMessage.createdAt), "h:mm a");
 
   return (
     <button

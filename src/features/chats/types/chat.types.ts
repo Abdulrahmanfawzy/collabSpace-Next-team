@@ -67,3 +67,36 @@ export interface ChatMessageResponse {
   message: string;
   data: ChatMessage;
 }
+
+export interface ChatConversation {
+  id: string;
+  name: string;
+  avatarUrl: string;
+  lastMessage?: string;
+  time?: string;
+  unreadCount?: number;
+}
+
+export interface ChatChannel {
+  id: number;
+  name: string;
+  time?: string;
+}
+
+export interface ChatProject {
+  id: number;
+  name: string;
+  channels: ChatChannel[];
+}
+
+export type SelectedChat =
+  | {
+      type: "direct";
+      conversation: ChatConversation;
+    }
+  | {
+      type: "channel";
+      channel: ChatChannel;
+      project: ChatProject;
+    }
+  | null;

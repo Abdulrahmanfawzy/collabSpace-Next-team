@@ -1,3 +1,6 @@
+
+"use client";
+
 import ChatHeader from "@/features/chats/panel/conversation/ChatHeader";
 import MessageList from "@/features/chats/panel/conversation/MessageList";
 import MessageComposer from "@/features/chats/panel/conversation/MessageComposer";
@@ -11,18 +14,27 @@ interface ConversationProps {
 export default function Conversation({
   selectedChat,
 }: ConversationProps) {
-  const chatId =
-    selectedChat.type === "direct"
-      ? selectedChat.conversation.id
-      : selectedChat.channel.id;
+  const isProjectChannel = selectedChat.type === "channel";
+
+  const projectId = isProjectChannel
+    ? selectedChat.project.id
+    : null;
 
   return (
-    <section className="flex h-full min-h-0 gap-5 flex-1 flex-col overflow-hidden">
+    <section className="flex h-full min-h-0 flex-1 flex-col gap-5 overflow-hidden">
       <ChatHeader selectedChat={selectedChat} />
 
-      <MessageList chatId={chatId} />
+      {projectId !== null ? (
+        <>
+          <MessageList projectId={projectId} />
 
-      <MessageComposer />
+          <MessageComposer projectId={projectId} />
+        </>
+      ) : (
+        <div className="flex min-h-0 flex-1 items-center justify-center text-sm text-muted-foreground">
+          Direct messages are not connected to the API yet.
+        </div>
+      )}
     </section>
   );
 }
