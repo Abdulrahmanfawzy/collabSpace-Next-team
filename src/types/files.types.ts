@@ -1,5 +1,6 @@
 export interface ProjectFile {
   id: number;
+  projectId: number;
   name: string;
   uploadedBy: string;
   size: string;
@@ -54,4 +55,10 @@ export interface UploadProjectFileResponse {
   success: boolean;
   message: string;
   data: ApiProjectFile;
+}
+
+export interface DeleteProjectFileResponse {
+  success: boolean;
+  message: string;
+  data: null;
 }

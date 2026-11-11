@@ -6,6 +6,7 @@ import type {
   ProjectFilesListResult,
   ProjectFilesResponse,
   UploadProjectFileResponse,
+  DeleteProjectFileResponse,
 } from "@/types/files.types";
 
 const API_URL = process.env.API;
@@ -17,13 +18,14 @@ function mapProjectFile(file: ApiProjectFile): ProjectFile {
 
   return {
     id: file.id,
+    projectId: file.project_id,
     name: file.name,
     uploadedBy: file.uploaded_by,
     size: file.file_size_formatted,
     uploadedAt: Number.isNaN(uploadedAt.getTime())
       ? file.created_at
       : uploadedAt.toLocaleDateString(),
-    downloadUrl: file.url,
+    downloadUrl: `/api/files/${file.id}/download?name=${encodeURIComponent(file.name)}`,
   };
 }
 
@@ -119,4 +121,54 @@ export async function uploadProjectFile(
     file: mapProjectFile(result.data),
     message: result.message,
   };
+}
+
+export async function deleteProjectFile(
+  fileId: number
+): Promise<{ message: string }> {
+  if (!Number.isInteger(fileId) || fileId <= 0) {
+    throw new Error("A valid file ID is required to delete a file.");
+  }
+
+  const token = process.env.token;
+  if (!token) {
+    throw new Error("You must be signed in to delete project files.");
+  }
+
+  const response = await fetch(
+    `${API_URL}/api/v1/files/${fileId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    }
+  );
+
+  const result = (await response.json()) as DeleteProjectFileResponse;
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to delete project file");
+  }
+
+  return { message: result.message };
+}
+
+export async function getProjectFileDownload(
+  fileId: number,
+  token: string
+): Promise<Response> {
+  if (!Number.isInteger(fileId) || fileId <= 0) {
+    throw new Error("A valid file ID is required to download a file.");
+  }
+
+  return fetch(`${API_URL}/api/v1/files/${fileId}/download`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "*/*",
+    },
+    cache: "no-store",
+  });
 }
