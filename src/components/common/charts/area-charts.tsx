@@ -26,6 +26,7 @@ const AreaChart = ({
   height = 155,
   color = "#3B82F6",
   valueFormatter = (value) => `${value / 1000}k`,
+  valueLabel = "Projects",
   className,
 }: AreaChartProps) => {
   const gradientId = `chart-gradient-${useId().replace(/:/g, "")}`
@@ -170,7 +171,7 @@ const AreaChart = ({
                 }}
                 formatter={(value) => [
                   Number(value).toLocaleString(),
-                  "Projects",
+                  valueLabel,
                 ]}
               />
 

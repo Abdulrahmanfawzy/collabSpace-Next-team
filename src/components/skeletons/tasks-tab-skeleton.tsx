@@ -10,7 +10,13 @@ const TaskCardSkeleton = () => (
       <Skeleton className="h-2.5 w-full" />
       <Skeleton className="h-2.5 w-3/4" />
     </div>
-    <Skeleton className="h-8 w-full" />
+    <div className="mt-1 space-y-1.5">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-2.5 w-12" />
+        <Skeleton className="h-2.5 w-7" />
+      </div>
+      <Skeleton className="h-1 w-full rounded-full" />
+    </div>
     <div className="flex items-center justify-between">
       <div className="flex -space-x-2">
         {Array.from({ length: 3 }).map((_, index) => (

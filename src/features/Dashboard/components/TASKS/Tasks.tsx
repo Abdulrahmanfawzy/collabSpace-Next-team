@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 import TaskItem from "./TaskItem"
-import { Task, TeamMember } from "../../types/typesDashboard"
+import { Task } from "../../types/typesDashboard"
 
 
 export type TasksProps = {
