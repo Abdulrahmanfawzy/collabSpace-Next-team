@@ -1,7 +1,7 @@
 'use client'
 import { TaskBoard } from "@/components/common/tasks/task-board"
 import type { Task } from "@/types/tasks.types"
-import { taskColumns } from "../../projects/[slug]/_components/tasks.data"
+import { taskColumns } from "../../projects/[id]/_components/tasks.data"
 
 
 interface IProps {

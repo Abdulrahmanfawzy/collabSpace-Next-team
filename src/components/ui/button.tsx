@@ -15,9 +15,9 @@ const buttonVariants = cva(
           "bg-app-neutral-light text-app-primary hover:bg-app-neutral",
         ghost: "hover:bg-muted hover:text-foreground aria-expanded:bg-muted",
         destructive:
-          "bg-app-error text-white hover:bg-app-error/90 focus-visible:ring-app-error/30",
+          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/30",
         "destructive-soft":
-          "bg-app-error-light text-app-error-dark hover:bg-app-error-background focus-visible:ring-app-error/20",
+          "bg-support-red-light text-support-red-dark hover:bg-support-red-light/80 focus-visible:ring-support-red/20",
         success:
           "bg-app-success text-white hover:bg-app-success/90 focus-visible:ring-app-success/30",
         auth:

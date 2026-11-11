@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default  function RecentFiles({ files, viewAllHref = "/files" }: RecentFilesProps) {
     return (
-      <Card className="flex h-85 flex-col rounded-2xl border-0 shadow-sm">
+      <Card className="flex h-[22rem] min-h-0 flex-col rounded-2xl border-0 shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between space-y-0  pb-3">
           <CardTitle className="text-xl font-medium">Recent Files</CardTitle>
           <Link href={viewAllHref} className="text-sm text-blue-600 hover:underline">

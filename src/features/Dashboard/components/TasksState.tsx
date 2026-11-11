@@ -1,24 +1,21 @@
 // components/task-stats.tsx
 
-import { stats } from "../constants/DataState"
+import { getStates } from "../constants/DataState"
 import CompletionRateCard from "./CompletionCard"
 import StatCard from "./StateCard"
+import type { DashboardData } from "../types/typesDashboard"
 
-
-
-
-
-
-function TaskStats() {
+function TaskStats({ items }: { items?: DashboardData | null }) {
+    const stats = getStates(items)
     return (
         <section
             aria-label="Task overview"
             className=" grid gap-6 sm:grid-cols-2 xl:grid-cols-4"
         >
             {stats.map((s) => (
-                <StatCard key={s.title}  stat={s} />
+                <StatCard key={s.title} stat={s} />
             ))}
-            <CompletionRateCard rate={33} change={22} />
+            <CompletionRateCard rate={items?.overview.tasks.completion_rate ?? 0} change={items?.overview.tasks.completed_percentage ?? 0} />
         </section>
     )
 }
