@@ -40,13 +40,15 @@ const files = [
 const tabs = ["Overview", "Tasks", "Teams", "Files"];
 interface ProjectTabsProps {
   project: ProjectOverview
+  year: number;
+  onYearChange: (year: number) => void;
   isTasksLoading?: boolean
   isTeamsLoading?: boolean
   isFilesLoading?: boolean
 }
 
 const ProjectTabs = ({
-  project,
+  project, year,onYearChange,
   isTasksLoading = false,
   isTeamsLoading = false,
   isFilesLoading = false,
@@ -54,7 +56,7 @@ const ProjectTabs = ({
   const tabContents = [
     {
       value: "overview",
-      component: <OverviewTab project={project} />,
+      component: <OverviewTab project={project} year={year} onYearChange={onYearChange} />,
     },
     {
       value: "tasks",

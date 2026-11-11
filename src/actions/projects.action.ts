@@ -6,11 +6,13 @@ import {
   deleteProject,
   getProjectOverview,
   getProjects,
+ 
   updateProject,
 } from "@/api/projects.api";
 import type {
   CreateProjectPayload,
   ProjectFiltersParams,
+  ProjectOverviewParams,
   UpdateProjectPayload,
 } from "@/types/project";
 // ---------------- get projects ----------------
@@ -20,8 +22,8 @@ export async function getProjectsAction(
   return await getProjects(filters);
 }
 // ---------------- get project overview ----------------
-export async function getProjectOverviewAction(id: number) {
-  return await getProjectOverview(id);
+export async function getProjectOverviewAction( params: ProjectOverviewParams) {
+  return await getProjectOverview(params);
 }
 // ---------------- create project ----------------
 export async function createProjectAction(

@@ -12,6 +12,7 @@ import type {
   ProjectMutationResponse,
   UpdateProjectResponse,
   UpdateProjectPayload,
+  ProjectOverviewParams,
 } from "@/types/project";
 
 const API_URL = process.env.API
@@ -48,12 +49,20 @@ export async function getProjects(
   return response.json();
 }
 // ---------------- get project overview ----------------
-export async function getProjectOverview(
-  id: number
-): Promise<ProjectOverview | null> {
+
+export async function getProjectOverview({
+  id,
+  period,
+  year,
+}: ProjectOverviewParams): Promise<ProjectOverview | null> {
   const token = process.env.token;
+   const params = new URLSearchParams({
+    period,
+    year: String(year),
+  });
+
   const response = await fetch(
-    `${API_URL}/api/v1/projects/${id}/overview`,
+    `${API_URL}/api/v1/projects/${id}/overview?${params.toString()}`,
     {
       method: "GET",
       headers: {

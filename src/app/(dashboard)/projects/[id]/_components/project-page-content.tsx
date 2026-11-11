@@ -4,6 +4,7 @@ import OverviewProjectsSkeleton from "@/components/skeletons/overview-projects-s
 import { useGetProjectOverview } from "@/hooks/projects/use-get-project-overview";
 import ProjectHeader from "./project-header";
 import ProjectTabs from "./project-tabs";
+import { useState } from "react";
 
 interface ProjectPageContentProps {
   projectId: number;
@@ -12,14 +13,21 @@ interface ProjectPageContentProps {
 export default function ProjectPageContent({
   projectId,
 }: ProjectPageContentProps) {
-  const { data: project, isPending, isError, error } =
-    useGetProjectOverview(projectId);
+  const [year, setYear] = useState(2025);
+  const [period, setPeriod] = useState<"year">("year");
 
-  if (isPending) {
+  const { data: project, isLoading, error } = useGetProjectOverview({
+    id: projectId,
+    period,
+    year,
+  });
+
+
+  if (isLoading) {
     return <OverviewProjectsSkeleton />;
   }
 
-  if (isError) {
+  if (error) {
     return (
       <p className="py-6 text-sm text-red-600">
         Failed to load project overview: {error.message}
@@ -34,7 +42,10 @@ export default function ProjectPageContent({
   return (
     <main className="min-h-screen bg-bg-light">
       <ProjectHeader project={project} />
-      <ProjectTabs project={project} />
+      <ProjectTabs 
+          project={project}
+          year={year}
+          onYearChange={setYear} />
     </main>
   );
 }

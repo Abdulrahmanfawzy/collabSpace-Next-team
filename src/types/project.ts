@@ -105,6 +105,7 @@ export interface ProjectOverview {
   };
   created_at: string;
   updated_at: string;
+  chart: ProjectChart;
 }
 
 export interface ProjectOverviewResponse {
@@ -121,6 +122,30 @@ export interface ProjectFiltersParams {
   status?: string;
   priority?: string;
   sort?: string;
+}
+type OverviewPeriod = "month" | "year";
+export interface ProjectOverviewParams {
+  id: number;
+  period: OverviewPeriod;
+  year: number;
+}
+//--chart overview
+export interface ProjectChartData {
+  month: string;
+  month_number: number;
+  year: number;
+  label: string;
+  created_tasks: number;
+  completed_tasks: number;
+  progress_percentage: number;
+  is_future: boolean;
+}
+
+export interface ProjectChart {
+  period: string;
+  year: number;
+  group_by: string;
+  data: ProjectChartData[];
 }
 // ---------------- add project ----------------
 
