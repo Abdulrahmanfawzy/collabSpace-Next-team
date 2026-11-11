@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  assignTask,
   createTask,
   getProjectKanban,
   getTasks,
@@ -11,6 +12,7 @@ import type {
   CreateTaskPayload,
   TaskFilters,
   TaskStatus,
+  UpdateTaskAssignmentPayload,
   UpdateTaskPayload,
 } from "@/types/tasks.types";
 // -----------------------tasks with filter-------------------------------
@@ -38,4 +40,11 @@ export async function updateTaskAction(
   payload: UpdateTaskPayload
 ) {
   return updateTask(taskId, payload);
+}
+
+export async function assignTaskAction(
+  taskId: string,
+  payload: UpdateTaskAssignmentPayload
+) {
+  return assignTask(taskId, payload);
 }

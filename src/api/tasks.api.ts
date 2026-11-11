@@ -12,6 +12,8 @@ import type {
   TaskStatusUpdateResponse,
   UpdateTaskPayload,
   UpdateTaskResponse,
+  UpdateTaskAssignmentPayload,
+  UpdateTaskAssignmentResponse,
   TasksListResult,
   TasksResponse,
 } from "@/types/tasks.types";
@@ -84,6 +86,34 @@ export async function updateTask(
   const result = (await response.json()) as UpdateTaskResponse;
   if (!response.ok || !result.success) {
     throw new Error(result.message || "Failed to update task");
+  }
+
+  return {
+    task: mapApiTask(result.data),
+    message: result.message,
+  };
+}
+
+export async function assignTask(
+  taskId: string,
+  payload: UpdateTaskAssignmentPayload
+): Promise<{ task: Task; message: string }> {
+  const response = await fetch(
+    `${API_URL}/api/v1/tasks/${encodeURIComponent(taskId)}/assign`,
+    {
+      method: "PATCH",
+      headers: {
+        ...(await getAuthHeaders()),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    }
+  );
+
+  const result = (await response.json()) as UpdateTaskAssignmentResponse;
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to assign task");
   }
 
   return {

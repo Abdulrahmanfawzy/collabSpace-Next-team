@@ -12,9 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CommonSelect } from "@/components/common/common-select";
 import { useUpdateTask } from "@/hooks/tasks/use-update-task";
+import { useAssignTask } from "@/hooks/tasks/use-assign-task";
 import type {
   ApiTaskStatus,
   Task,
+  UpdateTaskAssignmentPayload,
   UpdateTaskPayload,
 } from "@/types/tasks.types";
 
@@ -64,6 +66,10 @@ export function UpdateTaskDialog({
   onOpenChange,
 }: UpdateTaskDialogProps) {
   const { mutate, isPending } = useUpdateTask();
+  const {
+    mutate: assignTask,
+    isPending: isAssigning,
+  } = useAssignTask();
   const [name, setName] = useState(task.name);
   const [priority, setPriority] = useState<UpdateTaskPayload["priority"]>(
     priorityByTaskPriority[task.priority]
@@ -72,6 +78,10 @@ export function UpdateTaskDialog({
     statusByTaskStatus[task.status]
   );
   const [formError, setFormError] = useState("");
+  const [assigneeId, setAssigneeId] = useState(
+    task.assignees[0]?.id ?? ""
+  );
+  const [assignmentError, setAssignmentError] = useState("");
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -91,15 +101,73 @@ export function UpdateTaskDialog({
     );
   };
 
+  const handleAssign = () => {
+    const parsedAssigneeId = Number(assigneeId);
+    if (!Number.isInteger(parsedAssigneeId) || parsedAssigneeId <= 0) {
+      setAssignmentError("Enter a valid team member ID.");
+      return;
+    }
+
+    setAssignmentError("");
+    const payload: UpdateTaskAssignmentPayload = {
+      assigned_to: parsedAssigneeId,
+    };
+    assignTask(
+      {
+        taskId: task.id,
+        projectId: projectId ?? task.projectId,
+        payload,
+      },
+      { onSuccess: () => onOpenChange(false) }
+    );
+  };
+
   return (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Update Task</DialogTitle>
           <DialogDescription>
-            Change the task name, priority, or status.
+            Change task details or assign it to a team member.
           </DialogDescription>
         </DialogHeader>
+
+        <section className="flex flex-col gap-3 rounded-lg border border-gray-100 p-4">
+          <h3 className="text-sm font-medium text-gray-800">
+            {task.assignees.length ? "Reassign task" : "Assign task"}
+          </h3>
+          <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
+            Team member ID
+            <Input
+              type="number"
+              min={1}
+              step={1}
+              value={assigneeId}
+              onChange={(event) => {
+                setAssigneeId(event.target.value);
+                setAssignmentError("");
+              }}
+              className={fieldClassName}
+            />
+          </label>
+          {assignmentError && (
+            <p role="alert" className="text-sm text-destructive">
+              {assignmentError}
+            </p>
+          )}
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isAssigning || isPending}
+            onClick={handleAssign}
+          >
+            {isAssigning
+              ? "Assigning..."
+              : task.assignees.length
+                ? "Reassign"
+                : "Assign"}
+          </Button>
+        </section>
 
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">

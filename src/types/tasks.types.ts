@@ -163,6 +163,16 @@ export interface UpdateTaskResponse {
   message: string;
   data: ApiTask;
 }
+
+export interface UpdateTaskAssignmentPayload {
+  assigned_to: number;
+}
+
+export interface UpdateTaskAssignmentResponse {
+  success: boolean;
+  message: string;
+  data: ApiTask;
+}
 // ------------------------Kanaban board for project -----------------------------------------------------------
 export interface ApiKanbanColumn {
   name: string;
