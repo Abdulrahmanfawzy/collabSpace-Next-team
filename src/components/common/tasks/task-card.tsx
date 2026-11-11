@@ -1,10 +1,35 @@
-import { CalendarDays, GripVertical, MessageSquare } from "lucide-react"
+import {
+    CalendarDays,
+    Ellipsis,
+    GripVertical,
+    LoaderCircle,
+    MessageSquare,
+    Pencil,
+    Trash2,
+} from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
+import { useState } from "react"
 
 import { TaskPriorityBadge } from "./task-priority"
 import type { Task } from "../../../types/tasks.types"
+import { Button } from "@/components/ui/button"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { useDeleteTask } from "@/hooks/tasks/use-delete-task"
 
 interface TaskCardProps {
     task: Task
@@ -19,6 +44,8 @@ export const TaskCard = ({
     draggable = false,
     index,
 }: TaskCardProps) => {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const { mutate: deleteTask, isPending: isDeleting } = useDeleteTask()
     const {
         attributes,
         listeners,
@@ -31,6 +58,13 @@ export const TaskCard = ({
         disabled: !draggable,
         data: { type: "task", status: task.status, index },
     })
+
+    const handleDelete = () => {
+        deleteTask(
+            { taskId: task.id, projectId: task.projectId },
+            { onSuccess: () => setDeleteDialogOpen(false) }
+        )
+    }
 
     return (
         <article
@@ -65,7 +99,42 @@ export const TaskCard = ({
                         </h3>
                     </div>
 
-                    <TaskPriorityBadge priority={task.priority} />
+                    <div className="flex shrink-0 items-center gap-1">
+                        <TaskPriorityBadge priority={task.priority} />
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    aria-label={`Task actions for ${task.name}`}
+                                    className="size-7"
+                                    onClick={(event) => event.stopPropagation()}
+                                >
+                                    <Ellipsis aria-hidden="true" size={16} />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                align="end"
+                                className="w-36"
+                                onClick={(event) => event.stopPropagation()}
+                            >
+                                <DropdownMenuItem
+                                    onSelect={() => onClick?.(task)}
+                                >
+                                    <Pencil aria-hidden="true" />
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    variant="destructive"
+                                    onSelect={() => setDeleteDialogOpen(true)}
+                                >
+                                    <Trash2 aria-hidden="true" />
+                                    Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
 
                 {/*---------------------- Description---------------------- */}
@@ -164,6 +233,54 @@ export const TaskCard = ({
                     </span>
                 </div>
             </div>
+            <Dialog
+                open={deleteDialogOpen}
+                onOpenChange={(open) => {
+                    if (!isDeleting) setDeleteDialogOpen(open)
+                }}
+            >
+                <DialogContent onClick={(event) => event.stopPropagation()}>
+                    <DialogHeader>
+                        <DialogTitle>Delete task?</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to delete “{task.name}”? This
+                            action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setDeleteDialogOpen(false)}
+                            disabled={isDeleting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={handleDelete}
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? (
+                                <>
+                                    <LoaderCircle
+                                        aria-hidden="true"
+                                        className="animate-spin"
+                                        size={16}
+                                    />
+                                    Deleting…
+                                </>
+                            ) : (
+                                <>
+                                    <Trash2 aria-hidden="true" size={16} />
+                                    Delete task
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </article>
     )
 }

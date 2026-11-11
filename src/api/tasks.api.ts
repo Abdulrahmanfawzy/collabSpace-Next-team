@@ -14,6 +14,7 @@ import type {
   UpdateTaskResponse,
   UpdateTaskAssignmentPayload,
   UpdateTaskAssignmentResponse,
+  DeleteTaskResponse,
   TasksListResult,
   TasksResponse,
 } from "@/types/tasks.types";
@@ -120,6 +121,26 @@ export async function assignTask(
     task: mapApiTask(result.data),
     message: result.message,
   };
+}
+
+export async function deleteTask(
+  taskId: string
+): Promise<{ message: string }> {
+  const response = await fetch(
+    `${API_URL}/api/v1/tasks/${encodeURIComponent(taskId)}`,
+    {
+      method: "DELETE",
+      headers: await getAuthHeaders(),
+      cache: "no-store",
+    }
+  );
+
+  const result = (await response.json()) as DeleteTaskResponse;
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to delete task");
+  }
+
+  return { message: result.message };
 }
 
 // ----------- list tasks with filters------------------------------------------

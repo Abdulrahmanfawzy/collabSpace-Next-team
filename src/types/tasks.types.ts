@@ -173,6 +173,12 @@ export interface UpdateTaskAssignmentResponse {
   message: string;
   data: ApiTask;
 }
+
+export interface DeleteTaskResponse {
+  success: boolean;
+  message: string;
+  data: null;
+}
 // ------------------------Kanaban board for project -----------------------------------------------------------
 export interface ApiKanbanColumn {
   name: string;

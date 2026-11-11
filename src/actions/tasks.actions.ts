@@ -3,6 +3,7 @@
 import {
   assignTask,
   createTask,
+  deleteTask,
   getProjectKanban,
   getTasks,
   updateTask,
@@ -47,4 +48,8 @@ export async function assignTaskAction(
   payload: UpdateTaskAssignmentPayload
 ) {
   return assignTask(taskId, payload);
+}
+
+export async function deleteTaskAction(taskId: string) {
+  return deleteTask(taskId);
 }
