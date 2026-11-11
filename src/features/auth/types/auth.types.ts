@@ -13,6 +13,7 @@ export interface AuthUser {
   years_of_experience: number | null;
   phone: string | null;
   avatar_url: string | null;
+  available_status?: string | null;
   status: string;
   roles: string[];
   permissions: string[];
