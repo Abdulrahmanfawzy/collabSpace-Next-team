@@ -10,16 +10,19 @@ import type {
   Task,
   TaskStatus,
   TaskStatusUpdateResponse,
+  UpdateTaskPayload,
+  UpdateTaskResponse,
   TasksListResult,
   TasksResponse,
 } from "@/types/tasks.types";
 import { mapApiTask } from "../lib/tasks/task-mapper";
-import { getAccessToken } from "@/auth";
+
 
 const API_URL = process.env.API;
 
 async function getAuthHeaders(): Promise<HeadersInit> {
-  const token = await getAccessToken();
+//   const token = await getAccessToken();
+const token=process.env.token;
   if (!token) {
     throw new Error("You must be signed in to access tasks.");
   }
@@ -53,6 +56,34 @@ export async function createTask(
   const result = (await response.json()) as CreateTaskResponse;
   if (!response.ok || !result.success) {
     throw new Error(result.message || "Failed to create task");
+  }
+
+  return {
+    task: mapApiTask(result.data),
+    message: result.message,
+  };
+}
+
+export async function updateTask(
+  taskId: string,
+  payload: UpdateTaskPayload
+): Promise<{ task: Task; message: string }> {
+  const response = await fetch(
+    `${API_URL}/api/v1/tasks/${encodeURIComponent(taskId)}`,
+    {
+      method: "PUT",
+      headers: {
+        ...(await getAuthHeaders()),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    }
+  );
+
+  const result = (await response.json()) as UpdateTaskResponse;
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to update task");
   }
 
   return {

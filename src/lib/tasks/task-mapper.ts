@@ -46,6 +46,11 @@ export function mapApiTask(task: ApiTask): Task {
 
   return {
     id: String(task.id),
+    projectId:
+      task.project_id !== undefined &&
+      Number.isInteger(Number(task.project_id))
+        ? Number(task.project_id)
+        : undefined,
     name: task.name ?? task.title ?? "",
     description: task.description ?? null,
     status,

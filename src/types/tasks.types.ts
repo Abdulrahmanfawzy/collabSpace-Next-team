@@ -27,6 +27,7 @@ export interface TaskFilters {
 
 export interface Task {
   id: string
+  projectId?: number
   name: string
   description: string | null
   status: TaskStatus
@@ -71,6 +72,7 @@ export interface ApiTaskAssignee {
 
 export interface ApiTask {
   id: number | string;
+  project_id?: number | string;
   name?: string;
   title?: string;
   description?: string | null;
@@ -145,6 +147,18 @@ export interface CreateTaskPayload {
 }
 
 export interface CreateTaskResponse {
+  success: boolean;
+  message: string;
+  data: ApiTask;
+}
+
+export interface UpdateTaskPayload {
+  name: string;
+  priority: "Low" | "Medium" | "High" | "Critical";
+  status: ApiTaskStatus;
+}
+
+export interface UpdateTaskResponse {
   success: boolean;
   message: string;
   data: ApiTask;

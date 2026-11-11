@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { TaskBoard } from "@/components/common/tasks/task-board";
+import { UpdateTaskDialog } from "@/components/common/tasks/update-task-dialog";
 import TasksTabSkeleton from "@/components/skeletons/tasks-tab-skeleton";
 import { CommonPagination } from "@/components/common/common-pagination";
 import { useGetTasks } from "@/hooks/tasks/use-get-tasks";
@@ -14,6 +16,7 @@ interface TasksContentProps {
 }
 
 const TasksContent = ({ filters, search, onPageChange }: TasksContentProps) => {
+  const [taskToUpdate, setTaskToUpdate] = useState<Task | null>(null);
   const { data, isPending, error } = useGetTasks(filters);
   const tasks = data?.tasks ?? [];
 
@@ -22,7 +25,7 @@ const TasksContent = ({ filters, search, onPageChange }: TasksContentProps) => {
   };
 
   const handleTaskClick = (task: Task) => {
-    console.log("Selected task:", task);
+    setTaskToUpdate(task);
   };
 
   const normalizedSearch = search.trim().toLocaleLowerCase();
@@ -44,6 +47,15 @@ const TasksContent = ({ filters, search, onPageChange }: TasksContentProps) => {
 
   return (
     <div className="mt-6">
+      {taskToUpdate && (
+        <UpdateTaskDialog
+          key={taskToUpdate.id}
+          task={taskToUpdate}
+          onOpenChange={(open) => {
+            if (!open) setTaskToUpdate(null);
+          }}
+        />
+      )}
       {isPending ? (
         <TasksTabSkeleton />
       ) : error ? (
