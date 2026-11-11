@@ -15,7 +15,6 @@ function initials(name: string) {
       .join("")
       .toUpperCase()
   }
-
     return (
       <li className="rounded-xl border border-border/60 p-3">
         <div className="flex items-center justify-between gap-2">
@@ -49,4 +48,3 @@ function initials(name: string) {
       </li>
     )
   }
-
