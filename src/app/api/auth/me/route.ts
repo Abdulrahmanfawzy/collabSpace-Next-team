@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
-import { AUTH_TOKEN_COOKIE } from "@/features/auth/constants/auth.constants";
+import { auth } from "@/auth";
+import { authService, AuthApiError } from "@/features/auth/services/auth.service";
 
-import {
-  authService,
-  AuthApiError,
-} from "@/features/auth/services/auth.service";
 
 export async function GET() {
-  const cookieStore = await cookies();
-
-  const token = cookieStore.get(AUTH_TOKEN_COOKIE)?.value;
+  const session = await auth();
+  const token = session?.backendToken;
 
   if (!token) {
     return NextResponse.json(
@@ -19,33 +14,22 @@ export async function GET() {
         success: false,
         message: "Unauthenticated.",
       },
-      {
-        status: 401,
-      },
+      { status: 401 },
     );
   }
 
   try {
     const response = await authService.me(token);
 
-    return NextResponse.json(response, {
-      status: 200,
-    });
+    return NextResponse.json(response, { status: 200 });
   } catch (error) {
     if (error instanceof AuthApiError) {
-      
-      if (error.status === 401) {
-        cookieStore.delete(AUTH_TOKEN_COOKIE);
-      }
-
       return NextResponse.json(
         {
           success: false,
           message: error.message,
         },
-        {
-          status: error.status,
-        },
+        { status: error.status },
       );
     }
 
@@ -54,9 +38,7 @@ export async function GET() {
         success: false,
         message: "Unable to retrieve the current user.",
       },
-      {
-        status: 500,
-      },
+      { status: 500 },
     );
   }
 }

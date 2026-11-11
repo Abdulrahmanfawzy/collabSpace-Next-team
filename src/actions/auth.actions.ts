@@ -3,6 +3,8 @@
 import { cookies } from "next/headers";
 import { ZodError } from "zod";
 
+import { signIn, signOut } from "@/auth";
+
 import {
   loginSchema,
   registerSchema,
@@ -17,10 +19,7 @@ import {
   type ResetPasswordFormInput,
 } from "@/features/auth/schema/auth.schema";
 
-import {
-  AUTH_TOKEN_COOKIE,
-  RESET_OTP_COOKIE,
-} from "@/features/auth/constants/auth.constants";
+import { RESET_OTP_COOKIE } from "@/features/auth/constants/auth.constants";
 
 import {
   authService,
@@ -30,15 +29,16 @@ import {
 import type {
   AuthActionResult,
   AuthUser,
-  AuthSessionData,
   ForgotPasswordData,
   GoogleRedirectData,
 } from "@/features/auth/types/auth.types";
+
 
 interface ResetOtpSession {
   email: string;
   otp: string;
 }
+
 
 function validationFailure(error: ZodError): AuthActionResult<never> {
   return {
@@ -72,15 +72,6 @@ function cookieOptions() {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
   };
-}
-
-async function saveSession(session: AuthSessionData): Promise<void> {
-  const cookieStore = await cookies();
-
-  cookieStore.set(AUTH_TOKEN_COOKIE, session.token, {
-    ...cookieOptions(),
-    path: "/",
-  });
 }
 
 async function clearResetOtpCookie(): Promise<void> {
@@ -124,6 +115,7 @@ function readResetOtpSession(value?: string): ResetOtpSession | null {
   }
 }
 
+
 export async function loginAction(
   input: LoginInput,
 ): Promise<AuthActionResult<AuthUser>> {
@@ -136,7 +128,11 @@ export async function loginAction(
   try {
     const response = await authService.login(validation.data);
 
-    await saveSession(response.data);
+    await signIn("credentials", {
+      backendToken: response.data.token,
+      backendUser: JSON.stringify(response.data.user),
+      redirect: false,
+    });
 
     return {
       success: true,
@@ -147,6 +143,7 @@ export async function loginAction(
     return handleFailure(error);
   }
 }
+
 
 export async function registerAction(
   input: RegisterInput,
@@ -160,7 +157,11 @@ export async function registerAction(
   try {
     const response = await authService.register(validation.data);
 
-    await saveSession(response.data);
+    await signIn("credentials", {
+      backendToken: response.data.token,
+      backendUser: JSON.stringify(response.data.user),
+      redirect: false,
+    });
 
     return {
       success: true,
@@ -171,6 +172,7 @@ export async function registerAction(
     return handleFailure(error);
   }
 }
+
 
 export async function forgotPasswordAction(
   input: ForgotPasswordInput,
@@ -184,7 +186,6 @@ export async function forgotPasswordAction(
   try {
     const response = await authService.forgotPassword(validation.data);
 
-    // A new OTP invalidates the previous reset session.
     await clearResetOtpCookie();
 
     return {
@@ -196,6 +197,7 @@ export async function forgotPasswordAction(
     return handleFailure(error);
   }
 }
+
 
 export async function verifyResetOtpAction(
   input: VerifyResetOtpInput,
@@ -209,7 +211,6 @@ export async function verifyResetOtpAction(
   try {
     const response = await authService.verifyResetOtp(validation.data);
 
-    // Save OTP server-side instead of putting it in URL.
     await saveResetOtpSession({
       email: validation.data.email,
       otp: validation.data.otp,
@@ -224,6 +225,7 @@ export async function verifyResetOtpAction(
     return handleFailure(error);
   }
 }
+
 
 export async function resetPasswordAction(
   input: ResetPasswordFormInput,
@@ -269,7 +271,8 @@ export async function resetPasswordAction(
   try {
     const response = await authService.resetPassword(backendValidation.data);
 
-    cookieStore.delete(AUTH_TOKEN_COOKIE);
+    // Invalidate the Next-Auth session so the user must log in again.
+    await signOut({ redirect: false });
 
     await clearResetOtpCookie();
 
@@ -282,6 +285,7 @@ export async function resetPasswordAction(
     return handleFailure(error);
   }
 }
+
 
 export async function googleRedirectAction(): Promise<
   AuthActionResult<GoogleRedirectData>
@@ -299,30 +303,25 @@ export async function googleRedirectAction(): Promise<
   }
 }
 
+
 export async function logoutAction(): Promise<AuthActionResult<null>> {
-  const cookieStore = await cookies();
+  const { auth } = await import("@/auth");
 
-  const token = cookieStore.get(AUTH_TOKEN_COOKIE)?.value;
-
-  if (!token) {
-    return {
-      success: true,
-      message: "You are already logged out.",
-      data: null,
-    };
-  }
+  const session = await auth();
+  const token = session?.backendToken;
 
   try {
-    const response = await authService.logout(token);
-
-    return {
-      success: true,
-      message: response.message,
-      data: null,
-    };
-  } catch (error) {
-    return handleFailure(error);
+    if (token) {
+      await authService.logout(token);
+    }
+  } catch {
   } finally {
-    cookieStore.delete(AUTH_TOKEN_COOKIE);
+    await signOut({ redirect: false });
   }
+
+  return {
+    success: true,
+    message: "You have been logged out.",
+    data: null,
+  };
 }
