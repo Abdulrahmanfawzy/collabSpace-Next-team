@@ -47,14 +47,4 @@ export async function updateProjectAction(
 export async function deleteProjectAction(id: number) {
   return await deleteProject(id);
 }
-// ---------------- update project ----------------
-export async function updateProjectAction(
-  id: number,
-  payload: UpdateProjectPayload
-) {
-  return await updateProject(id, payload);
-}
-// ---------------- delete project ----------------
-export async function deleteProjectAction(id: number) {
-  return await deleteProject(id);
-}
+

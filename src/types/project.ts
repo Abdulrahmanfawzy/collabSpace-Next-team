@@ -11,7 +11,6 @@ export interface Project {
   start_date: string;
   deadline: string;
   status: "Planning" | "Pending" | "In Progress" | "On Hold" | "Completed" | "Cancelled";
-  status: "Planning" | "Pending" | "In Progress" | "On Hold" | "Completed" | "Cancelled";
   priority: "Low" | "Medium" | "High" | "Critical";
   progress_percentage: number;
   files_count: number;
@@ -185,7 +184,6 @@ export interface CreateProjectPayload {
   deadline: string;
   priority: "Low" | "Medium" | "High" | "Critical";
   status: Project["status"];
-  status: Project["status"];
   teams: number[];
   members: {
     user_id: number;
@@ -225,15 +223,7 @@ export interface UpdateProjectResponse {
   message: string;
   data: UpdatedProject;
 }
-export type UpdateProjectPayload = Pick<
-  CreateProjectPayload,
-  "name" | "description" | "start_date" | "deadline" | "status" | "priority"
->;
 
-export interface ProjectMutationResponse {
-  success: boolean;
-  message: string;
-}
 
 // -------------update project----------------
 
