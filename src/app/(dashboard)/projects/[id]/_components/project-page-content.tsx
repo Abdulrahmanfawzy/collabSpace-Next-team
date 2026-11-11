@@ -62,19 +62,12 @@ export default function ProjectPageContent({
     return <p className="py-6 text-sm text-gray-600">Project not found.</p>;
   }
 
-  const completedTasks = teams.reduce(
-    (total, team) => total + team.completed_tasks,
-    0
-  );
-  const totalTasks = teams.reduce((total, team) => total + team.total_tasks, 0);
+  const { completed: completedTasks, total: totalTasks } =
+    displayedProject.tasks_statistics;
   const progressPercentage =
-    areTeamsLoading || teamsError
-      ? displayedProject.progress_percentage
-      : totalTasks > 0
-        ? Math.round((completedTasks / totalTasks) * 1000) / 10
-        : teams.length > 0
-          ? 0
-          : displayedProject.progress_percentage;
+    totalTasks > 0
+      ? Math.round((completedTasks / totalTasks) * 1000) / 10
+      : 0;
 
   return (
     <main className="min-h-screen bg-bg-light">
