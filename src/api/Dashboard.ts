@@ -1,3 +1,4 @@
+import "server-only";
 import type { DashboardData } from "../features/Dashboard/types/typesDashboard";
 
 const getApiBaseUrl = () => {
@@ -12,8 +13,10 @@ const getApiBaseUrl = () => {
   }
   return baseUrl;
 };
-const getDashboard = async (): Promise<DashboardData> => {
-  const token = process.env.token;
+const getDashboard = async (token: string): Promise<DashboardData> => {
+  if (!token) {
+    throw new Error("Cannot fetch dashboard without an authenticated access token.");
+  }
   try {
     const response = await fetch(`${getApiBaseUrl()}/api/v1/dashboard`, {
       headers: {
@@ -21,6 +24,7 @@ const getDashboard = async (): Promise<DashboardData> => {
         Authorization: `Bearer ${token}`,
       },
       method: "GET",
+      cache: "no-store",
     });
 
     const payload = await response.json();

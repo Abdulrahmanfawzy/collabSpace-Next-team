@@ -1,8 +1,9 @@
 import Navbar from "@/components/layout/Navbar/Navbar";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { AUTH_TOKEN_COOKIE } from "@/features/auth/constants/auth.constants";
 import TaskStats from "@/features/Dashboard/components/TasksState";
 import ProjectOverview from "../../features/Dashboard/components/ProjectPoints";
-import { data, ticks } from "@/features/Dashboard/constants/DataState";
 import ProjectsAndFiles from "../../features/Dashboard/components/Items";
 import { files, meetings, members, projects, tasks, teams } from "../../constant/DataFiles";
 import { TasksAndTeams } from "../../features/Dashboard/components/TASKS";
@@ -15,18 +16,18 @@ export const metadata: Metadata = {
 };
 
 async function Dashboard() {
-  const items = await getDashboard()
-  const people = (n: number) =>
-    Array.from({ length: n }, (_, i) => ({ name: `Member ${i + 1}`, avatarUrl: `/avatars/${i + 1}.jpg` }))
-  console.log(items, "from Server Next js ");
-  //Mapping on data extract all data from api chart overview 
-  const DataChart = items.project_overview.data.map((chrt)=>(
-    {
-      month:chrt.month,
-      projects:chrt.projects,
-      completedTasks:chrt.completed_tasks
-    }
-  ))
+  const cookieStore = await cookies();
+  const token = cookieStore.get(AUTH_TOKEN_COOKIE)?.value;
+  if (!token) throw new Error("No authenticated session was found for the dashboard.");
+
+  const items = await getDashboard(token);
+  const chartData = items.project_overview.data.map((point) => ({
+    x: point.month_number - 1,
+    value: point.projects,
+  }));
+  const chartTicks = items.project_overview.data
+    .filter((point) => point.month_number % 2 === 1)
+    .map((point) => ({ x: point.month_number - 1, label: point.month }));
   
 
   return (
@@ -34,8 +35,8 @@ async function Dashboard() {
       <TaskStats items={items} />
       <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <ProjectOverview
-          data={DataChart}
-          ticks={ticks}
+          data={chartData}
+          ticks={chartTicks}
           projects={["All Projects", "Project A", "Project B"]}
           periods={["This Year", "Last Year"]}
 
