@@ -61,7 +61,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 });
 
 
-export async function getBackendToken(): Promise<string | null> {
-  const session = await auth();  
-  return session?.backendToken || null;
+/** Read the backend access token from the authenticated NextAuth server session. */
+export async function getAccessToken(): Promise<string | null> {
+  const session = await auth();
+  return session?.backendToken ?? null;
 }
+
+// Keep the existing helper name available to other server modules.
+export const getBackendToken = getAccessToken;

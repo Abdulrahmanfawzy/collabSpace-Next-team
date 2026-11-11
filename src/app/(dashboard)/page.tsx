@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getBackendToken } from "@/auth";
+import { getAccessToken } from "@/auth";
 import TaskStats from "@/features/Dashboard/components/TasksState";
 import ProjectOverview from "../../features/Dashboard/components/ProjectPoints";
 import ProjectsAndFiles from "../../features/Dashboard/components/Items";
@@ -13,10 +13,10 @@ export const metadata: Metadata = {
 };
 
 async function Dashboard() {
-  const token = await getBackendToken();
-  if (!token) throw new Error("No authenticated backend token was found for the dashboard.");
+  const accessToken = await getAccessToken();
+  if (!accessToken) throw new Error("No authenticated backend token was found for the dashboard.");
 
-  const items = await getDashboard(token);
+  const items = await getDashboard({ accessToken });
   const chartData = items.project_overview.data.map((point) => ({
     x: point.month_number - 1,
     value: point.projects,
