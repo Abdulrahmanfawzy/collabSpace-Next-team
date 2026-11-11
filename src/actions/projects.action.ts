@@ -5,6 +5,7 @@ import {
   assignProjectTeams,
   createProject,
   deleteProject,
+  deleteProjectTeam,
   getProjectOverview,
   getProjectTeams,
   getProjects,
@@ -38,6 +39,13 @@ export async function assignProjectTeamsAction(
   payload: AssignProjectTeamsPayload
 ) {
   return await assignProjectTeams(projectId, payload);
+}
+// ---------------- remove team from project ----------------
+export async function deleteProjectTeamAction(
+  projectId: number,
+  teamId: number
+) {
+  return await deleteProjectTeam(projectId, teamId);
 }
 // ---------------- create project ----------------
 export async function createProjectAction(

@@ -150,6 +150,31 @@ export async function assignProjectTeams(
   return result;
 }
 
+export async function deleteProjectTeam(
+  projectId: number,
+  teamId: number
+): Promise<ProjectMutationResponse> {
+  const token = process.env.token;
+  const response = await fetch(
+    `${API_URL}/api/v1/projects/${projectId}/teams/${teamId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }
+  );
+  const result: ProjectMutationResponse = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to remove team from project");
+  }
+
+  return result;
+}
+
 // ---------------- create project ----------------
 export async function createProject(
   payload: CreateProjectPayload

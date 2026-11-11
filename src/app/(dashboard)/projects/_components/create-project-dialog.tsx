@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { useCreateProject } from "@/hooks/projects/use-create-project";
 import { useAssignProjectTeams } from "@/hooks/projects/use-assign-project-teams";
+import { useDeleteProjectTeam } from "@/hooks/projects/use-delete-project-team";
 import { useUpdateProject } from "@/hooks/projects/use-update-project";
 import {
   createProjectSchema,
@@ -73,7 +74,10 @@ export function CreateProjectDialog({
   const { mutate: updateProject, isPending: isUpdating } = useUpdateProject();
   const { mutate: assignProjectTeams, isPending: isAssigningTeams } =
     useAssignProjectTeams();
-  const isPending = isCreating || isUpdating || isAssigningTeams;
+  const { mutate: deleteProjectTeam, isPending: isDeletingTeam } =
+    useDeleteProjectTeam();
+  const isPending =
+    isCreating || isUpdating || isAssigningTeams || isDeletingTeam;
 
   const form = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
@@ -483,22 +487,36 @@ export function CreateProjectDialog({
                       className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"
                     >
                       <span>{teamName ?? `Team ${teamId}`}</span>
-                      {(!project ||
-                        !project.teams.some((team) => team.id === teamId)) && (
-                        <button
-                          type="button"
-                          aria-label={`Remove ${teamName ?? `team ${teamId}`}`}
-                          className="rounded-full hover:bg-primary/10"
-                          onClick={() =>
+                      <button
+                        type="button"
+                        aria-label={`Remove ${teamName ?? `team ${teamId}`}`}
+                        className="rounded-full hover:bg-primary/10"
+                        onClick={() => {
+                          const isAlreadyAssigned =
+                            project?.teams.some((team) => team.id === teamId) ??
+                            false;
+
+                          if (!project || !isAlreadyAssigned) {
                             setTeamIds((current) =>
                               current.filter((id) => id !== teamId)
-                            )
+                            );
+                            return;
                           }
-                          disabled={isPending}
-                        >
-                          <X aria-hidden="true" size={14} />
-                        </button>
-                      )}
+
+                          deleteProjectTeam(
+                            { projectId: project.id, teamId },
+                            {
+                              onSuccess: () =>
+                                setTeamIds((current) =>
+                                  current.filter((id) => id !== teamId)
+                                ),
+                            }
+                          );
+                        }}
+                        disabled={isPending}
+                      >
+                        <X aria-hidden="true" size={14} />
+                      </button>
                     </li>
                   );
                 })}
