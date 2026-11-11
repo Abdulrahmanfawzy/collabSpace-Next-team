@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { TeamMember } from "../../../../../types/teams.types";
 import { BadgeCheck } from "lucide-react";
 
@@ -19,13 +18,17 @@ export const TeamMemberCard = ({
     <div className="flex items-center gap-2 border-b border-bg-label pb-4 mt-3 last:border-b-0">
       {/* Avatar */}
       <div className="relative h-10 w-10 shrink-0">
-        <Image
-          src={member.avatar}
-          alt={member.name}
-          width={40}
-          height={40}
-          className="h-10 w-10 shrink-0 rounded-full object-cover"
-        />
+        {member.avatar ? (
+          <img
+            src={typeof member.avatar === "string" ? member.avatar : member.avatar.src}
+            alt={member.name}
+            className="h-10 w-10 shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-600">
+            {member.name.charAt(0).toUpperCase()}
+          </span>
+        )}
         {/*------------------------------ Leader Badge------------------------------------ */}
         {isLeader && (
           <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-white">

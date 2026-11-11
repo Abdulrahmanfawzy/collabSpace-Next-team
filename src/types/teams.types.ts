@@ -4,7 +4,7 @@ export interface TeamMember {
   id: string;
   name: string;
   role: string;
-  avatar: string | StaticImageData;
+  avatar: string | StaticImageData | null;
   completedTasks: number;
   totalTasks: number;
 }

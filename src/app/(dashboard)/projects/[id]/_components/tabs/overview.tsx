@@ -5,26 +5,47 @@ import ProjectDetails from "../project-details"
 import TeamMembers from "../project-members"
 import ProjectProgress from "../project-progress"
 import OverviewProjectsSkeleton from "@/components/skeletons/overview-projects-skeleton"
-import { ProjectOverview } from "@/types/project"
+import type { ProjectAssignedTeam, ProjectOverview } from "@/types/project"
 
 
-const projectData = [
-  12500, 14615, 15769, 15577, 14423, 12308, 10000, 10000, 14231,
-  18846, 23077, 19423, 17500, 8654, 11923, 15577, 14615, 11731,
-  9808, 11923, 15962,
-].map((value, index) => ({
-  label: String(index),
-  value,
-}))
+
 
 interface OverviewTabProps {
   isLoading?: boolean;
   project: ProjectOverview;
+  teams: ProjectAssignedTeam[];
+  areTeamsLoading: boolean;
+  teamsError: Error | null;
+  progressPercentage: number;
+  completedTasks: number;
+  totalTasks: number;
+  year:number,
+  onYearChange: (year: number) => void;
 }
-const OverviewTab = ({ isLoading = false, project }: OverviewTabProps) => {
+const OverviewTab = ({
+  isLoading = false,
+  project,
+  teams,
+  areTeamsLoading,
+  teamsError,
+  progressPercentage,
+  completedTasks,
+  totalTasks,
+  year,
+  onYearChange,
+}: OverviewTabProps) => {
     if(isLoading){
         return (<OverviewProjectsSkeleton/>);
     }
+     const chartData = project.chart.data.map((item) => ({
+    label: item.month,
+    value: item.created_tasks,
+  }));
+
+  const maxValue = Math.max(
+    ...chartData.map((item) => item.value),
+    1
+  );
   return (
     <section className="my-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
        {/*------------------------ left section------------------------------------------------------ */}
@@ -35,18 +56,29 @@ const OverviewTab = ({ isLoading = false, project }: OverviewTabProps) => {
         />
          {/* --------------------------------------------------------------------------------------- */}
         <div className="space-y-6">
-          <AreaChart
+         <AreaChart
             title="Project overview"
-            data={projectData}
-            maxValue={25000}
+            data={chartData}
+            maxValue={maxValue}
             steps={5}
             height={155}
             color="#3B82F6"
-            xAxisLabels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+            xAxisLabels={project.chart.data.map((item) => item.month)}
+            valueFormatter={(value) => String(value)}
+            valueLabel="Created Tasks"
             filters={[
-              { label: "All Projects" },
-              { label: "This Year" },
+              {
+                label: "Year",
+                value: String(year),
+                options: [
+                  { label: "2025", value: "2025" },
+                  { label: "2026", value: "2026" },
+                  { label: "2027", value: "2027" },
+                ],
+                onChange: (value) => onYearChange(Number(value)),
+              },
             ]}
+          
           />
         </div>
       {/* ------------------------------------------------------------------------------------------ */}
@@ -55,9 +87,18 @@ const OverviewTab = ({ isLoading = false, project }: OverviewTabProps) => {
       {/*------------------------ right section------------------------------------------------------ */}
       <div className="flex flex-col gap-4">
         
-        <ProjectProgress project={project} />
+        <ProjectProgress
+          project={project}
+          progressPercentage={progressPercentage}
+          completedTasks={completedTasks}
+          totalTasks={totalTasks}
+        />
         
-        <TeamMembers teams={project.teams} members={project.direct_members} />
+        <TeamMembers
+          teams={teams}
+          isLoading={areTeamsLoading}
+          error={teamsError}
+        />
       </div>
     </section>
   )

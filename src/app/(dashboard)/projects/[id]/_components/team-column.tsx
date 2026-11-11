@@ -28,19 +28,25 @@ export const TeamColumn = ({ team }: TeamColumnProps) => {
     totalTasks > 0
       ? Math.round((completedTasks / totalTasks) * 100)
       : 0;
+  const teamStyleKey =
+    Object.keys(columnStyles).find((key) =>
+      team.name.toLowerCase().includes(key.toLowerCase())
+    ) ?? "";
+  const [headerClassName, progressClassName] =
+    columnStyles[teamStyleKey] ?? ["bg-gray-100", "text-gray-500"];
 
   return (
     <div className="min-w-0 overflow-hidden rounded-xl bg-white shadow-sm">
 
       {/*---------------------------------------- Column Header--------------------------------- */}
       <div
-        className={`flex items-center justify-between gap-2 p-5 ${columnStyles[team.name][0] ?? "bg-gray-100"}`}
+        className={`flex items-center justify-between gap-2 p-5 ${headerClassName}`}
       >
         <h2 className="text-xs font-semibold text-gray-900">
           {team.name}
         </h2>
 
-        <span className={`whitespace-nowrap text-xs font-medium ${columnStyles[team.name][1] ?? "text-gray-500"}`}>
+        <span className={`whitespace-nowrap text-xs font-medium ${progressClassName}`}>
           {percentage}% Completed
         </span>
       </div>

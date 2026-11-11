@@ -9,7 +9,9 @@ import {
   Flag,
   FolderPlus,
   LoaderCircle,
+  Pencil,
   Plus,
+  X,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -32,11 +34,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCreateProject } from "@/hooks/projects/use-create-project";
+import { useAssignProjectTeams } from "@/hooks/projects/use-assign-project-teams";
+import { useDeleteProjectTeam } from "@/hooks/projects/use-delete-project-team";
+import { useUpdateProject } from "@/hooks/projects/use-update-project";
 import {
   createProjectSchema,
   type CreateProjectFormValues,
 } from "@/schemas/projects/create-project.schema";
-import type { CreateProjectPayload } from "@/types/project";
+import type {
+  CreateProjectPayload,
+  Project,
+  UpdateProjectPayload,
+} from "@/types/project";
 
 const fieldClassName =
   "h-11 rounded-lg border-gray-200 bg-white px-3 text-sm shadow-none placeholder:text-gray-400 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10";
@@ -49,14 +58,26 @@ function FieldError({ message }: { message?: string }) {
 
 interface CreateProjectDialogProps {
   trigger: ReactNode;
+  project?: Project;
 }
 
 export function CreateProjectDialog({
   trigger,
+  project,
 }: CreateProjectDialogProps) {
   const [open, setOpen] = useState(false);
+  const [teamIds, setTeamIds] = useState<number[]>([]);
+  const [teamIdInput, setTeamIdInput] = useState("");
+  const [teamIdError, setTeamIdError] = useState("");
   const queryClient = useQueryClient();
-  const { mutate: createProject, isPending } = useCreateProject();
+  const { mutate: createProject, isPending: isCreating } = useCreateProject();
+  const { mutate: updateProject, isPending: isUpdating } = useUpdateProject();
+  const { mutate: assignProjectTeams, isPending: isAssigningTeams } =
+    useAssignProjectTeams();
+  const { mutate: deleteProjectTeam, isPending: isDeletingTeam } =
+    useDeleteProjectTeam();
+  const isPending =
+    isCreating || isUpdating || isAssigningTeams || isDeletingTeam;
 
   const form = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
@@ -73,10 +94,75 @@ export function CreateProjectDialog({
   const handleOpenChange = (nextOpen: boolean) => {
     if (isPending) return;
     setOpen(nextOpen);
-    if (!nextOpen) form.reset();
+    if (nextOpen && project) {
+      setTeamIds(project.teams.map((team) => team.id));
+      setTeamIdInput("");
+      setTeamIdError("");
+      form.reset({
+        name: project.name,
+        description: project.description ?? "",
+        start_date: project.start_date,
+        deadline: project.deadline,
+        status: project.status,
+        priority: project.priority,
+      });
+    } else if (nextOpen) {
+      setTeamIds([]);
+      setTeamIdInput("");
+      setTeamIdError("");
+    } else if (!nextOpen) {
+      form.reset();
+      setTeamIds([]);
+      setTeamIdInput("");
+      setTeamIdError("");
+    }
+  };
+
+  const handleAddTeam = () => {
+    const teamId = Number(teamIdInput);
+    if (!Number.isInteger(teamId) || teamId <= 0) {
+      setTeamIdError("Enter a valid team ID.");
+      return;
+    }
+    if (teamIds.includes(teamId)) {
+      setTeamIdError("This team is already selected.");
+      return;
+    }
+
+    setTeamIds((current) => [...current, teamId]);
+    setTeamIdInput("");
+    setTeamIdError("");
   };
 
   const handleSubmit = (values: CreateProjectFormValues) => {
+    if (project) {
+      const payload: UpdateProjectPayload = values;
+
+      updateProject(
+        { id: project.id, payload },
+        {
+          onSuccess: () => {
+            if (teamIds.length === 0) {
+              form.reset();
+              setOpen(false);
+              return;
+            }
+
+            assignProjectTeams(
+              { projectId: project.id, payload: { team_ids: teamIds } },
+              {
+                onSuccess: () => {
+                  form.reset();
+                  setOpen(false);
+                },
+              }
+            );
+          },
+        }
+      );
+      return;
+    }
+
     const payload: CreateProjectPayload = {
       ...values,
       teams: [],
@@ -84,8 +170,28 @@ export function CreateProjectDialog({
     };
 
     createProject(payload, {
-      onSuccess: async () => {
+      onSuccess: async (response) => {
         await queryClient.invalidateQueries({ queryKey: ["projects"] });
+        if (teamIds.length > 0) {
+          assignProjectTeams(
+            {
+              projectId: response.data.id,
+              payload: { team_ids: teamIds },
+            },
+            {
+              onSuccess: () => {
+                form.reset();
+                setOpen(false);
+              },
+              onError: () => {
+                form.reset();
+                setOpen(false);
+              },
+            }
+          );
+          return;
+        }
+
         form.reset();
         setOpen(false);
       },
@@ -102,15 +208,20 @@ export function CreateProjectDialog({
         <DialogHeader className="border-b border-gray-100 px-6 py-5 text-left sm:px-7">
           <div className="flex items-start gap-4">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <FolderPlus aria-hidden="true" size={21} />
+              {project ? (
+                <Pencil aria-hidden="true" size={20} />
+              ) : (
+                <FolderPlus aria-hidden="true" size={21} />
+              )}
             </div>
             <div className="space-y-1.5">
               <DialogTitle className="text-xl font-semibold tracking-tight text-gray-900">
-                Create a new project
+                {project ? "Edit project" : "Create a new project"}
               </DialogTitle>
               <DialogDescription className="text-sm leading-5 text-gray-500">
-                Set up the project details, timeline, and priorities to get
-                your team started.
+                {project
+                  ? "Update the project details, timeline, and priority."
+                  : "Set up the project details, timeline, and priorities to get your team started."}
               </DialogDescription>
             </div>
           </div>
@@ -270,9 +381,11 @@ export function CreateProjectDialog({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Planning">Planning</SelectItem>
+                        <SelectItem value="Pending">Pending</SelectItem>
                         <SelectItem value="In Progress">In Progress</SelectItem>
                         <SelectItem value="On Hold">On Hold</SelectItem>
                         <SelectItem value="Completed">Completed</SelectItem>
+                        <SelectItem value="Cancelled">Cancelled</SelectItem>
                       </SelectContent>
                     </Select>
                     <FieldError message={fieldState.error?.message} />
@@ -314,6 +427,103 @@ export function CreateProjectDialog({
             </div>
           </section>
 
+          <section className="space-y-4 border-t border-gray-100 pt-5">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900">
+                Assign teams
+              </h3>
+              <p className="mt-1 text-xs text-gray-500">
+                Add one or more team IDs to this project.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <div className="flex-1">
+                <Input
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={teamIdInput}
+                  onChange={(event) => {
+                    setTeamIdInput(event.target.value);
+                    setTeamIdError("");
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      handleAddTeam();
+                    }
+                  }}
+                  disabled={isPending}
+                  aria-label="Team ID"
+                  aria-invalid={Boolean(teamIdError)}
+                  placeholder="Enter a team ID"
+                  className={fieldClassName}
+                />
+                <FieldError message={teamIdError} />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 shrink-0 gap-2 rounded-lg"
+                onClick={handleAddTeam}
+                disabled={isPending}
+              >
+                <Plus aria-hidden="true" size={16} />
+                Add team
+              </Button>
+            </div>
+
+            {teamIds.length > 0 && (
+              <ul className="flex flex-wrap gap-2">
+                {teamIds.map((teamId) => {
+                  const teamName = project?.teams.find(
+                    (team) => team.id === teamId
+                  )?.name;
+
+                  return (
+                    <li
+                      key={teamId}
+                      className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"
+                    >
+                      <span>{teamName ?? `Team ${teamId}`}</span>
+                      <button
+                        type="button"
+                        aria-label={`Remove ${teamName ?? `team ${teamId}`}`}
+                        className="rounded-full hover:bg-primary/10"
+                        onClick={() => {
+                          const isAlreadyAssigned =
+                            project?.teams.some((team) => team.id === teamId) ??
+                            false;
+
+                          if (!project || !isAlreadyAssigned) {
+                            setTeamIds((current) =>
+                              current.filter((id) => id !== teamId)
+                            );
+                            return;
+                          }
+
+                          deleteProjectTeam(
+                            { projectId: project.id, teamId },
+                            {
+                              onSuccess: () =>
+                                setTeamIds((current) =>
+                                  current.filter((id) => id !== teamId)
+                                ),
+                            }
+                          );
+                        }}
+                        disabled={isPending}
+                      >
+                        <X aria-hidden="true" size={14} />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+
           <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-gray-500">
               <span className="text-destructive">*</span> Required fields
@@ -340,12 +550,12 @@ export function CreateProjectDialog({
                       className="animate-spin"
                       size={16}
                     />
-                    Creating…
+                    {project ? "Saving…" : "Creating…"}
                   </>
                 ) : (
                   <>
                     <Plus aria-hidden="true" size={16} />
-                    Create project
+                    {project ? "Save changes" : "Create project"}
                   </>
                 )}
               </Button>

@@ -2,10 +2,18 @@ import type { ProjectOverview } from "@/types/project"
 
 interface ProjectProgressProps {
   project: ProjectOverview
+  progressPercentage: number
+  completedTasks: number
+  totalTasks: number
 }
 
-const ProjectProgress = ({ project }: ProjectProgressProps) => {
-  const progress = Math.min(Math.max(project?.progress_percentage ?? 0, 0), 100)
+const ProjectProgress = ({
+  project,
+  progressPercentage,
+  completedTasks,
+  totalTasks,
+}: ProjectProgressProps) => {
+  const progress = Math.min(Math.max(progressPercentage, 0), 100)
   const tasks = project?.tasks_statistics
 
   return (
@@ -45,14 +53,14 @@ const ProjectProgress = ({ project }: ProjectProgressProps) => {
         {/* Percentage */}
         <div className="flex flex-col items-center -mt-1">
           <span className="text-sm font-semibold text-gray-800">
-            {project?.progress_percentage}%
+            {progressPercentage}%
           </span>
 
           <span className="text-[9px] text-gray-600">
             Project Completed
           </span>
           <span className="mt-1 text-[9px] text-gray-500">
-            Task completion rate: {tasks.completion_rate}%
+            Tasks completed: {completedTasks}/{totalTasks}
           </span>
         </div>
       </div>
