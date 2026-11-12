@@ -23,3 +23,17 @@ export function canViewProjectReports(roles: readonly UserRole[]): boolean {
     hasPermission([role], "view_project_reports"),
   );
 }
+
+export function canAccessChats(roles: readonly UserRole[]): boolean {
+  return roles.some((role) =>
+    hasPermission([role], "access_all_project_chats") ||
+    hasPermission([role], "access_project_chats") ||
+    hasPermission([role], "send_project_chat"),
+  );
+}
+
+export function canAccessMeetings(roles: readonly UserRole[]): boolean {
+  return roles.some((role) =>
+    hasPermission([role], "view_meetings") || hasPermission([role], "join_meeting"),
+  );
+}

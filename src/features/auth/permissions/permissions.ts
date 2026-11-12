@@ -68,6 +68,7 @@ export const managerPermissions = [
   "assign_project_member",
 
   "upload_file",
+  "access_project_chats",
 
   "view_meetings",
   "schedule_meeting",

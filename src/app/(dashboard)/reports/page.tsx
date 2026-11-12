@@ -1,9 +1,4 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import {
-  canViewProjectReports,
-  canViewReports,
-} from "@/features/auth/permissions/hasPermission";
+import { requireAnyPermission } from "@/features/auth/permissions/authorization";
 import getProjectReports from "@/api/projectReports.api";
 import ReportActivityChart from "@/features/Reports/components/ReportActivityChart";
 import ReportRequestForm from "@/features/Reports/components/ReportRequestForm";
@@ -12,21 +7,8 @@ import CompletionVsDeadline from "@/features/Reports/components/completionDeadli
 import ProjectsProgress from "@/features/Reports/components/ProjectProgress";
 
 export default async function ReportsPage() {
-  const session = await auth();
-  const accessToken = session?.backendToken;
-  if (!accessToken) throw new Error("No authenticated backend token was found for reports.");
-  const roles = session?.user?.roles ?? [];
-  if (!canViewReports(roles)) redirect("/");
-  if (!canViewProjectReports(roles)) {
-    return (
-      <section className="rounded-2xl bg-slate-50 p-6">
-        <h1 className="text-xl font-semibold">Personal Reports</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Your personal reports will appear here when the personal reports API is available.
-        </p>
-      </section>
-    );
-  }
+  const session = await requireAnyPermission("view_all_reports", "view_project_reports");
+  const accessToken = session.backendToken;
 
   const response = await getProjectReports(accessToken);
   const { chart, summary } = response.data;

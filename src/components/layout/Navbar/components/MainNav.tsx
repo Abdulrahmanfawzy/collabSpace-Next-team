@@ -12,7 +12,12 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import { MainNavItem } from "@/types/Types";
-import { canViewReports } from "@/features/auth/permissions/hasPermission";
+import {
+  canAccessChats,
+  canAccessMeetings,
+  canViewReports,
+  hasPermission,
+} from "@/features/auth/permissions/hasPermission";
 import type { UserRole } from "@/features/auth/types/auth.types";
 
 const links: MainNavItem[] = [
@@ -26,9 +31,25 @@ const links: MainNavItem[] = [
 
 export default function MainNav({ roles = [] }: { roles?: readonly UserRole[] }) {
   const pathname = usePathname();
-  const visibleLinks = links.filter(
-    ({ href }) => href !== "/reports" || canViewReports(roles),
-  );
+  const visibleLinks = links.flatMap((link) => {
+    if (link.href === "/") {
+      return hasPermission(roles, "view_dashboard") ? [link] : [];
+    }
+    if (link.href === "/projects") {
+      return hasPermission(roles, "view_projects") ? [link] : [];
+    }
+    if (link.href === "/tasks") {
+      return hasPermission(roles, "view_tasks") ? [link] : [];
+    }
+    if (link.href === "/chats") return canAccessChats(roles) ? [link] : [];
+    if (link.href === "/meetings") return canAccessMeetings(roles) ? [link] : [];
+    if (link.href === "/reports" && canViewReports(roles)) {
+      return roles.includes("Team Member")
+        ? [{ ...link, label: "Reports", href: "/profile", active: "Reports" }]
+        : [link];
+    }
+    return [];
+  });
 
 
   return (

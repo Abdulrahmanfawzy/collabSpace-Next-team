@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { auth } from "@/auth";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { hasPermission } from "@/features/auth/permissions/hasPermission";
 import TaskStats from "@/features/Dashboard/components/TasksState";
 import ProjectOverview from "../../features/Dashboard/components/ProjectPoints";
@@ -18,7 +18,7 @@ async function Dashboard() {
   const session = await auth();
   const accessToken = session?.backendToken;
   if (!accessToken) throw new Error("No authenticated backend token was found for the dashboard.");
-  if (!hasPermission(session?.user?.roles ?? [], "view_dashboard")) notFound();
+  if (!hasPermission(session?.user?.roles ?? [], "view_dashboard")) redirect("/forbidden");
 
   const items = await getDashboard({ accessToken });
   const chartData = items.project_overview.data.map((point) => ({
