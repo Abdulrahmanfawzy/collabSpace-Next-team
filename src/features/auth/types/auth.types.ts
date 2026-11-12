@@ -3,10 +3,12 @@ export interface ApiResponse<T> {
   message: string;
   data: T;
 }
+
 export type UserRole =
   | "Administrator"
   | "Project Manager"
   | "Team Member";
+
 export interface AuthUser {
   id: number;
   name: string;
