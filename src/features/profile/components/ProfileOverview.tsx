@@ -1,85 +1,62 @@
-import {
-  BriefcaseBusiness,
-  CheckCircle2,
-  Clock3,
-  FolderKanban,
-  MapPin,
-  Mail,
-  Phone,
-  File,
-} from "lucide-react";
 
-import {
-  profileActivities,
-  profileStats,
-  profileUser,
-} from "../data/mock-profile";
+import { File } from "lucide-react";
 
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  description,
-}: {
-  icon: typeof CheckCircle2;
-  label: string;
-  value: string;
-  description: string;
-}) {
-  return (
-    <article className="rounded-xl border border-border bg-white p-5">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-text-body">{label}</p>
-        <Icon className="size-5 text-primary" />
-      </div>
+import { RelativeTime } from "@/components/common/RelativeTime";
+import type { ApiProfileActivity } from "@/features/profile/types/profile.types";
 
-      <p className="mt-4 text-2xl font-semibold text-text-primary">{value}</p>
-
-      <p className="mt-1 text-xs text-text-muted">{description}</p>
-    </article>
-  );
+interface ProfileOverviewProps {
+  about: string | null;
+  activities: ApiProfileActivity[];
 }
 
-export function ProfileOverview() {
-
+export function ProfileOverview({
+  about,
+  activities,
+}: ProfileOverviewProps) {
   return (
     <div className="space-y-12">
-      <div className="flex flex-col max-w-[75%]">
+      <div className="flex max-w-[75%] flex-col">
         <section className="rounded-xl border p-5 md:p-6">
-          <h2 className="text-lg font-semibold text-text-primary">About</h2>
+          <h2 className="text-lg font-semibold text-text-primary">
+            About
+          </h2>
 
           <p className="mt-4 text-sm leading-7 text-text-body">
-            {profileUser.bio}
+            {about?.trim() || "No information available."}
           </p>
 
-          <section className="mt-6 ">
+          <section className="mt-6">
             <h2 className="text-lg font-semibold text-text-primary">
               Recent Activities
             </h2>
 
             <div className="mt-5 w-full space-y-4">
-              {profileActivities.map((activity) => (
-                <article
-                  key={activity.id}
-                  className="flex justify-between space-between"
-                >
-                  <div
-                    className="mt-1 flex w-fit space-x-1 
-                 "
+              {activities.length > 0 ? (
+                activities.map((activity) => (
+                  <article
+                    key={activity.id}
+                    className="flex justify-between gap-4"
                   >
-                    <File className="size-4 text-destructive/50 rounded-full bg-primary-50" />{" "}
-                    <h3 className="text-sm font-medium text-text-primary">
-                      {activity.title}
-                    </h3>
-                  </div>
+                    <div className="mt-1 flex w-fit items-start space-x-1">
+                      <File className="size-4 shrink-0 rounded-full bg-primary-50 text-destructive/50" />
 
-                  <div className="w-fit text-center">
-                    <p className="mt-1 text-xs text-text-body">
-                      {activity.timestamp}
-                    </p>
-                  </div>
-                </article>
-              ))}
+                      <h3 className="text-sm font-medium text-text-primary">
+                        {activity.description || activity.action}
+                      </h3>
+                    </div>
+
+                    <div className="w-fit shrink-0 text-center">
+                      <p className="mt-1 text-xs text-text-body">
+                        <RelativeTime date={activity.created_at} />
+                      </p>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <p className="text-sm text-text-body">
+                  No recent activities found.
+                </p>
+              )}
             </div>
           </section>
         </section>
