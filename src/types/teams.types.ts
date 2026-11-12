@@ -104,3 +104,18 @@ export interface TeamsParams {
   page?: number;
   per_page?: number;
 }
+
+export interface TeamMemberAssignment {
+  user_id: number;
+  role_in_team?: string;
+}
+
+export interface AssignTeamMembersPayload {
+  members: TeamMemberAssignment[];
+}
+
+export interface AssignTeamMembersResponse {
+  success: boolean;
+  message: string;
+  data: TeamListItem;
+}
