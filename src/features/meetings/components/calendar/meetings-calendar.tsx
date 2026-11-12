@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -47,8 +46,14 @@ export default function MeetingsCalendar() {
   };
 
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["meetings", "calendar"],
-    queryFn: () => meetingService.getMeetings(),
+    queryKey: ["meetings", "calendar", "all"],
+    queryFn: () =>
+      meetingService.getMeetings({
+        project_id: undefined, // يلغي default مشروع 1
+        time_filter: "all", // الماضي والقادم
+        per_page: 100,
+      }),
+    staleTime: 60 * 1000,
   });
 
   if (!isLoaded) return null;
@@ -92,6 +97,7 @@ export default function MeetingsCalendar() {
         <CalendarMood
           view={view}
           meetings={meetings}
+          currentDate={currentDate}
         />
       )}
     </div>

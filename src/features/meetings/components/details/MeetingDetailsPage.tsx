@@ -96,9 +96,7 @@ export default function MeetingDetailsPage({ meetingId }: Props) {
 
         {/* Right Section */}
         <aside className="min-w-0">
-          <MeetingTranscripts
-            participants={meeting.participants ?? []}
-          />
+         <MeetingTranscripts meetingId={meeting.id} />
         </aside>
 
       </div>

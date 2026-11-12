@@ -1,9 +1,10 @@
+
 "use client";
 
 import MeetingsHeader from "@/features/meetings/components/calendar/MeetingsHeader";
 import MeetingsCalendar from "@/features/meetings/components/calendar/meetings-calendar";
 import { useCreateMeeting } from "@/features/meetings/hooks/useMeetings";
-import type { CreateMeetingValues } from "@/features/meetings/components/calendar/AddMeetingDialog";
+import type { CreateMeetingValues } from "@/features/meetings/types/meeting.types";
 
 export default function MeetingsPage() {
   const createMeetingMutation = useCreateMeeting();

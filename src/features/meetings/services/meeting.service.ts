@@ -1,6 +1,5 @@
 
 import apiClient from "@/api/apiClient";
-import axios from "axios";
 import type {
   CreateMeetingValues,
   MeetingsResponse,
@@ -12,6 +11,18 @@ export interface GetMeetingsParams {
   time_filter?: "upcoming" | "past" | "all";
   per_page?: number;
 }
+
+export type UpdateMeetingValues = Partial<
+  Pick<
+    CreateMeetingValues,
+    | "title"
+    | "description"
+    | "meeting_date"
+    | "start_time"
+    | "end_time"
+    | "meeting_link"
+  >
+>;
 
 const DEFAULT_MEETINGS_PARAMS: GetMeetingsParams = {
   project_id: 1,
@@ -47,15 +58,22 @@ export const meetingService = {
   },
 
   // Create meeting
+  createMeeting: async (data: CreateMeetingValues) => {
+    const response = await apiClient.post("/meetings", data);
 
-  
-createMeeting: async (data: CreateMeetingValues) => {
-  const response = await apiClient.post(
-    "/meetings",
-    data
-  );
+    return response.data;
+  },
 
-  return response.data;
-},
+  // Update meeting
+  updateMeeting: async (
+    id: number,
+    data: UpdateMeetingValues,
+  ) => {
+    const response = await apiClient.put(
+      `/meetings/${id}`,
+      data,
+    );
 
+    return response.data;
+  },
 };

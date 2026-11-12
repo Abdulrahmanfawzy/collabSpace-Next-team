@@ -1,11 +1,12 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 import SummaryPanel from "@/features/meetings/components/details/SummaryPanel";
 import type { MeetingSummary } from "@/features/meetings/types/meeting.types";
+
 import NotesMeeting from "./NotesMeeting";
 import CommentsMeeting from "./CommentsMeeting";
 
@@ -30,7 +31,30 @@ export default function MeetingTabs({
   notes,
   comments,
 }: MeetingTabsProps) {
+  const storageKey = `meeting-${meetingId}-active-tab`;
+
   const [activeTab, setActiveTab] = useState<TabKey>("summary");
+
+  // Restore saved tab when meeting changes or component mounts
+  useEffect(() => {
+    const savedTab = localStorage.getItem(storageKey);
+
+    if (
+      savedTab === "summary" ||
+      savedTab === "note" ||
+      savedTab === "comments"
+    ) {
+      setActiveTab(savedTab);
+    } else {
+      setActiveTab("summary");
+    }
+  }, [storageKey]);
+
+  // Save selected tab
+  const handleTabChange = (tab: TabKey) => {
+    setActiveTab(tab);
+    localStorage.setItem(storageKey, tab);
+  };
 
   return (
     <div className="w-full">
@@ -44,7 +68,7 @@ export default function MeetingTabs({
           <button
             key={tab.key}
             type="button"
-            onClick={() => setActiveTab(tab.key)}
+            onClick={() => handleTabChange(tab.key)}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === tab.key
                 ? "bg-primary text-primary-foreground"
@@ -77,8 +101,8 @@ export default function MeetingTabs({
         )}
 
         {activeTab === "comments" && (
-          <CommentsMeeting  meetingId={Number(meetingId)} />
-)}
+          <CommentsMeeting meetingId={Number(meetingId)} />
+        )}
       </div>
     </div>
   );
