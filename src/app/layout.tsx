@@ -6,7 +6,8 @@ import { SessionProvider } from "next-auth/react";
 import "@/app/globals.css";
 
 import { cn } from "@/lib/utils";
-import type { Metadata } from "next";
+
+
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
 const inter = Inter({
