@@ -54,6 +54,11 @@ const OverviewTab = ({
     ...chartData.map((item) => item.value),
     1
   );
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 11 }, (_, index) => {
+    const optionYear = currentYear - 5 + index;
+    return { label: String(optionYear), value: String(optionYear) };
+  });
   return (
     <section className="my-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
        {/*------------------------ left section------------------------------------------------------ */}
@@ -79,11 +84,7 @@ const OverviewTab = ({
               {
                 label: "Year",
                 value: String(year),
-                options: [
-                  { label: "2025", value: "2025" },
-                  { label: "2026", value: "2026" },
-                  { label: "2027", value: "2027" },
-                ],
+                options: yearOptions,
                 onChange: (value) => onYearChange(Number(value)),
               },
             ]}

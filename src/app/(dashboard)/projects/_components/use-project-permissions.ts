@@ -14,6 +14,7 @@ export function useProjectPermissions() {
     canViewTasks: hasPermission(roles, "view_tasks"),
     canCreateTask: hasPermission(roles, "create_task"),
     canEditTask: hasPermission(roles, "edit_task"),
+    canDeleteTask: hasPermission(roles, "delete_task"),
     canUpdateTaskStatus: hasPermission(roles, "update_task_status"),
     canViewTeams: hasPermission(roles, "view_teams"),
     canUploadFile: hasPermission(roles, "upload_file"),

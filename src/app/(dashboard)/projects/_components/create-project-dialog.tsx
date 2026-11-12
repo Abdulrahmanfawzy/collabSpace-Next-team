@@ -37,6 +37,7 @@ import { useCreateProject } from "@/hooks/projects/use-create-project";
 import { useAssignProjectTeams } from "@/hooks/projects/use-assign-project-teams";
 import { useDeleteProjectTeam } from "@/hooks/projects/use-delete-project-team";
 import { useUpdateProject } from "@/hooks/projects/use-update-project";
+import { useGetTeams } from "@/hooks/teams/use-get-teams";
 import {
   createProjectSchema,
   type CreateProjectFormValues,
@@ -44,6 +45,7 @@ import {
 import type {
   CreateProjectPayload,
   Project,
+  ProjectTeam,
   UpdateProjectPayload,
 } from "@/types/project";
 import { useProjectPermissions } from "./use-project-permissions";
@@ -67,15 +69,27 @@ export function CreateProjectDialog({
   project,
 }: CreateProjectDialogProps) {
   const [open, setOpen] = useState(false);
-  const [teamIds, setTeamIds] = useState<number[]>([]);
-  const [teamIdInput, setTeamIdInput] = useState("");
-  const [teamIdError, setTeamIdError] = useState("");
+  const [selectedTeams, setSelectedTeams] = useState<ProjectTeam[]>([]);
+  const [teamPage, setTeamPage] = useState(1);
   const queryClient = useQueryClient();
   const {
     canCreateProject,
     canEditProject,
     canAssignProjectMember,
   } = useProjectPermissions();
+  const {
+    data: teamsResponse,
+    isPending: areTeamsLoading,
+    isPlaceholderData: isTeamsPlaceholderData,
+    error: teamsError,
+    refetch: refetchTeams,
+  } = useGetTeams(
+    { page: teamPage, per_page: 15 },
+    { enabled: open && canAssignProjectMember }
+  );
+  const availableTeams = teamsResponse?.data.data ?? [];
+  const teamPagination = teamsResponse?.data.meta;
+  const teamIds = selectedTeams.map((team) => team.id);
   const { mutate: createProject, isPending: isCreating } = useCreateProject();
   const { mutate: updateProject, isPending: isUpdating } = useUpdateProject();
   const { mutate: assignProjectTeams, isPending: isAssigningTeams } =
@@ -101,9 +115,8 @@ export function CreateProjectDialog({
     if (isPending) return;
     setOpen(nextOpen);
     if (nextOpen && project) {
-      setTeamIds(project.teams.map((team) => team.id));
-      setTeamIdInput("");
-      setTeamIdError("");
+      setSelectedTeams(project.teams);
+      setTeamPage(1);
       form.reset({
         name: project.name,
         description: project.description ?? "",
@@ -113,31 +126,25 @@ export function CreateProjectDialog({
         priority: project.priority,
       });
     } else if (nextOpen) {
-      setTeamIds([]);
-      setTeamIdInput("");
-      setTeamIdError("");
+      setSelectedTeams([]);
+      setTeamPage(1);
     } else if (!nextOpen) {
       form.reset();
-      setTeamIds([]);
-      setTeamIdInput("");
-      setTeamIdError("");
+      setSelectedTeams([]);
+      setTeamPage(1);
     }
   };
 
-  const handleAddTeam = () => {
-    const teamId = Number(teamIdInput);
-    if (!Number.isInteger(teamId) || teamId <= 0) {
-      setTeamIdError("Enter a valid team ID.");
-      return;
-    }
-    if (teamIds.includes(teamId)) {
-      setTeamIdError("This team is already selected.");
-      return;
-    }
-
-    setTeamIds((current) => [...current, teamId]);
-    setTeamIdInput("");
-    setTeamIdError("");
+  const handleTeamSelection = (team: ProjectTeam, selected: boolean) => {
+    setSelectedTeams((current) => {
+      if (!selected) {
+        return current.filter(({ id }) => id !== team.id);
+      }
+      if (current.some(({ id }) => id === team.id)) {
+        return current;
+      }
+      return [...current, team];
+    });
   };
 
   const handleSubmit = (values: CreateProjectFormValues) => {
@@ -450,54 +457,108 @@ export function CreateProjectDialog({
                 Assign teams
               </h3>
               <p className="mt-1 text-xs text-gray-500">
-                Add one or more team IDs to this project.
+                Choose one or more teams by name.
               </p>
             </div>
 
-            <div className="flex items-start gap-2">
-              <div className="flex-1">
-                <Input
-                  type="number"
-                  min={1}
-                  step={1}
-                  value={teamIdInput}
-                  onChange={(event) => {
-                    setTeamIdInput(event.target.value);
-                    setTeamIdError("");
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      handleAddTeam();
-                    }
-                  }}
-                  disabled={isPending}
-                  aria-label="Team ID"
-                  aria-invalid={Boolean(teamIdError)}
-                  placeholder="Enter a team ID"
-                  className={fieldClassName}
-                />
-                <FieldError message={teamIdError} />
+            <div className="space-y-3">
+              <div className="max-h-52 space-y-1 overflow-y-auto rounded-lg border border-gray-200 bg-white p-2">
+                {areTeamsLoading && (
+                  <p className="p-3 text-sm text-gray-500">Loading teams...</p>
+                )}
+
+                {teamsError && (
+                  <div className="flex items-center justify-between gap-3 p-3">
+                    <p role="alert" className="text-sm text-destructive">
+                      Failed to load teams: {teamsError.message}
+                    </p>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void refetchTeams()}
+                    >
+                      Retry
+                    </Button>
+                  </div>
+                )}
+
+                {!areTeamsLoading &&
+                  !teamsError &&
+                  availableTeams.map((team) => (
+                    <label
+                      key={team.id}
+                      className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 hover:bg-gray-50"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={teamIds.includes(team.id)}
+                        onChange={(event) =>
+                          handleTeamSelection(team, event.target.checked)
+                        }
+                        disabled={isPending || isTeamsPlaceholderData}
+                        className="h-4 w-4 accent-primary"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium text-gray-800">
+                          {team.name}
+                        </span>
+                        <span className="block text-xs text-gray-500">
+                          {team.members_count} members
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+
+                {!areTeamsLoading &&
+                  !teamsError &&
+                  availableTeams.length === 0 && (
+                    <p className="p-3 text-sm text-gray-500">
+                      No teams available.
+                    </p>
+                  )}
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                className="h-11 shrink-0 gap-2 rounded-lg"
-                onClick={handleAddTeam}
-                disabled={isPending}
-              >
-                <Plus aria-hidden="true" size={16} />
-                Add team
-              </Button>
+
+              {teamPagination && teamPagination.last_page > 1 && (
+                <div className="flex items-center justify-between">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setTeamPage((page) => page - 1)}
+                    disabled={
+                      teamPage <= 1 ||
+                      areTeamsLoading ||
+                      isTeamsPlaceholderData
+                    }
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-xs text-gray-500">
+                    {isTeamsPlaceholderData
+                      ? `Loading page ${teamPage}...`
+                      : `Page ${teamPagination.current_page} of ${teamPagination.last_page}`}
+                  </span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setTeamPage((page) => page + 1)}
+                    disabled={
+                      teamPage >= teamPagination.last_page ||
+                      areTeamsLoading ||
+                      isTeamsPlaceholderData
+                    }
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </div>
 
-            {teamIds.length > 0 && (
+            {selectedTeams.length > 0 && (
               <ul className="flex flex-wrap gap-2">
-                {teamIds.map((teamId) => {
-                  const teamName = project?.teams.find(
-                    (team) => team.id === teamId
-                  )?.name;
-
+                {selectedTeams.map(({ id: teamId, name: teamName }) => {
                   return (
                     <li
                       key={teamId}
@@ -514,8 +575,8 @@ export function CreateProjectDialog({
                             false;
 
                           if (!project || !isAlreadyAssigned) {
-                            setTeamIds((current) =>
-                              current.filter((id) => id !== teamId)
+                            setSelectedTeams((current) =>
+                              current.filter((team) => team.id !== teamId)
                             );
                             return;
                           }
@@ -524,8 +585,8 @@ export function CreateProjectDialog({
                             { projectId: project.id, teamId },
                             {
                               onSuccess: () =>
-                                setTeamIds((current) =>
-                                  current.filter((id) => id !== teamId)
+                                setSelectedTeams((current) =>
+                                  current.filter((team) => team.id !== teamId)
                                 ),
                             }
                           );

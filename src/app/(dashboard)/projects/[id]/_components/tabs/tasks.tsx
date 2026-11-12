@@ -36,6 +36,7 @@ const TasksTab = ({
   const {
     canCreateTask,
     canEditTask,
+    canDeleteTask,
     canUpdateTaskStatus,
   } = useProjectPermissions();
   const queryKey = ["project-kanban", projectId];
@@ -105,6 +106,8 @@ const TasksTab = ({
         columns={data?.columns ?? []}
         onAddTask={canCreateTask ? handleAddTask : undefined}
         onTaskClick={canEditTask ? handleTaskClick : undefined}
+        canEditTask={canEditTask}
+        canDeleteTask={canDeleteTask}
         onTaskMove={canUpdateTaskStatus ? handleTaskMove : undefined}
       />
       {canCreateTask && (

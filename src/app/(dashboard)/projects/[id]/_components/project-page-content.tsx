@@ -16,7 +16,7 @@ interface ProjectPageContentProps {
 export default function ProjectPageContent({
   projectId,
 }: ProjectPageContentProps) {
-  const [year, setYear] = useState(2025);
+  const [year, setYear] = useState(() => new Date().getFullYear());
   const [period, setPeriod] = useState<"year">("year");
   const [lastProject, setLastProject] = useState<{
     id: number;

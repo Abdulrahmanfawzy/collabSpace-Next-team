@@ -10,6 +10,8 @@ interface TaskColumnProps {
   column: TaskColumnType
   onAddTask?: (status: TaskColumnType["id"]) => void
   onTaskClick?: (task: Task) => void
+  canEditTask: boolean
+  canDeleteTask: boolean
   enableDragAndDrop: boolean
 }
 
@@ -24,6 +26,8 @@ export const TaskColumn = ({
   column,
   onAddTask,
   onTaskClick,
+  canEditTask,
+  canDeleteTask,
   enableDragAndDrop,
 }: TaskColumnProps) => {
   const { setNodeRef } = useDroppable({
@@ -57,9 +61,9 @@ export const TaskColumn = ({
       {/*---------------- Column Content-------------------- */}
       <div className="flex flex-col gap-3 p-3">
 
-        <AddTaskButton
-          onClick={() => onAddTask?.(column.id)}
-        />
+        {onAddTask && (
+          <AddTaskButton onClick={() => onAddTask(column.id)} />
+        )}
 
         <SortableContext
           items={column.tasks.map((task) => task.id)}
@@ -70,6 +74,8 @@ export const TaskColumn = ({
               key={task.id}
               task={task}
               onClick={onTaskClick}
+              canEditTask={canEditTask}
+              canDeleteTask={canDeleteTask}
               draggable={enableDragAndDrop}
               index={index}
             />

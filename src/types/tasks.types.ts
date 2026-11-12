@@ -61,6 +61,8 @@ export interface TaskBoardProps {
   columns: TaskColumn[]
   onAddTask?: (status: TaskStatus) => void
   onTaskClick?: (task: Task) => void
+  canEditTask?: boolean
+  canDeleteTask?: boolean
   onTaskMove?: (
     taskId: string,
     status: TaskStatus,
