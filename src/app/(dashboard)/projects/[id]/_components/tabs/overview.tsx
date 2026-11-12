@@ -24,6 +24,7 @@ interface OverviewTabProps {
   isChartLoading?: boolean;
   chartError?: Error | null;
   canViewTeams?: boolean;
+  canManageTeams?: boolean;
 }
 const OverviewTab = ({
   isLoading = false,
@@ -39,6 +40,7 @@ const OverviewTab = ({
   isChartLoading = false,
   chartError = null,
   canViewTeams = true,
+  canManageTeams = false,
 }: OverviewTabProps) => {
     if(isLoading){
         return (<OverviewProjectsSkeleton/>);
@@ -108,7 +110,10 @@ const OverviewTab = ({
         
         {canViewTeams && (
           <TeamMembers
+            projectId={project.id}
             teams={teams}
+            availableMembers={project.direct_members}
+            canManageMembers={canManageTeams}
             isLoading={areTeamsLoading}
             error={teamsError}
           />

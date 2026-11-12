@@ -119,3 +119,9 @@ export interface AssignTeamMembersResponse {
   message: string;
   data: TeamListItem;
 }
+
+export interface DeleteTeamMemberResponse {
+  success: boolean;
+  message: string;
+  data: TeamListItem;
+}

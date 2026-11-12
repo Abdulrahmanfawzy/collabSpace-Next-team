@@ -7,6 +7,7 @@ import type { AssignTeamMembersPayload } from "@/types/teams.types";
 
 interface AssignTeamMembersVariables {
   teamId: number;
+  projectId?: number;
   payload: AssignTeamMembersPayload;
 }
 
@@ -16,9 +17,18 @@ export function useAssignTeamMembers() {
   return useMutation({
     mutationFn: ({ teamId, payload }: AssignTeamMembersVariables) =>
       assignTeamMembersAction(teamId, payload),
-    onSuccess: async (response) => {
+    onSuccess: async (response, { projectId }) => {
       toast.success(response.message);
-      await queryClient.invalidateQueries({ queryKey: ["teams"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["teams"] }),
+        ...(projectId
+          ? [
+              queryClient.invalidateQueries({
+                queryKey: ["project-teams", projectId],
+              }),
+            ]
+          : []),
+      ]);
     },
     onError: (error) => {
       toast.error(error.message || "Failed to assign team members");

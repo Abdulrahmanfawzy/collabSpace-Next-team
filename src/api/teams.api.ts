@@ -8,6 +8,7 @@ import type {
   TeamsResponse,
   AssignTeamMembersPayload,
   AssignTeamMembersResponse,
+  DeleteTeamMemberResponse,
 } from "@/types/teams.types";
 
 const API_URL = process.env.API;
@@ -119,6 +120,37 @@ export async function assignTeamMembers(
       .join(" ");
 
     throw new Error(message || "Failed to assign team members");
+  }
+
+  return result;
+}
+
+export async function deleteTeamMember(
+  teamId: number,
+  userId: number
+): Promise<DeleteTeamMemberResponse> {
+  const token = await getBackendToken();
+
+  if (!token) {
+    throw new Error("You must be signed in to remove team members.");
+  }
+
+  const response = await fetch(
+    `${API_URL}/api/v1/teams/${teamId}/members/${userId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    }
+  );
+
+  const result: DeleteTeamMemberResponse = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Failed to remove team member");
   }
 
   return result;

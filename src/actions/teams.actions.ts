@@ -2,6 +2,7 @@
 
 import {
   assignTeamMembers,
+  deleteTeamMember,
   getTeamRoles,
   getTeams,
 } from "@/api/teams.api";
@@ -23,4 +24,8 @@ export async function assignTeamMembersAction(
   payload: AssignTeamMembersPayload
 ) {
   return assignTeamMembers(teamId, payload);
+}
+
+export async function deleteTeamMemberAction(teamId: number, userId: number) {
+  return deleteTeamMember(teamId, userId);
 }

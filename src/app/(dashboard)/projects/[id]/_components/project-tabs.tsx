@@ -48,7 +48,8 @@ const ProjectTabs = ({
   isTeamsLoading = false,
   isFilesLoading = false,
 }: ProjectTabsProps) => {
-  const { canViewTasks, canViewTeams } = useProjectPermissions();
+  const { canViewTasks, canViewTeams, canAssignProjectMember } =
+    useProjectPermissions();
   const tabs = [
     "Overview",
     ...(canViewTasks ? ["Tasks"] : []),
@@ -72,6 +73,7 @@ const ProjectTabs = ({
           onYearChange={onYearChange}
           isChartLoading={isChartLoading}
           chartError={chartError}
+          canManageTeams={canAssignProjectMember}
         />
       ),
     },
