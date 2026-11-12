@@ -1,8 +1,14 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+
 import SummaryPanel from "@/features/meetings/components/details/SummaryPanel";
+import type { MeetingSummary } from "@/features/meetings/types/meeting.types";
+
+import NotesMeeting from "./NotesMeeting";
+import CommentsMeeting from "./CommentsMeeting";
 
 type TabKey = "summary" | "note" | "comments";
 
@@ -13,52 +19,90 @@ const TABS: { key: TabKey; label: string }[] = [
 ];
 
 interface MeetingTabsProps {
-  keyPoints: string[];
-  notes?: React.ReactNode;
-  comments?: React.ReactNode;
+  meetingId: string;
+  summary: MeetingSummary | null;
+  notes?: ReactNode;
+  comments?: ReactNode;
 }
 
 export default function MeetingTabs({
-  keyPoints,
+  meetingId,
+  summary,
   notes,
   comments,
 }: MeetingTabsProps) {
+  const storageKey = `meeting-${meetingId}-active-tab`;
+
   const [activeTab, setActiveTab] = useState<TabKey>("summary");
+
+  // Restore saved tab when meeting changes or component mounts
+  useEffect(() => {
+    const savedTab = localStorage.getItem(storageKey);
+
+    if (
+      savedTab === "summary" ||
+      savedTab === "note" ||
+      savedTab === "comments"
+    ) {
+      setActiveTab(savedTab);
+    } else {
+      setActiveTab("summary");
+    }
+  }, [storageKey]);
+
+  // Save selected tab
+  const handleTabChange = (tab: TabKey) => {
+    setActiveTab(tab);
+    localStorage.setItem(storageKey, tab);
+  };
 
   return (
     <div className="w-full">
-      <div className="flex gap-2   p-4">
-      {TABS.map((tab) => (
-  <button
-    key={tab.key}
-    type="button"
-    onClick={() => setActiveTab(tab.key)}
-    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-      activeTab === tab.key
-        ? "bg-primary text-primary-foreground"
-        : "border border-border text-foreground hover:bg-muted"
-    }`}
-    role="tab"
-    aria-selected={activeTab === tab.key}
-    aria-controls="meeting-tab-panel"
-    id={`tab-${tab.key}`}
-    tabIndex={activeTab === tab.key ? 0 : -1}
-  >
-    {tab.label}
-  </button>
-))}
+      {/* Tabs Navigation */}
+      <div
+        className="flex gap-2 p-4"
+        role="tablist"
+        aria-label="Meeting details tabs"
+      >
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => handleTabChange(tab.key)}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === tab.key
+                ? "bg-primary text-primary-foreground"
+                : "border border-border text-foreground hover:bg-muted"
+            }`}
+            role="tab"
+            aria-selected={activeTab === tab.key}
+            aria-controls="meeting-tab-panel"
+            id={`tab-${tab.key}`}
+            tabIndex={activeTab === tab.key ? 0 : -1}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      <div className="mt-4">
+      {/* Tab Content */}
+      <div
+        className="mt-4"
+        role="tabpanel"
+        id="meeting-tab-panel"
+        aria-labelledby={`tab-${activeTab}`}
+      >
         {activeTab === "summary" && (
-          <SummaryPanel keyPoints={keyPoints} />
+          <SummaryPanel summary={summary} />
         )}
 
-        {activeTab === "note" &&
-          (notes ?? <p>No notes yet.</p>)}
+        {activeTab === "note" && (
+          <NotesMeeting meetingId={Number(meetingId)} />
+        )}
 
-        {activeTab === "comments" &&
-          (comments ?? <p>No comments yet.</p>)}
+        {activeTab === "comments" && (
+          <CommentsMeeting meetingId={Number(meetingId)} />
+        )}
       </div>
     </div>
   );

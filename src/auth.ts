@@ -5,6 +5,8 @@ import Credentials from "next-auth/providers/credentials";
 import type { AuthUser } from "@/features/auth/types/auth.types";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+
   providers: [
     Credentials({
       credentials: {
@@ -16,7 +18,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const token = credentials?.backendToken as string | undefined;
         const userJson = credentials?.backendUser as string | undefined;
 
-        if (!token || !userJson) return null;
+        if (
+          typeof token !== "string" ||
+          token.trim() === "" ||
+          typeof userJson !== "string" ||
+          userJson.trim() === ""
+        ) {
+          return null;
+        }
 
         try {
           const user = JSON.parse(userJson) as AuthUser;
@@ -49,13 +58,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     session({ session, token }) {
-      session.backendToken = token.backendToken as string;
+      session.backendToken =
+        typeof token.backendToken === "string"
+          ? token.backendToken
+          : "";
 
-      if (token.backendUser) {
+      if (typeof token.backendUser === "string") {
         try {
-          session.user = JSON.parse(
-            token.backendUser as string
-          ) as AuthUser;
+          session.user = JSON.parse(token.backendUser) as AuthUser;
         } catch {
           console.error("Failed to parse backend user from session.");
         }
@@ -76,5 +86,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
 export async function getBackendToken(): Promise<string | null> {
   const session = await auth();
-  return session?.backendToken ?? null;
+  return session?.backendToken || null;
 }

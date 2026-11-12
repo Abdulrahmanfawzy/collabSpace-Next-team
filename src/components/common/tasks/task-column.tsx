@@ -1,13 +1,18 @@
-import { Dot, MoreVertical } from "lucide-react"
+import { Dot } from "lucide-react"
+import { useDroppable } from "@dnd-kit/core"
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 
 import { AddTaskButton } from "./add-task-button"
 import { TaskCard } from "./task-card"
-import type{TaskColumn as TaskColumnType, Task } from "../../../types/tasks.types"
+import type { TaskColumn as TaskColumnType, Task } from "../../../types/tasks.types"
 
 interface TaskColumnProps {
   column: TaskColumnType
   onAddTask?: (status: TaskColumnType["id"]) => void
   onTaskClick?: (task: Task) => void
+  canEditTask: boolean
+  canDeleteTask: boolean
+  enableDragAndDrop: boolean
 }
 
 const columnStyles = {
@@ -21,9 +26,21 @@ export const TaskColumn = ({
   column,
   onAddTask,
   onTaskClick,
+  canEditTask,
+  canDeleteTask,
+  enableDragAndDrop,
 }: TaskColumnProps) => {
+  const { setNodeRef } = useDroppable({
+    id: `column:${column.id}`,
+    data: { type: "column", status: column.id },
+    disabled: !enableDragAndDrop,
+  })
+
   return (
-    <div className="min-w-0 overflow-hidden rounded-xl border border-gray-100 bg-white">
+    <div
+      ref={setNodeRef}
+      className="min-w-0 self-start overflow-hidden rounded-xl border border-gray-100 bg-white"
+    >
 
       {/*---------------- Column Header-------------------- */}
       <div
@@ -36,25 +53,31 @@ export const TaskColumn = ({
         </h2>
        </div>
 
-        <button type="button" aria-label="Column options">
-          <MoreVertical size={16} />
-        </button>
       </div>
 
       {/*---------------- Column Content-------------------- */}
       <div className="flex flex-col gap-3 p-3">
 
-        <AddTaskButton
-          onClick={() => onAddTask?.(column.id)}
-        />
+        {onAddTask && (
+          <AddTaskButton onClick={() => onAddTask(column.id)} />
+        )}
 
-        {column.tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onClick={onTaskClick}
-          />
-        ))}
+        <SortableContext
+          items={column.tasks.map((task) => task.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {column.tasks.map((task, index) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onClick={onTaskClick}
+              canEditTask={canEditTask}
+              canDeleteTask={canDeleteTask}
+              draggable={enableDragAndDrop}
+              index={index}
+            />
+          ))}
+        </SortableContext>
 
       </div>
     </div>

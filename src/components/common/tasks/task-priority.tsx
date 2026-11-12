@@ -6,6 +6,7 @@ interface TaskPriorityProps {
 }
 
 const priorityStyles = {
+  critical: "bg-red-100 text-red-700",
   high: "bg-red-50 text-red-500",
   medium: "bg-yellow-50 text-yellow-600",
   low: "bg-[#EAF6EA] text-green-600",
