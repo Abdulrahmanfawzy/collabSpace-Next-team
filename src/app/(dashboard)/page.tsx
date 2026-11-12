@@ -29,22 +29,29 @@ async function Dashboard() {
   return (
     <div className="flex flex-col gap-6 pt-2 ">
       <TaskStats items={items} />
-      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
-        <ProjectOverview
-          data={chartData}
-          ticks={chartTicks}
-          projects={["All Projects", ...items.active_projects.items.map((project) => project.name)]}
-          periods={[items.project_overview.period]}
+      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-4">
+  <div className="min-w-0 lg:col-span-2">
+    <ProjectOverview
+      data={chartData}
+      ticks={chartTicks}
+      projects={[
+        "All Projects",
+        ...items.active_projects.items.map((project) => project.name),
+      ]}
+      periods={[items.project_overview.period]}
+    />
+  </div>
 
-        />
-        <ProjectsAndFiles
-          projectsHref="/projects"
-          filesHref="/files"
-          projects={items.active_projects.items}
-          files={items.recent_files.items}
-        />
-      </div>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+  <div className="min-w-0 lg:col-span-2">
+    <ProjectsAndFiles
+      projectsHref="/projects"
+      filesHref="/files"
+      projects={items.active_projects.items}
+      files={items.recent_files.items}
+    />
+  </div>
+</div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4 mb-8">
         <TasksAndTeams
           tasks={items.tasks.items}
           teams={items.teams.items}

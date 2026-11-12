@@ -17,7 +17,7 @@ export function ProjectsAndFiles({
   filesHref,
 }: ProjectsAndFilesProps) {
   return (
-    <div className="contents">
+    <div className="grid min-w-0 grid-cols-1 gap-6 md:grid-cols-2">
       <ActiveProjects projects={projects} viewAllHref={projectsHref} />
       <RecentFiles files={files} viewAllHref={filesHref} />
     </div>

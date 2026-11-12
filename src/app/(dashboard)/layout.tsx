@@ -31,7 +31,7 @@ export default async function DashboardLayout({
   const queryClient = new QueryClient();
 
   try {
-    const response = await authService.me(session.backendToken);
+    const response = await authService.me(accessToken);
 
     queryClient.setQueryData(
       authQueryKeys.currentUser,
