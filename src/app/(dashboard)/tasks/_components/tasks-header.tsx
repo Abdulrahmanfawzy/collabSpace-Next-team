@@ -30,6 +30,7 @@ interface TasksHeaderProps {
   onSearchChange: (value: string) => void;
   onApply: () => boolean;
   onReset: () => void;
+  canCreateTask: boolean;
 }
 
 const statusOptions = [
@@ -61,6 +62,7 @@ const TasksHeader = ({
   onSearchChange,
   onApply,
   onReset,
+  canCreateTask,
 }: TasksHeaderProps) => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
@@ -119,23 +121,27 @@ const TasksHeader = ({
           </Button>
         </div>
 
-        <Button
-          type="button"
-          variant="default"
-          size="default"
-          className="shrink-0 rounded-3xl"
-          onClick={() => setCreateTaskOpen(true)}
-        >
-          Create Task
-          <Plus />
-        </Button>
+        {canCreateTask && (
+          <Button
+            type="button"
+            variant="default"
+            size="default"
+            className="shrink-0 rounded-3xl"
+            onClick={() => setCreateTaskOpen(true)}
+          >
+            Create Task
+            <Plus />
+          </Button>
+        )}
       </header>
 
-      <CreateTaskDialog
-        open={createTaskOpen}
-        onOpenChange={setCreateTaskOpen}
-        projectId={projectId}
-      />
+      {canCreateTask && (
+        <CreateTaskDialog
+          open={createTaskOpen}
+          onOpenChange={setCreateTaskOpen}
+          projectId={projectId}
+        />
+      )}
 
       <Dialog open={filtersOpen} onOpenChange={setFiltersOpen}>
         <DialogContent

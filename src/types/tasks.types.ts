@@ -14,6 +14,11 @@ export type ApiTaskStatus =
 
 export type TaskPriority = "critical" | "high" | "medium" | "low"
 
+export interface TaskAssigneeOption {
+  id: number;
+  name: string;
+}
+
 export interface TaskFilters {
   page?: number;
   project_id?: number;
@@ -56,6 +61,8 @@ export interface TaskBoardProps {
   columns: TaskColumn[]
   onAddTask?: (status: TaskStatus) => void
   onTaskClick?: (task: Task) => void
+  canEditTask?: boolean
+  canDeleteTask?: boolean
   onTaskMove?: (
     taskId: string,
     status: TaskStatus,
