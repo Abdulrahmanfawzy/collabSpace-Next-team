@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { getBackendToken } from "@/auth";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { hasPermission } from "@/features/auth/permissions/hasPermission";
 import TaskStats from "@/features/Dashboard/components/TasksState";
 import ProjectOverview from "../../features/Dashboard/components/ProjectPoints";
 import ProjectsAndFiles from "../../features/Dashboard/components/Items";
@@ -13,10 +15,13 @@ export const metadata: Metadata = {
 };
 
 async function Dashboard() {
-  const token = await getBackendToken();
-  if (!token) throw new Error("No authenticated backend token was found for the dashboard.");
+  const session = await auth();
+  const accessToken = session?.backendToken;
+  if (!accessToken) throw new Error("No authenticated backend token was found for the dashboard.");
+  if (!hasPermission(session?.user?.roles ?? [], "view_dashboard")) redirect("/forbidden");
+  if (session?.user?.roles?.includes("Team Member")) redirect("/projects");
 
-  const items = await getDashboard(token);
+  const items = await getDashboard({ accessToken });
   const chartData = items.project_overview.data.map((point) => ({
     x: point.month_number - 1,
     value: point.projects,
@@ -25,26 +30,32 @@ async function Dashboard() {
     .filter((point) => point.month_number % 2 === 1)
     .map((point) => ({ x: point.month_number - 1, label: point.month }));
 
-
   return (
     <div className="flex flex-col gap-6 pt-2 ">
       <TaskStats items={items} />
-      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
-        <ProjectOverview
-          data={chartData}
-          ticks={chartTicks}
-          projects={["All Projects", ...items.active_projects.items.map((project) => project.name)]}
-          periods={[items.project_overview.period]}
+      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-4">
+  <div className="min-w-0 lg:col-span-2">
+    <ProjectOverview
+      data={chartData}
+      ticks={chartTicks}
+      projects={[
+        "All Projects",
+        ...items.active_projects.items.map((project) => project.name),
+      ]}
+      periods={[items.project_overview.period]}
+    />
+  </div>
 
-        />
-        <ProjectsAndFiles
-          projectsHref="/projects"
-          filesHref="/files"
-          projects={items.active_projects.items}
-          files={items.recent_files.items}
-        />
-      </div>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+  <div className="min-w-0 lg:col-span-2">
+    <ProjectsAndFiles
+      projectsHref="/projects"
+      filesHref="/files"
+      projects={items.active_projects.items}
+      files={items.recent_files.items}
+    />
+  </div>
+</div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4 mb-8">
         <TasksAndTeams
           tasks={items.tasks.items}
           teams={items.teams.items}

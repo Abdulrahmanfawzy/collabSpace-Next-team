@@ -36,16 +36,17 @@ export type ProjectsProgressProps = {
   ticks: ProgressTick[]
   projects?: string[] // first item is the default
   onProjectChange?: (project: string) => void
+  title?: string
+  valueLabel?: string
 }
 
 /* ---------- Config ---------- */
 
 const chartConfig = {
-  value: { label: "Progress", color: "#86efac" },
+  value: { label: "Projects", color: "#86efac" },
 } satisfies ChartConfig
 
 const AXIS_TEXT = "#9ca3af"
-const Y_TICKS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
 /* ---------- Component ---------- */
 
@@ -53,17 +54,21 @@ export function ProjectsProgress({
   data,
   ticks,
   projects = ["All Projects"],
+  title = "Projects Progress",
+  valueLabel = "Projects",
   
 }: ProjectsProgressProps) {
   const gradientId = React.useId().replace(/:/g, "")
   const labelFor = (x: number) => ticks.find((t) => t.x === x)?.label ?? ""
-  const maxX = Math.max(...data.map((d) => d.x))
+  const maxX = Math.max(0, ...data.map((d) => d.x))
+  const maxY = Math.max(1, ...data.map((d) => d.value))
+  const yTicks = Array.from({ length: 5 }, (_, index) => Math.ceil((maxY * index) / 4))
   const onProjectChange=(p) => console.log(p)
 
   return (
     <Card className="rounded-2xl border-0 shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 px-5 pb-2 pt-5">
-        <CardTitle className="text-xl font-medium">Projects Progress</CardTitle>
+        <CardTitle className="text-xl font-medium">{title}</CardTitle>
 
         <Select defaultValue={projects[0]} onValueChange={onProjectChange}>
           <SelectTrigger
@@ -93,8 +98,8 @@ export function ProjectsProgress({
             </defs>
 
             <YAxis
-              domain={[10, 105]}
-              ticks={Y_TICKS}
+              domain={[0, maxY]}
+              ticks={yTicks}
               tickLine={false}
               axisLine={false}
               width={38}
@@ -124,6 +129,7 @@ export function ProjectsProgress({
               fill={`url(#${gradientId})`}
               dot={false}
               activeDot={{ r: 4, fill: "#22c55e", stroke: "#fff" }}
+              name={valueLabel}
             />
           </AreaChart>
         </ChartContainer>

@@ -13,15 +13,19 @@ const getApiBaseUrl = () => {
   }
   return baseUrl;
 };
-const getDashboard = async (token: string): Promise<DashboardData> => {
-  if (!token) {
+interface DashboardOptions {
+  accessToken: string;
+}
+
+const getDashboard = async ({ accessToken }: DashboardOptions): Promise<DashboardData> => {
+  if (!accessToken) {
     throw new Error("Cannot fetch dashboard without an authenticated access token.");
   }
   try {
     const response = await fetch(`${getApiBaseUrl()}/api/v1/dashboard`, {
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       method: "GET",
       cache: "no-store",

@@ -2,6 +2,7 @@ export type Rate = {
     id: string
     title: string 
     value: number 
-    change: number 
+    change?: number
+    suffix?: string
   }
   

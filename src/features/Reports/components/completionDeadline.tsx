@@ -22,18 +22,23 @@ export type CompletionVsDeadlineProps = {
 }
 
 const chartConfig = {
-  value: { label: "Completion", color: "#3b3bff" },
+  value: { label: "Completed Tasks", color: "#3b3bff" },
 } satisfies ChartConfig
 
 const AXIS_TEXT = "#9ca3af"
-const Y_TICKS = [0, 25, 50, 75, 100]
 
 export function CompletionVsDeadline({
   data,
   title = "Task Completion Time vs Deadline",
 }: CompletionVsDeadlineProps) {
   // unique key per bar so repeated labels (Jun, Jun, ...) still work
-  const rows = data.map((d, i) => ({ ...d, id: i }))
+  const rows = data.map((d, i) => ({
+    ...d,
+    id: i,
+    axisLabel: d.label.replace(/\s+\d{4}$/, ""),
+  }))
+  const maxValue = Math.max(1, ...data.map((point) => point.value))
+  const yTicks = Array.from({ length: 5 }, (_, index) => Math.ceil((maxValue * index) / 4))
 
   return (
     <Card className="rounded-2xl border-0 shadow-sm">
@@ -47,8 +52,8 @@ export function CompletionVsDeadline({
             <CartesianGrid vertical={false} stroke="#eef0f4" />
 
             <YAxis
-              domain={[0, 100]}
-              ticks={Y_TICKS}
+              domain={[0, maxValue]}
+              ticks={yTicks}
               tickLine={false}
               axisLine={false}
               width={34}
@@ -56,11 +61,12 @@ export function CompletionVsDeadline({
             />
             <XAxis
               dataKey="id"
-              tickFormatter={(_, i) => rows[i]?.label ?? ""}
+              dataKey="axisLabel"
               tickLine={false}
               axisLine={false}
               tickMargin={10}
-              interval={0}
+              interval="preserveStartEnd"
+              minTickGap={12}
               tick={{ fill: AXIS_TEXT, fontSize: 13 }}
             />
 

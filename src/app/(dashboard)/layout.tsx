@@ -6,7 +6,7 @@ import {
   HydrationBoundary,
 } from "@tanstack/react-query";
 
-import { auth } from "@/auth";
+import { getAccessToken } from "@/auth";
 import { authQueryKeys } from "@/features/auth/constants/auth.query-keys";
 import {
   authService,
@@ -22,16 +22,16 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
-  const session = await auth();
+  const accessToken = await getAccessToken();
 
-  if (!session?.backendToken) {
+  if (!accessToken) {
     redirect("/login");
   }
 
   const queryClient = new QueryClient();
 
   try {
-    const response = await authService.me(session.backendToken);
+    const response = await authService.me(accessToken);
 
     queryClient.setQueryData(
       authQueryKeys.currentUser,
