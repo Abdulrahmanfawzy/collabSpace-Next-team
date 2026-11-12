@@ -16,6 +16,8 @@ export default function ChannelItem({
   onClick,
   onSelect,
 }: ChannelItemProps) {
+  const unreadCount = channel.unreadCount ?? 0;
+
   return (
     <Button
       type="button"
@@ -35,9 +37,9 @@ export default function ChannelItem({
         </span>
       </div>
 
-      {channel.unreadCount > 0 && (
+      {unreadCount > 0 && (
         <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-xs text-primary-foreground">
-          {channel.unreadCount}
+          {unreadCount}
         </span>
       )}
     </Button>
