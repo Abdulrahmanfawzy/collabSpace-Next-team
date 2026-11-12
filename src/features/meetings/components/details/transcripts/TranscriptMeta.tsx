@@ -1,11 +1,15 @@
 
+"use client";
+
 import Image from "next/image";
+import CommentsMeeting from "@/features/meetings/components/details/CommentsMeeting";
 
 interface TranscriptMetaProps {
   speaker: string;
   avatar: string | null;
   timestamp: string;
   text: string;
+  meetingId: number;
 }
 
 export default function TranscriptMeta({
@@ -13,6 +17,7 @@ export default function TranscriptMeta({
   avatar,
   timestamp,
   text,
+  meetingId,
 }: TranscriptMetaProps) {
   return (
     <article className="flex gap-3 border-b border-border pb-5 last:border-0">
@@ -26,7 +31,7 @@ export default function TranscriptMeta({
       />
 
       {/* Content */}
-      <div className="min-w-0 flex-1 space-y-2">
+      <div className="min-w-0 flex-1 space-y-4">
         {/* Speaker Info */}
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <h3 className="text-sm font-semibold text-foreground">
@@ -42,6 +47,11 @@ export default function TranscriptMeta({
         <p className="text-sm leading-6 text-muted-foreground">
           {text}
         </p>
+
+        {/* Meeting Comments */}
+        <div className="border-t border-border pt-4">
+          <CommentsMeeting meetingId={meetingId} />
+        </div>
       </div>
     </article>
   );

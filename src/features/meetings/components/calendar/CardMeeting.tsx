@@ -1,8 +1,14 @@
 
+"use client";
+
 import type { Meeting } from "@/features/meetings/types/meeting.types";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import {Plus} from "lucide-react"
+import { Plus } from "lucide-react";
+
+import AddMeetingDialog from "./AddMeetingDialog";
+import { useUpdateMeeting } from "@/features/meetings/hooks/useUpdateMeeting";
 
 type CardMeetingProps = {
   meeting: Meeting;
@@ -13,6 +19,18 @@ export default function CardMeeting({
   meeting,
   className,
 }: CardMeetingProps) {
+  const updateMeeting = useUpdateMeeting();
+
+  const handleUpdate = async (
+    id: number,
+    values: Parameters<typeof updateMeeting.mutateAsync>[0]["values"]
+  ) => {
+    await updateMeeting.mutateAsync({
+      id,
+      values,
+    });
+  };
+
   return (
     <div
       className={`w-full rounded-md border border-primary/20 bg-primary/5 p-2 ${
@@ -57,17 +75,27 @@ export default function CardMeeting({
           </span>
         )}
 
-        {/* View Meeting */}
-        <Button
-          asChild
-          size="sm"
-          variant="outline"
-          className="ml-auto h-7 px-2 text-xs"
-        >
-          <Link href={`/meetings/${meeting.id}`}>
-            join <Plus className="h-4 w-4" />
-          </Link>
-        </Button>
+        {/* Actions */}
+        <div className="ml-auto flex flex-col items-center gap-2">
+          {/* Edit Meeting */}
+          <AddMeetingDialog
+            meeting={meeting}
+            onUpdate={handleUpdate}
+            isSubmitting={updateMeeting.isPending}
+          />
+
+          {/* View Meeting */}
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="h-7 px-2 text-xs"
+          >
+            <Link href={`/meetings/${meeting.id}`}>
+              Join <Plus className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );

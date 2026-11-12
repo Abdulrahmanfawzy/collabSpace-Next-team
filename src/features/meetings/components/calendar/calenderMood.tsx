@@ -1,3 +1,4 @@
+
 import CalendarGrid from "./CalendarGrid";
 import CardMeeting from "./CardMeeting";
 import Link from "next/link";
@@ -6,6 +7,7 @@ import type { Meeting } from "@/features/meetings/types/meeting.types";
 type CalendarMoodProps = {
   view: "week" | "month";
   meetings: Meeting[];
+  currentDate: Date;
 };
 
 const formatDate = (date: Date) => {
@@ -19,12 +21,17 @@ const formatDate = (date: Date) => {
 export default function CalendarMood({
   view,
   meetings,
+  currentDate,
 }: CalendarMoodProps) {
   if (view === "week") {
-    return <CalendarGrid meetings={meetings} />;
+    return (
+      <CalendarGrid
+        meetings={meetings}
+        currentDate={currentDate}
+      />
+    );
   }
 
-  const currentDate = new Date();
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -53,20 +60,28 @@ export default function CalendarMood({
   return (
     <div className="grid grid-cols-7">
       {weekdays.map((day) => (
-        <div key={day} className="border-b p-3 text-center text-sm font-semibold">
+        <div
+          key={day}
+          className="border-b p-3 text-center text-sm font-semibold"
+        >
           {day.slice(0, 3)}
         </div>
       ))}
 
       {days.map((day, index) => {
         if (!day) {
-          return <div key={`empty-${index}`} className="min-h-32 border-b border-l" />;
+          return (
+            <div
+              key={`empty-${index}`}
+              className="min-h-32 border-b border-l"
+            />
+          );
         }
 
         const dateKey = formatDate(day);
 
         const dayMeetings = meetings.filter(
-          (meeting) => meeting.meeting_date === dateKey
+          (meeting) => meeting.meeting_date?.slice(0, 10) === dateKey
         );
 
         return (
@@ -74,7 +89,13 @@ export default function CalendarMood({
             key={dateKey}
             className="flex min-h-32 flex-col gap-2 border-b border-l p-2"
           >
-            <span className="text-sm font-semibold">
+            <span
+              className={`flex size-7 items-center justify-center rounded-full text-sm font-semibold ${
+                dateKey === formatDate(new Date())
+                  ? "bg-primary text-primary-foreground"
+                  : ""
+              }`}
+            >
               {day.getDate()}
             </span>
 

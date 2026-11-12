@@ -45,7 +45,7 @@ export default function SummaryPanel({
   ];
 
   return (
-    <section className="min-h-64 rounded-2xl bg-muted/50 p-5 sm:p-6">
+    <section className="h-[500px] overflow-y-auto rounded-2xl bg-muted/50 p-5 sm:p-6">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-2xl font-semibold">{title}</h2>
