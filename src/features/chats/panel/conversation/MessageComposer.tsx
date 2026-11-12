@@ -8,20 +8,32 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 import { useSendMessage } from "@/features/chats/hooks/useSendMessage";
+import { hasPermission } from "@/utils/permission.utils";
+
+import type { AuthUser } from "@/features/auth/types/auth.types";
 import type { ChatMessage } from "@/features/chats/types/chat.types";
 
 interface MessageComposerProps {
   projectId: number;
+  user: AuthUser | null;
   replyTo: ChatMessage | null;
   onCancelReply: () => void;
 }
 
 export default function MessageComposer({
   projectId,
+  user,
   replyTo,
   onCancelReply,
 }: MessageComposerProps) {
   const [message, setMessage] = useState("");
+
+const isAdministrator =
+  user?.roles?.includes("Administrator") ?? false;
+
+const canSendMessage =
+  isAdministrator ||
+  hasPermission(user, "send_project_chat");
 
   const {
     mutateAsync: sendMessage,
@@ -31,7 +43,7 @@ export default function MessageComposer({
   const handleSend = async () => {
     const trimmedMessage = message.trim();
 
-    if (!trimmedMessage || isPending) return;
+    if (!canSendMessage || !trimmedMessage || isPending) return;
 
     try {
       await sendMessage({
@@ -47,6 +59,8 @@ export default function MessageComposer({
       console.error("Failed to send message:", error);
     }
   };
+
+  if (!canSendMessage) return null;
 
   return (
     <div className="shrink-0 border-t border-border bg-background px-6 py-4">

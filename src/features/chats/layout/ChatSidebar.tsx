@@ -13,23 +13,36 @@ import DirectMessageList from "@/features/chats/sidebar/DirectMessageList";
 import ProjectChatList from "@/features/chats/sidebar/ProjectChatList";
 
 import { useProjects } from "@/features/chats/hooks/useProjects";
+import { hasPermission } from "@/utils/permission.utils";
 
+import type { AuthUser } from "@/features/auth/types/auth.types";
 import type {
   SelectedChat,
   ChatProject,
 } from "@/features/chats/types/chat.types";
 
 interface ChatSidebarProps {
+  user: AuthUser | null;
   onSelectChat: (chat: SelectedChat) => void;
 }
 
 export default function ChatSidebar({
+  user,
   onSelectChat,
 }: ChatSidebarProps) {
   const [activeTab, setActiveTab] =
     useState<ChatTabType>("inbox");
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Administrator UI access
+  const isAdministrator =
+    user?.roles?.includes("Administrator") ?? false;
+
+  // Project chat permission
+  const canAccessProjectChats =
+    isAdministrator ||
+    hasPermission(user, "access_all_project_chats");
 
   const {
     data: projects = [],
@@ -40,12 +53,12 @@ export default function ChatSidebar({
   const handleSelectProject = (project: ChatProject) => {
     onSelectChat({
       type: "channel",
-     channel: {
-  id: project.id,
-  name: project.name,
-  description: "Project discussion",
-  unreadCount: 0,
-},
+      channel: {
+        id: project.id,
+        name: project.name,
+        description: "Project discussion",
+        unreadCount: 0,
+      },
       project,
     });
   };
@@ -71,6 +84,10 @@ export default function ChatSidebar({
             searchQuery={searchQuery}
             onSelectChat={() => {}}
           />
+        ) : !canAccessProjectChats ? (
+          <p className="px-4 py-6 text-center text-sm text-muted-foreground">
+            You don't have permission to access project chats.
+          </p>
         ) : isLoading ? (
           <p className="px-4 py-6 text-center text-sm text-muted-foreground">
             Loading projects...

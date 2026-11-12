@@ -1,3 +1,4 @@
+
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
@@ -33,23 +34,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
 
   callbacks: {
-   
     jwt({ token, user }) {
       if (user) {
-        token.backendToken = (user as unknown as { backendToken: string }).backendToken;
-        token.backendUser = (user as unknown as { backendUser: string }).backendUser;
+        const authUser = user as typeof user & {
+          backendToken: string;
+          backendUser: string;
+        };
+
+        token.backendToken = authUser.backendToken;
+        token.backendUser = authUser.backendUser;
       }
+
       return token;
     },
 
-
-    session({ session, token }): any {
+    session({ session, token }) {
       session.backendToken = token.backendToken as string;
 
       if (token.backendUser) {
         try {
-          (session as any).user = JSON.parse(token.backendUser as string) as AuthUser;
+          session.user = JSON.parse(
+            token.backendUser as string
+          ) as AuthUser;
         } catch {
+          console.error("Failed to parse backend user from session.");
         }
       }
 
@@ -57,13 +65,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
 
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+  },
 
   pages: {
     signIn: "/login",
   },
 });
-
 
 export async function getBackendToken(): Promise<string | null> {
   const session = await auth();

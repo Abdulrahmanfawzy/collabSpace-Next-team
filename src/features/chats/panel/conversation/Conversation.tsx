@@ -7,6 +7,7 @@ import ChatHeader from "@/features/chats/panel/conversation/ChatHeader";
 import MessageList from "@/features/chats/panel/conversation/MessageList";
 import MessageComposer from "@/features/chats/panel/conversation/MessageComposer";
 
+import type { AuthUser } from "@/features/auth/types/auth.types";
 import type {
   ChatMessage,
   SelectedChat,
@@ -14,10 +15,12 @@ import type {
 
 interface ConversationProps {
   selectedChat: NonNullable<SelectedChat>;
+  user: AuthUser | null;
 }
 
 export default function Conversation({
   selectedChat,
+  user,
 }: ConversationProps) {
   const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
 
@@ -43,6 +46,7 @@ export default function Conversation({
           <div className="shrink-0">
             <MessageComposer
               projectId={projectId}
+              user={user}
               replyTo={replyTo}
               onCancelReply={() => setReplyTo(null)}
             />
