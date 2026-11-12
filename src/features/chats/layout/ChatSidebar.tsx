@@ -12,16 +12,11 @@ import ChatSearch from "@/features/chats/sidebar/ChatSearch";
 import DirectMessageList from "@/features/chats/sidebar/DirectMessageList";
 import ProjectChatList from "@/features/chats/sidebar/ProjectChatList";
 
-import {
-  directConversations,
-  chatProjects,
-} from "@/features/chats/data/mockChats";
+import { useProjects } from "@/features/chats/hooks/useProjects";
 
 import type {
   SelectedChat,
-  ChatChannel,
   ChatProject,
-  ChatConversation,
 } from "@/features/chats/types/chat.types";
 
 interface ChatSidebarProps {
@@ -36,22 +31,21 @@ export default function ChatSidebar({
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSelectDirectMessage = (
-    conversation: ChatConversation
-  ) => {
-    onSelectChat({
-      type: "direct",
-      conversation,
-    });
-  };
+  const {
+    data: projects = [],
+    isLoading,
+    isError,
+  } = useProjects();
 
-  const handleSelectChannel = (
-    channel: ChatChannel,
-    project: ChatProject
-  ) => {
+  const handleSelectProject = (project: ChatProject) => {
     onSelectChat({
       type: "channel",
-      channel,
+      channel: {
+        id: `project-${project.id}`,
+        name: project.name,
+        description: "Project discussion",
+        unreadCount: 0,
+      },
       project,
     });
   };
@@ -73,18 +67,27 @@ export default function ChatSidebar({
       <div className="min-h-0 flex-1 overflow-y-auto">
         {activeTab === "inbox" ? (
           <DirectMessageList
-            conversations={directConversations}
+            conversations={[]}
             searchQuery={searchQuery}
-            onSelectChat={handleSelectDirectMessage}
+            onSelectChat={() => {}}
           />
+        ) : isLoading ? (
+          <p className="px-4 py-6 text-center text-sm text-muted-foreground">
+            Loading projects...
+          </p>
+        ) : isError ? (
+          <p className="px-4 py-6 text-center text-sm text-destructive">
+            Failed to load projects.
+          </p>
         ) : (
           <ProjectChatList
-            projects={chatProjects.map((project) => ({
-              ...project,
-              time: "",
+            projects={projects.map((project) => ({
+              id: project.id,
+              name: project.name,
+              channels: [],
             }))}
             searchQuery={searchQuery}
-            onSelectChannel={handleSelectChannel}
+            onSelectProject={handleSelectProject}
           />
         )}
       </div>

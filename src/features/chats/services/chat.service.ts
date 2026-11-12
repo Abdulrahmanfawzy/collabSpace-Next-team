@@ -1,5 +1,5 @@
 
-import  apiClient  from "@/api/apiClient";
+import apiClient from "@/api/apiClient";
 
 import type {
   ChatMessage,
@@ -24,7 +24,7 @@ export const chatService = {
     perPage: number = 20
   ): Promise<ChatMessagesResponse> => {
     const { data } = await apiClient.get<ChatMessagesResponse>(
-      `/v1/projects/${projectId}/messages`,
+      `/api/v1/projects/${projectId}/messages`,
       {
         params: {
           per_page: perPage,
@@ -40,7 +40,7 @@ export const chatService = {
     payload: SendMessagePayload
   ): Promise<ChatMessage> => {
     const { data } = await apiClient.post<ChatMessageResponse>(
-      `/v1/projects/${projectId}/messages`,
+      `/api/v1/projects/${projectId}/messages`,
       payload
     );
 
@@ -52,7 +52,7 @@ export const chatService = {
     payload: UpdateMessagePayload
   ): Promise<ChatMessage> => {
     const { data } = await apiClient.patch<ChatMessageResponse>(
-      `/v1/messages/${messageId}`,
+      `/api/v1/messages/${messageId}`,
       payload
     );
 
@@ -60,6 +60,34 @@ export const chatService = {
   },
 
   deleteMessage: async (messageId: number): Promise<void> => {
-    await apiClient.delete(`/v1/messages/${messageId}`);
+    await apiClient.delete(`/api/v1/messages/${messageId}`);
+  },
+};
+
+export interface Project {
+  id: number;
+  name: string;
+  description?: string;
+  status?: string;
+}
+
+interface ProjectsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    data: Project[];
+    current_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+
+export const projectService = {
+  async getProjects(): Promise<Project[]> {
+    const { data } = await apiClient.get<ProjectsResponse>(
+      "/api/v1/projects"
+    );
+
+    return data.data.data;
   },
 };

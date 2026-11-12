@@ -12,8 +12,12 @@ export default function DirectMessageItem({
   onSelect,
 }: DirectMessageItemProps) {
   const lastMessage = message.lastMessage;
+
   const lastMessageText =
-    typeof lastMessage === "string" ? lastMessage : lastMessage?.text ?? "";
+    typeof lastMessage === "string"
+      ? lastMessage
+      : lastMessage?.text ?? "";
+
   const lastMessageTime =
     typeof lastMessage === "string" || !lastMessage?.createdAt
       ? ""
@@ -50,7 +54,7 @@ export default function DirectMessageItem({
 
         <div className="mt-1 flex items-center justify-between gap-2">
           <p className="truncate text-sm text-muted-foreground">
-            {lastMessage?.text ?? ""}
+            {lastMessageText}
           </p>
 
           {!!message.unreadCount && (
