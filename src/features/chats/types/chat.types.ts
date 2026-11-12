@@ -80,6 +80,8 @@ export interface ChatConversation {
 export interface ChatChannel {
   id: number;
   name: string;
+  description?: string;
+  unreadCount?: number;
   time?: string;
 }
 

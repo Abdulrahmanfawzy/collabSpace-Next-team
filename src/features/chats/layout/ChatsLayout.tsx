@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -9,20 +8,18 @@ import ChatSidebar from "@/features/chats/layout/ChatSidebar";
 import type { SelectedChat } from "@/features/chats/types/chat.types";
 
 export default function ChatsLayout() {
-  const [selectedChat, setSelectedChat] =
-    useState<SelectedChat>(null);
+  const [selectedChat, setSelectedChat] = useState<SelectedChat>(null);
 
   const handleBack = () => {
     setSelectedChat(null);
   };
 
   return (
-    <div className="flex h-full min-h-0 w-full overflow-hidden">
+    <div className="flex h-[calc(100dvh-4rem)] min-h-0 w-full overflow-hidden">
       {/* Sidebar */}
       <aside
         className={`
-          h-full min-h-0 w-full shrink-0
-          flex-col border-r border-border
+          h-full min-h-0 w-full shrink-0 flex-col border-r border-border
           md:flex md:w-72 lg:w-80
           ${selectedChat ? "hidden" : "flex"}
         `}
@@ -33,7 +30,7 @@ export default function ChatsLayout() {
       {/* Chat Panel */}
       <section
         className={`
-          min-h-0 min-w-0 flex-1 flex-col
+          min-h-0 min-w-0 flex-1 flex-col overflow-hidden
           ${selectedChat ? "flex" : "hidden md:flex"}
         `}
       >

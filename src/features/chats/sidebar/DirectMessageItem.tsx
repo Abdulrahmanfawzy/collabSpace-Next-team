@@ -11,17 +11,34 @@ export default function DirectMessageItem({
   message,
   onSelect,
 }: DirectMessageItemProps) {
+  const avatar =
+    "avatar" in message
+      ? String((message as { avatar?: string | null }).avatar ?? "")
+      : "";
+
   const lastMessage = message.lastMessage;
+  const lastMessageValue: unknown = lastMessage;
 
   const lastMessageText =
-    typeof lastMessage === "string"
-      ? lastMessage
-      : lastMessage?.text ?? "";
+    typeof lastMessageValue === "string"
+      ? lastMessageValue
+      : lastMessageValue &&
+          typeof lastMessageValue === "object" &&
+          "text" in lastMessageValue
+        ? String(lastMessageValue.text ?? "")
+        : "";
+
+  const lastMessageWithTimestamp =
+    lastMessageValue &&
+    typeof lastMessageValue === "object" &&
+    "createdAt" in lastMessageValue
+      ? lastMessageValue
+      : null;
 
   const lastMessageTime =
-    typeof lastMessage === "string" || !lastMessage?.createdAt
+    !lastMessageWithTimestamp?.createdAt
       ? ""
-      : format(new Date(lastMessage.createdAt), "h:mm a");
+      : format(new Date(String(lastMessageWithTimestamp.createdAt)), "h:mm a");
 
   return (
     <button

@@ -40,12 +40,12 @@ export default function ChatSidebar({
   const handleSelectProject = (project: ChatProject) => {
     onSelectChat({
       type: "channel",
-      channel: {
-        id: `project-${project.id}`,
-        name: project.name,
-        description: "Project discussion",
-        unreadCount: 0,
-      },
+     channel: {
+  id: project.id,
+  name: project.name,
+  description: "Project discussion",
+  unreadCount: 0,
+},
       project,
     });
   };

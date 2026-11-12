@@ -1,16 +1,21 @@
 
 "use client";
 
-import { useProjectMessages } from "@/features/chats/hooks/useProjectMessages";
+import { useEffect, useRef } from "react";
 
+import { useProjectMessages } from "@/features/chats/hooks/useProjectMessages";
 import DateDivider from "@/features/chats/panel/conversation/DateDivider";
+
+import type { ChatMessage } from "@/features/chats/types/chat.types";
 
 interface MessageListProps {
   projectId: number;
+  onReply: (message: ChatMessage) => void;
 }
 
 export default function MessageList({
   projectId,
+  onReply,
 }: MessageListProps) {
   const {
     data,
@@ -19,6 +24,18 @@ export default function MessageList({
     error,
     refetch,
   } = useProjectMessages(projectId);
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const chatMessages = data?.data.data ?? [];
+
+  // Scroll to the latest message
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [chatMessages.length]);
 
   if (isLoading) {
     return (
@@ -48,8 +65,6 @@ export default function MessageList({
     );
   }
 
-  const chatMessages = data?.data.data ?? [];
-
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-6 py-6">
       <DateDivider date="Today" />
@@ -59,7 +74,7 @@ export default function MessageList({
           chatMessages.map((message) => (
             <div
               key={message.id}
-              className="flex items-start gap-3"
+              className="group flex items-start gap-3"
             >
               {message.sender.avatar_url ? (
                 <img
@@ -101,6 +116,14 @@ export default function MessageList({
                 <div className="rounded-2xl rounded-tl-sm bg-muted px-4 py-3 text-sm leading-6 text-foreground">
                   {message.message}
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => onReply(message)}
+                  className="w-fit text-xs text-muted-foreground transition-colors hover:text-primary"
+                >
+                  Reply
+                </button>
               </div>
             </div>
           ))
@@ -109,6 +132,9 @@ export default function MessageList({
             No messages yet. Start the conversation!
           </p>
         )}
+
+        {/* Scroll target */}
+        <div ref={bottomRef} />
       </div>
     </div>
   );
