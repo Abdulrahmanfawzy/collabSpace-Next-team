@@ -21,6 +21,8 @@ interface OverviewTabProps {
   totalTasks: number;
   year:number,
   onYearChange: (year: number) => void;
+  isChartLoading?: boolean;
+  chartError?: Error | null;
 }
 const OverviewTab = ({
   isLoading = false,
@@ -33,6 +35,8 @@ const OverviewTab = ({
   totalTasks,
   year,
   onYearChange,
+  isChartLoading = false,
+  chartError = null,
 }: OverviewTabProps) => {
     if(isLoading){
         return (<OverviewProjectsSkeleton/>);
@@ -66,6 +70,7 @@ const OverviewTab = ({
             xAxisLabels={project.chart.data.map((item) => item.month)}
             valueFormatter={(value) => String(value)}
             valueLabel="Created Tasks"
+            isLoading={isChartLoading}
             filters={[
               {
                 label: "Year",
@@ -80,6 +85,11 @@ const OverviewTab = ({
             ]}
           
           />
+          {chartError && (
+            <p className="mt-2 text-sm text-red-600" role="alert">
+              Failed to refresh chart: {chartError.message}
+            </p>
+          )}
         </div>
       {/* ------------------------------------------------------------------------------------------ */}
         <ProjectDetails project={project} />

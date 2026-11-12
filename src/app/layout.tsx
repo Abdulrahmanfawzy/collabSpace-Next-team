@@ -31,9 +31,7 @@ export default function Layout({
     <html lang="en">
       <body className={cn(inter.className)}>
         <SessionProvider>
-          <QueryProvider>
-            {children}
-          </QueryProvider>
+          <QueryProvider>{children}</QueryProvider>
         </SessionProvider>
       </body>
     </html>

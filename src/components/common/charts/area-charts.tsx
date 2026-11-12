@@ -13,6 +13,7 @@ import {
   YAxis,
 } from "recharts"
 import { CommonSelect } from "@/components/common/common-select"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "cn"
 import type { AreaChartProps } from "./types"
 
@@ -27,6 +28,7 @@ const AreaChart = ({
   color = "#3B82F6",
   valueFormatter = (value) => `${value / 1000}k`,
   valueLabel = "Projects",
+  isLoading = false,
   className,
 }: AreaChartProps) => {
   const gradientId = `chart-gradient-${useId().replace(/:/g, "")}`
@@ -84,8 +86,14 @@ const AreaChart = ({
       </div>
 
       {/* Chart */}
-      <div className="min-w-0" style={{ width: "100%", height }}>
-        {chartData.length > 0 ? (
+      <div
+        className="min-w-0"
+        style={{ width: "100%", height }}
+        aria-busy={isLoading}
+      >
+        {isLoading ? (
+          <Skeleton className="h-full w-full" />
+        ) : chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <RechartsAreaChart
               data={chartData}

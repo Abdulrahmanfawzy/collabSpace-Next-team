@@ -16,7 +16,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const token = credentials?.backendToken as string | undefined;
         const userJson = credentials?.backendUser as string | undefined;
 
-        if (!token || !userJson) return null;
+        if (
+          typeof token !== "string" ||
+          token.trim() === "" ||
+          typeof userJson !== "string" ||
+          userJson.trim() === ""
+        ) {
+          return null;
+        }
 
         try {
           const user = JSON.parse(userJson) as AuthUser;

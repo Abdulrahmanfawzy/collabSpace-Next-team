@@ -9,9 +9,11 @@ export interface AuthUser {
   name: string;
   email: string;
   job_title: string | null;
+  about: string | null;
   years_of_experience: number | null;
   phone: string | null;
   avatar_url: string | null;
+  available_status?: string | null;
   status: string;
   roles: string[];
   permissions: string[];
@@ -26,6 +28,12 @@ export interface AuthSessionData {
   user: AuthUser;
   token: string;
   token_type: string;
+}
+
+export interface ProfileStats {
+  completed_tasks: number;
+  total_tasks: number;
+  hours_worked: number;
 }
 
 export interface ProjectMembershipPivot {
@@ -44,9 +52,7 @@ export interface CurrentUserProject {
   deadline: string;
   priority: string;
   status: string;
-
   progress_percentage: string;
-
   created_by: number;
   created_at: string;
   updated_at: string;
@@ -55,10 +61,23 @@ export interface CurrentUserProject {
 
 export interface CurrentUserData {
   user: AuthUser;
-
+  stats: ProfileStats;
+  recent_activities: ProfileActivityItem[];
   teams: unknown[];
-
   projects: CurrentUserProject[];
+}
+
+export interface ProfileActivityItem {
+  id: number;
+  category: string;
+  action: string;
+  description: string;
+  user: {
+    id: number;
+    name: string;
+    avatar_url: string | null;
+  };
+  created_at: string;
 }
 
 export interface ForgotPasswordData {

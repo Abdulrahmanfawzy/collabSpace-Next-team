@@ -13,5 +13,10 @@ export function useGetProjectOverview({
     queryKey: ["project-overview", projectId, period, year],
     queryFn: () => getProjectOverviewAction({ id: projectId, period, year }),
     enabled: Number.isInteger(projectId) && projectId > 0,
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey[1] === projectId &&
+      previousQuery.queryKey[2] === period
+        ? previousData
+        : undefined,
   });
 }

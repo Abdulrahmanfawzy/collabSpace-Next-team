@@ -1,30 +1,62 @@
 
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import { Upload } from "lucide-react";
-import FileCard, { ProjectFile } from "../file-card";
+import { toast } from "sonner";
+import FileCard from "../file-card";
 import FilesSkeleton from "@/components/skeletons/files-tab-skeleton";
-
-
-
+import { CommonPagination } from "@/components/common/common-pagination";
+import { useGetProjectFiles } from "@/hooks/files/use-get-project-files";
+import { useUploadProjectFile } from "@/hooks/files/use-upload-project-file";
 
 interface FilesTabProps {
-  files: ProjectFile[];
-  isLoading: boolean;
-  onUpload?: (files: FileList) => void;
+  projectId: number;
+  isLoading?: boolean;
 }
 
 const FilesTab = ({
-  files,
-  isLoading,
-  onUpload,
+  projectId,
+  isLoading = false,
 }: FilesTabProps) => {
+  const maxFileSize = 20 * 1024 * 1024;
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const [page, setPage] = useState(1);
+  const { data, isPending, error } = useGetProjectFiles(projectId, page);
+  const { mutate: uploadFile, isPending: isUploading } =
+    useUploadProjectFile();
+  const files = data?.files ?? [];
   const recentFiles = files.slice(0, 3);
-  if (isLoading) {
-    return (<FilesSkeleton/>);
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (file.size > maxFileSize) {
+      toast.error("Files must be 20 MB or smaller.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    uploadFile(
+      { projectId, formData },
+      {
+        onSuccess: () => setPage(1),
+      }
+    );
+  };
+
+  if (isLoading || isPending) {
+    return <FilesSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <p role="alert" className="py-6 text-sm text-destructive">
+        Failed to load project files: {error.message}
+      </p>
+    );
   }
 
   return (
@@ -55,22 +87,18 @@ const FilesTab = ({
             <input
               ref={fileInputRef}
               type="file"
-              multiple
               className="hidden"
-              onChange={(e) => {
-                if (e.target.files) {
-                  onUpload?.(e.target.files);
-                  e.target.value = "";
-                }
-              }}
+              disabled={isUploading}
+              onChange={handleFileChange}
             />
 
             <button
               type="button"
+              disabled={isUploading}
               onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1 rounded-full bg-blue-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700"
+              className="flex items-center gap-1 rounded-full bg-blue-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Upload File
+              {isUploading ? "Uploading..." : "Upload File"}
               <Upload size={13} />
             </button>
           </div>
@@ -88,6 +116,13 @@ const FilesTab = ({
           </p>
         )}
 
+        {data && (
+          <CommonPagination
+            currentPage={data.pagination.current_page}
+            lastPage={data.pagination.last_page}
+            onPageChange={setPage}
+          />
+        )}
       </section>
     </div>
   );
