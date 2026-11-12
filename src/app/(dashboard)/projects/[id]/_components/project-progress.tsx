@@ -14,6 +14,13 @@ const ProjectProgress = ({
   totalTasks,
 }: ProjectProgressProps) => {
   const progress = Math.min(Math.max(progressPercentage, 0), 100)
+  //1- to draw  Needle angle based on progress percentage
+  const angle = Math.PI + (progress / 100) * Math.PI;
+
+  const needleLength = 55;
+
+  const needleX = 100 + needleLength * Math.cos(angle);
+  const needleY = 85 + needleLength * Math.sin(angle);
   const tasks = project?.tasks_statistics
 
   return (
@@ -47,6 +54,26 @@ const ProjectProgress = ({
             strokeWidth="7"
             strokeLinecap="round"
             strokeDasharray={`${(progress / 100) * 235.62} 235.62`}
+          />
+          {/* Needle */}
+          <line
+            x1="100"
+            y1="85"
+            x2={needleX}
+            y2={needleY}
+            stroke="#262626"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+
+          {/* Needle Center Circle */}
+          <circle
+            cx="100"
+            cy="85"
+            r="8"
+            fill="white"
+            stroke="#262626"
+            strokeWidth="2"
           />
         </svg>
 
