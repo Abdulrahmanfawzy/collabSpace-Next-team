@@ -21,7 +21,7 @@ const FilesTab = ({
   isLoading = false,
 }: FilesTabProps) => {
   const maxFileSize = 20 * 1024 * 1024;
-  const { canUploadFile } = useProjectPermissions();
+  const { canUploadFile, canDeleteFile } = useProjectPermissions();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [page, setPage] = useState(1);
   const { data, isPending, error } = useGetProjectFiles(projectId, page);
@@ -73,7 +73,11 @@ const FilesTab = ({
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {recentFiles.map((file) => (
-            <FileCard key={file.id} file={file} />
+            <FileCard
+              key={file.id}
+              file={file}
+              canDeleteFile={canDeleteFile}
+            />
           ))}
         </div>
       </section>
@@ -111,7 +115,11 @@ const FilesTab = ({
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {files.map((file) => (
-            <FileCard key={file.id} file={file} />
+            <FileCard
+              key={file.id}
+              file={file}
+              canDeleteFile={canDeleteFile}
+            />
           ))}
         </div>
 

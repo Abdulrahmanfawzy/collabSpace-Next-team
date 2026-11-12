@@ -31,6 +31,7 @@ export const adminPermissions = [
 
   // Files & Chat
   "upload_file",
+  "delete_file",
   "access_all_project_chats",
 
   // Meetings
@@ -68,6 +69,7 @@ export const managerPermissions = [
   "assign_project_member",
 
   "upload_file",
+  "delete_file",
 
   "view_meetings",
   "schedule_meeting",
