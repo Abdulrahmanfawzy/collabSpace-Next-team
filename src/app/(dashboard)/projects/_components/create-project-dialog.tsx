@@ -46,6 +46,7 @@ import type {
   Project,
   UpdateProjectPayload,
 } from "@/types/project";
+import { useProjectPermissions } from "./use-project-permissions";
 
 const fieldClassName =
   "h-11 rounded-lg border-gray-200 bg-white px-3 text-sm shadow-none placeholder:text-gray-400 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10";
@@ -70,6 +71,11 @@ export function CreateProjectDialog({
   const [teamIdInput, setTeamIdInput] = useState("");
   const [teamIdError, setTeamIdError] = useState("");
   const queryClient = useQueryClient();
+  const {
+    canCreateProject,
+    canEditProject,
+    canAssignProjectMember,
+  } = useProjectPermissions();
   const { mutate: createProject, isPending: isCreating } = useCreateProject();
   const { mutate: updateProject, isPending: isUpdating } = useUpdateProject();
   const { mutate: assignProjectTeams, isPending: isAssigningTeams } =
@@ -136,13 +142,14 @@ export function CreateProjectDialog({
 
   const handleSubmit = (values: CreateProjectFormValues) => {
     if (project) {
+      if (!canEditProject) return;
       const payload: UpdateProjectPayload = values;
 
       updateProject(
         { id: project.id, payload },
         {
           onSuccess: () => {
-            if (teamIds.length === 0) {
+            if (!canAssignProjectMember || teamIds.length === 0) {
               form.reset();
               setOpen(false);
               return;
@@ -163,6 +170,8 @@ export function CreateProjectDialog({
       return;
     }
 
+    if (!canCreateProject) return;
+
     const payload: CreateProjectPayload = {
       ...values,
       teams: [],
@@ -172,7 +181,7 @@ export function CreateProjectDialog({
     createProject(payload, {
       onSuccess: async (response) => {
         await queryClient.invalidateQueries({ queryKey: ["projects"] });
-        if (teamIds.length > 0) {
+        if (canAssignProjectMember && teamIds.length > 0) {
           assignProjectTeams(
             {
               projectId: response.data.id,
@@ -197,6 +206,13 @@ export function CreateProjectDialog({
       },
     });
   };
+
+  if (
+    (project && !canEditProject) ||
+    (!project && !canCreateProject)
+  ) {
+    return null;
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -427,6 +443,7 @@ export function CreateProjectDialog({
             </div>
           </section>
 
+          {canAssignProjectMember && (
           <section className="space-y-4 border-t border-gray-100 pt-5">
             <div>
               <h3 className="text-sm font-semibold text-gray-900">
@@ -523,6 +540,7 @@ export function CreateProjectDialog({
               </ul>
             )}
           </section>
+          )}
 
           <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-gray-500">

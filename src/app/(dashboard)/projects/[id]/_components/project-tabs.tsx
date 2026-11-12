@@ -11,10 +11,12 @@ import TasksTab from "./tabs/tasks";
 import TeamsTab from "./tabs/teams";
 import FilesTab from "./tabs/files";
 import type { ProjectAssignedTeam, ProjectOverview } from "@/types/project";
-const tabs = ["Overview", "Tasks", "Teams", "Files"];
+import type { TaskAssigneeOption } from "@/types/tasks.types";
+import { useProjectPermissions } from "../../_components/use-project-permissions";
 interface ProjectTabsProps {
   project: ProjectOverview;
   teams: ProjectAssignedTeam[];
+  projectAssignees: TaskAssigneeOption[];
   areTeamsLoading: boolean;
   teamsError: Error | null;
   progressPercentage: number;
@@ -32,6 +34,7 @@ interface ProjectTabsProps {
 const ProjectTabs = ({
   project,
   teams,
+  projectAssignees,
   areTeamsLoading,
   teamsError,
   progressPercentage,
@@ -45,6 +48,13 @@ const ProjectTabs = ({
   isTeamsLoading = false,
   isFilesLoading = false,
 }: ProjectTabsProps) => {
+  const { canViewTasks, canViewTeams } = useProjectPermissions();
+  const tabs = [
+    "Overview",
+    ...(canViewTasks ? ["Tasks"] : []),
+    ...(canViewTeams ? ["Teams"] : []),
+    "Files",
+  ];
   const tabContents = [
     {
       value: "overview",
@@ -57,6 +67,7 @@ const ProjectTabs = ({
           progressPercentage={progressPercentage}
           completedTasks={completedTasks}
           totalTasks={totalTasks}
+          canViewTeams={canViewTeams}
           year={year}
           onYearChange={onYearChange}
           isChartLoading={isChartLoading}
@@ -67,7 +78,11 @@ const ProjectTabs = ({
     {
       value: "tasks",
       component: (
-        <TasksTab projectId={project.id} isLoading={isTasksLoading} />
+        <TasksTab
+          projectId={project.id}
+          assignees={projectAssignees}
+          isLoading={isTasksLoading}
+        />
       ),
     },
     {
@@ -90,7 +105,7 @@ const ProjectTabs = ({
 
   return (
     <Tabs defaultValue="overview" className="w-full mt-5">
-    {/* -----------------------------------Tabs List ----------------------------------------------------------------------------------------------------- */}
+      {/* -----------------------------------Tabs List ----------------------------------------------------------------------------------------------------- */}
       <TabsList className="h-auto w-full items-center justify-start gap-7 rounded-none border-b border-gray-100 bg-transparent p-0">
         {tabs.map((tab) => (
           <TabsTrigger

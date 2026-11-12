@@ -7,6 +7,7 @@ import ProjectHeader from "./project-header";
 import ProjectTabs from "./project-tabs";
 import { useEffect, useState } from "react";
 import type { ProjectOverview } from "@/types/project";
+import type { TaskAssigneeOption } from "@/types/tasks.types";
 
 interface ProjectPageContentProps {
   projectId: number;
@@ -44,6 +45,15 @@ export default function ProjectPageContent({
     isPending: areTeamsLoading,
     error: teamsError,
   } = useGetProjectTeams(projectId);
+  const projectAssignees = teams
+    .flatMap((team) => team.members)
+    .reduce<TaskAssigneeOption[]>((members, member) => {
+      if (!members.some(({ id }) => id === member.id)) {
+        members.push({ id: member.id, name: member.name });
+      }
+      return members;
+    }, [])
+    .sort((first, second) => first.name.localeCompare(second.name));
 
 
   if (isLoading && !displayedProject) {
@@ -75,6 +85,7 @@ export default function ProjectPageContent({
       <ProjectTabs 
           project={displayedProject}
           teams={teams}
+          projectAssignees={projectAssignees}
           areTeamsLoading={areTeamsLoading}
           teamsError={teamsError}
           progressPercentage={progressPercentage}

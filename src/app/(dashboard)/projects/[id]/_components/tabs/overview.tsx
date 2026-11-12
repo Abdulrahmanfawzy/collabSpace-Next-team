@@ -23,6 +23,7 @@ interface OverviewTabProps {
   onYearChange: (year: number) => void;
   isChartLoading?: boolean;
   chartError?: Error | null;
+  canViewTeams?: boolean;
 }
 const OverviewTab = ({
   isLoading = false,
@@ -37,6 +38,7 @@ const OverviewTab = ({
   onYearChange,
   isChartLoading = false,
   chartError = null,
+  canViewTeams = true,
 }: OverviewTabProps) => {
     if(isLoading){
         return (<OverviewProjectsSkeleton/>);
@@ -104,11 +106,13 @@ const OverviewTab = ({
           totalTasks={totalTasks}
         />
         
-        <TeamMembers
-          teams={teams}
-          isLoading={areTeamsLoading}
-          error={teamsError}
-        />
+        {canViewTeams && (
+          <TeamMembers
+            teams={teams}
+            isLoading={areTeamsLoading}
+            error={teamsError}
+          />
+        )}
       </div>
     </section>
   )
