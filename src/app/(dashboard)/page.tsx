@@ -19,6 +19,7 @@ async function Dashboard() {
   const accessToken = session?.backendToken;
   if (!accessToken) throw new Error("No authenticated backend token was found for the dashboard.");
   if (!hasPermission(session?.user?.roles ?? [], "view_dashboard")) redirect("/forbidden");
+  if (session?.user?.roles?.includes("Team Member")) redirect("/projects");
 
   const items = await getDashboard({ accessToken });
   const chartData = items.project_overview.data.map((point) => ({
@@ -28,31 +29,6 @@ async function Dashboard() {
   const chartTicks = items.project_overview.data
     .filter((point) => point.month_number % 2 === 1)
     .map((point) => ({ x: point.month_number - 1, label: point.month }));
-
-  if (session?.user?.roles?.includes("Team Member")) {
-    return (
-      <div className="flex flex-col gap-6 pt-2">
-        <div className="rounded-xl border border-blue-100 bg-blue-50 px-5 py-4 text-sm text-blue-950">
-          Your dashboard is focused on your assigned projects and tasks, teams, files, meetings, and AI assistant. Use the navigation to open project chats and your personal reports.
-        </div>
-        <TaskStats items={items} />
-        <ProjectsAndFiles
-          projectsHref="/projects"
-          filesHref="/files"
-          projects={items.active_projects.items}
-          files={items.recent_files.items}
-        />
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4 mb-8">
-          <TasksAndTeams tasks={items.tasks.items} teams={items.teams.items} />
-          <MeetingsAndAskAI
-            meetings={items.upcoming_meetings.items}
-            meetingsHref="/meetings"
-          />
-        </div>
-      </div>
-    );
-  }
-
 
   return (
     <div className="flex flex-col gap-6 pt-2 ">
