@@ -1,3 +1,4 @@
+
 import type {
   ApiResponse,
   AuthFieldErrors,
@@ -29,16 +30,20 @@ export class AuthApiError extends Error {
 }
 
 function getAuthUrl(endpoint: string): string {
-  const baseUrl = process.env.PUBLIC_NEXT_BASEURL;
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   if (!baseUrl) {
-    throw new Error("PUBLIC_NEXT_BASEURL environment variable is missing.");
+    throw new Error(
+      "NEXT_PUBLIC_API_BASE_URL environment variable is missing."
+    );
   }
 
   return `${baseUrl.replace(/\/+$/, "")}/api/v1/auth/${endpoint.replace(/^\/+/, "")}`;
 }
 
-async function parseResponse<T>(response: Response): Promise<ApiResponse<T>> {
+async function parseResponse<T>(
+  response: Response
+): Promise<ApiResponse<T>> {
   const payload = (await response.json().catch(() => null)) as
     | (ApiResponse<T> & {
         errors?: AuthFieldErrors;
@@ -49,7 +54,7 @@ async function parseResponse<T>(response: Response): Promise<ApiResponse<T>> {
     throw new AuthApiError(
       payload?.message ?? `Request failed with status ${response.status}.`,
       response.status,
-      payload?.errors,
+      payload?.errors
     );
   }
 
@@ -58,7 +63,7 @@ async function parseResponse<T>(response: Response): Promise<ApiResponse<T>> {
 
 async function requestAuth<T>(
   endpoint: string,
-  options: RequestInit = {},
+  options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   const headers = new Headers(options.headers);
 
@@ -78,7 +83,6 @@ async function requestAuth<T>(
 }
 
 export const authService = {
-  // Login
   login(input: LoginInput) {
     return requestAuth<AuthSessionData>("login", {
       method: "POST",
@@ -86,7 +90,6 @@ export const authService = {
     });
   },
 
-  // Register
   register(input: RegisterInput) {
     return requestAuth<AuthSessionData>("register", {
       method: "POST",
@@ -94,7 +97,6 @@ export const authService = {
     });
   },
 
-  // Current authenticated user
   me(token: string) {
     return requestAuth<CurrentUserData>("me", {
       method: "GET",
@@ -104,7 +106,6 @@ export const authService = {
     });
   },
 
-  // Forgot password
   forgotPassword(input: ForgotPasswordInput) {
     return requestAuth<ForgotPasswordData>("forgot-password", {
       method: "POST",
@@ -112,7 +113,6 @@ export const authService = {
     });
   },
 
-  // Verify reset OTP
   verifyResetOtp(input: VerifyResetOtpInput) {
     return requestAuth<null>("verify-reset-otp", {
       method: "POST",
@@ -120,7 +120,6 @@ export const authService = {
     });
   },
 
-  // Reset password
   resetPassword(input: ResetPasswordInput) {
     return requestAuth<null>("reset-password", {
       method: "POST",
@@ -128,7 +127,6 @@ export const authService = {
     });
   },
 
-  // Google OAuth redirect
   async googleRedirect(): Promise<ApiResponse<GoogleRedirectData>> {
     const url = getAuthUrl("social/google/redirect");
 
@@ -152,7 +150,7 @@ export const authService = {
             provider: "google",
             authorization_url: new URL(
               location,
-              response.url || url,
+              response.url || url
             ).toString(),
           },
         };
@@ -162,7 +160,6 @@ export const authService = {
     return parseResponse<GoogleRedirectData>(response);
   },
 
-  // Logout
   logout(token: string) {
     return requestAuth<null>("logout", {
       method: "POST",

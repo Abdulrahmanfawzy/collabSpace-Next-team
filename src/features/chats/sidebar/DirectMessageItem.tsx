@@ -11,11 +11,34 @@ export default function DirectMessageItem({
   message,
   onSelect,
 }: DirectMessageItemProps) {
-  const lastMessage = message.lastMessage;
+  const avatar =
+    "avatar" in message
+      ? String((message as { avatar?: string | null }).avatar ?? "")
+      : "";
 
-  const lastMessageTime = lastMessage?.createdAt
-    ? format(new Date(lastMessage.createdAt), "h:mm a")
-    : "";
+  const lastMessage = message.lastMessage;
+  const lastMessageValue: unknown = lastMessage;
+
+  const lastMessageText =
+    typeof lastMessageValue === "string"
+      ? lastMessageValue
+      : lastMessageValue &&
+          typeof lastMessageValue === "object" &&
+          "text" in lastMessageValue
+        ? String(lastMessageValue.text ?? "")
+        : "";
+
+  const lastMessageWithTimestamp =
+    lastMessageValue &&
+    typeof lastMessageValue === "object" &&
+    "createdAt" in lastMessageValue
+      ? lastMessageValue
+      : null;
+
+  const lastMessageTime =
+    !lastMessageWithTimestamp?.createdAt
+      ? ""
+      : format(new Date(String(lastMessageWithTimestamp.createdAt)), "h:mm a");
 
   return (
     <button
@@ -48,7 +71,7 @@ export default function DirectMessageItem({
 
         <div className="mt-1 flex items-center justify-between gap-2">
           <p className="truncate text-sm text-muted-foreground">
-            {lastMessage?.text ?? ""}
+            {lastMessageText}
           </p>
 
           {!!message.unreadCount && (

@@ -1,3 +1,4 @@
+
 import {
   MoreVertical,
   Phone,
@@ -29,11 +30,11 @@ export default function ChatHeader({
     : selectedChat.channel.name;
 
   const avatarUrl = isDirect
-    ? selectedChat.conversation.avatar
+    ? selectedChat.conversation.image ?? selectedChat.conversation.avatar ?? undefined
     : undefined;
 
   const role = isDirect
-    ? selectedChat.conversation.isOnline
+    ? selectedChat.conversation.online
       ? "Online"
       : "Offline"
     : selectedChat.project.name;
