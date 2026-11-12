@@ -15,6 +15,7 @@ import {
 import { useDeleteProject } from "@/hooks/projects/use-delete-project";
 import type { Project } from "@/types/project";
 import { CreateProjectDialog } from "./create-project-dialog";
+import { useProjectPermissions } from "./use-project-permissions";
 
 interface ProjectRowActionsProps {
   project: Project;
@@ -23,93 +24,101 @@ interface ProjectRowActionsProps {
 export function ProjectRowActions({ project }: ProjectRowActionsProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { mutate: deleteProject, isPending } = useDeleteProject();
+  const { canEditProject, canDeleteProject } = useProjectPermissions();
 
   const handleDelete = () => {
+    if (!canDeleteProject) return;
     deleteProject(project.id, {
       onSuccess: () => setDeleteDialogOpen(false),
     });
   };
 
+  if (!canEditProject && !canDeleteProject) return null;
+
   return (
     <div className="flex items-center justify-start gap-1 ">
-      <CreateProjectDialog
-        project={project}
-        trigger={
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            aria-label={`Edit ${project.name}`}
-            title="Edit project"
-            className="text-primary cursor-pointer hover:bg-primary/10 hover:text-primary "
-          >
-            <Pencil aria-hidden="true" size={16} />
-          </Button>
-        }
-      />
+      {canEditProject && (
+        <CreateProjectDialog
+          project={project}
+          trigger={
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label={`Edit ${project.name}`}
+              title="Edit project"
+              className="text-primary cursor-pointer hover:bg-primary/10 hover:text-primary "
+            >
+              <Pencil aria-hidden="true" size={16} />
+            </Button>
+          }
+        />
+      )}
 
-      <Dialog
-        open={deleteDialogOpen}
-        onOpenChange={(open) => {
-          if (!isPending) setDeleteDialogOpen(open);
-        }}
-      >
-        <DialogTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            aria-label={`Delete ${project.name}`}
-            title="Delete project"
-            className="bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-600 cursor-pointer "
-          >
-            <Trash2 aria-hidden="true" size={16} />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete project?</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete “{project.name}”? This action
-              cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+      {canDeleteProject && (
+        <Dialog
+          open={deleteDialogOpen}
+          onOpenChange={(open) => {
+            if (!isPending) setDeleteDialogOpen(open);
+          }}
+        >
+          <DialogTrigger asChild>
             <Button
               type="button"
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={isPending}
-               className="cursor-pointer"
+              variant="ghost"
+              size="icon-sm"
+              aria-label={`Delete ${project.name}`}
+              title="Delete project"
+              className="bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-600 cursor-pointer "
             >
-              Cancel
+              <Trash2 aria-hidden="true" size={16} />
             </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={isPending}
-              className="cursor-pointer"
-            >
-              {isPending ? (
-                <>
-                  <LoaderCircle
-                    aria-hidden="true"
-                    className="animate-spin"
-                    size={16}
-                  />
-                  Deleting…
-                </>
-              ) : (
-                <>
-                  <Trash2 aria-hidden="true" size={16} />
-                  Delete project
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete project?</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete “{project.name}”? This action
+                cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDeleteDialogOpen(false)}
+                disabled={isPending}
+                className="cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={isPending}
+                className="cursor-pointer"
+              >
+                {isPending ? (
+                  <>
+                    <LoaderCircle
+                      aria-hidden="true"
+                      className="animate-spin"
+                      size={16}
+                    />
+                    Deleting…
+                  </>
+                ) : (
+                  <>
+                    <Trash2 aria-hidden="true" size={16} />
+                    Delete project
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

@@ -34,6 +34,8 @@ import { useDeleteTask } from "@/hooks/tasks/use-delete-task"
 interface TaskCardProps {
     task: Task
     onClick?: (task: Task) => void
+    canEditTask: boolean
+    canDeleteTask: boolean
     draggable?: boolean
     index: number
 }
@@ -41,6 +43,8 @@ interface TaskCardProps {
 export const TaskCard = ({
     task,
     onClick,
+    canEditTask,
+    canDeleteTask,
     draggable = false,
     index,
 }: TaskCardProps) => {
@@ -60,6 +64,7 @@ export const TaskCard = ({
     })
 
     const handleDelete = () => {
+        if (!canDeleteTask) return
         deleteTask(
             { taskId: task.id, projectId: task.projectId },
             { onSuccess: () => setDeleteDialogOpen(false) }
@@ -69,14 +74,13 @@ export const TaskCard = ({
     return (
         <article
             ref={setNodeRef}
-            onClick={() => onClick?.(task)}
+            onClick={canEditTask ? () => onClick?.(task) : undefined}
             style={{
                 transform: CSS.Transform.toString(transform),
                 transition,
                 opacity: isDragging ? 0.5 : undefined,
             }}
-            className="cursor-pointer rounded-xl bg-bg-light p-4 flex flex-col
-        transition hover:bg-gray-100  border border-bg-label"
+            className={`${canEditTask ? "cursor-pointer" : ""} rounded-xl bg-bg-light p-4 flex flex-col transition hover:bg-gray-100 border border-bg-label`}
         >
             <div className="flex flex-col gap-2">
                 {/*----------------------Title and Priority----------------- */}
@@ -101,7 +105,7 @@ export const TaskCard = ({
 
                     <div className="flex shrink-0 items-center gap-1">
                         <TaskPriorityBadge priority={task.priority} />
-                        <DropdownMenu>
+                        {(canEditTask || canDeleteTask) && <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     type="button"
@@ -119,21 +123,25 @@ export const TaskCard = ({
                                 className="w-36"
                                 onClick={(event) => event.stopPropagation()}
                             >
-                                <DropdownMenuItem
-                                    onSelect={() => onClick?.(task)}
-                                >
-                                    <Pencil aria-hidden="true" />
-                                    Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    variant="destructive"
-                                    onSelect={() => setDeleteDialogOpen(true)}
-                                >
-                                    <Trash2 aria-hidden="true" />
-                                    Delete
-                                </DropdownMenuItem>
+                                {canEditTask && (
+                                    <DropdownMenuItem
+                                        onSelect={() => onClick?.(task)}
+                                    >
+                                        <Pencil aria-hidden="true" />
+                                        Edit
+                                    </DropdownMenuItem>
+                                )}
+                                {canDeleteTask && (
+                                    <DropdownMenuItem
+                                        variant="destructive"
+                                        onSelect={() => setDeleteDialogOpen(true)}
+                                    >
+                                        <Trash2 aria-hidden="true" />
+                                        Delete
+                                    </DropdownMenuItem>
+                                )}
                             </DropdownMenuContent>
-                        </DropdownMenu>
+                        </DropdownMenu>}
                     </div>
                 </div>
 
@@ -233,7 +241,7 @@ export const TaskCard = ({
                     </span>
                 </div>
             </div>
-            <Dialog
+            {canDeleteTask && <Dialog
                 open={deleteDialogOpen}
                 onOpenChange={(open) => {
                     if (!isDeleting) setDeleteDialogOpen(open)
@@ -280,7 +288,7 @@ export const TaskCard = ({
                         </Button>
                     </DialogFooter>
                 </DialogContent>
-            </Dialog>
+            </Dialog>}
         </article>
     )
 }

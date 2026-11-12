@@ -3,8 +3,14 @@
 
 import { useState } from "react";
 import type { TaskFilters } from "@/types/tasks.types";
+import { hasPermission } from "@/features/permissions/hasPermission";
+import type { UserRole } from "@/features/auth/types/auth.types";
 import TasksHeader, { TaskFilterValues } from "./tasks-header";
 import TasksContent from "./tasks-content";
+
+interface TasksPageContentProps {
+  roles: UserRole[];
+}
 const emptyFilters: TaskFilterValues = {
   projectId: "",
   status: "all",
@@ -20,7 +26,7 @@ function parseId(value: string): number | undefined {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : Number.NaN;
 }
 
-const TasksPageContent = () => {
+const TasksPageContent = ({ roles }: TasksPageContentProps) => {
   const [values, setValues] = useState(emptyFilters);
   const [filters, setFilters] = useState<TaskFilters>({
     page: 1,
@@ -28,6 +34,10 @@ const TasksPageContent = () => {
   });
   const [filterError, setFilterError] = useState("");
   const [search, setSearch] = useState("");
+  const canCreateTask = hasPermission(roles, "create_task");
+  const canEditTask = hasPermission(roles, "edit_task");
+  const canDeleteTask = hasPermission(roles, "delete_task");
+  const canUpdateTaskStatus = hasPermission(roles, "update_task_status");
 
   const handleFilterChange = (key: keyof TaskFilterValues, value: string) => {
     setValues((current) => ({ ...current, [key]: value }));
@@ -83,6 +93,7 @@ const TasksPageContent = () => {
         onSearchChange={setSearch}
         onApply={handleApply}
         onReset={handleReset}
+        canCreateTask={canCreateTask}
       />
       {filterError && (
         <p role="alert" className="mt-3 text-sm text-destructive">
@@ -92,6 +103,9 @@ const TasksPageContent = () => {
       <TasksContent
         filters={filters}
         search={search}
+        canEditTask={canEditTask}
+        canDeleteTask={canDeleteTask}
+        canUpdateTaskStatus={canUpdateTaskStatus}
         onPageChange={(page) =>
           setFilters((current) => ({ ...current, page }))
         }

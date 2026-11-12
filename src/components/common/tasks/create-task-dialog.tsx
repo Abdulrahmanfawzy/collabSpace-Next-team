@@ -16,6 +16,7 @@ import { useCreateTask } from "@/hooks/tasks/use-create-task";
 import type {
   ApiTaskStatus,
   CreateTaskPayload,
+  TaskAssigneeOption,
   TaskStatus,
 } from "@/types/tasks.types";
 
@@ -24,6 +25,7 @@ interface CreateTaskDialogProps {
   onOpenChange: (open: boolean) => void;
   projectId?: number;
   defaultStatus?: TaskStatus;
+  assignees?: TaskAssigneeOption[];
 }
 
 const priorityOptions = [
@@ -55,6 +57,7 @@ export function CreateTaskDialog({
   onOpenChange,
   projectId,
   defaultStatus = "todo",
+  assignees,
 }: CreateTaskDialogProps) {
   const { mutate, isPending } = useCreateTask();
   const [projectIdValue, setProjectIdValue] = useState(
@@ -70,6 +73,13 @@ export function CreateTaskDialog({
   const [assignedTo, setAssignedTo] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [formError, setFormError] = useState("");
+  const assigneeOptions = [
+    { label: "Unassigned", value: "unassigned" },
+    ...(assignees ?? []).map((assignee) => ({
+      label: assignee.name,
+      value: String(assignee.id),
+    })),
+  ];
 
   const resetForm = () => {
     setProjectIdValue(projectId ? String(projectId) : "");
@@ -206,15 +216,38 @@ export function CreateTaskDialog({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
-              Assignee ID
-              <Input
-                type="number"
-                min={1}
-                step={1}
-                value={assignedTo}
-                onChange={(event) => setAssignedTo(event.target.value)}
-                className={fieldClassName}
-              />
+              {assignees ? (
+                <>
+                  Assign to project member
+                  <CommonSelect
+                    options={assigneeOptions}
+                    value={assignedTo || "unassigned"}
+                    onValueChange={(value) =>
+                      setAssignedTo(value === "unassigned" ? "" : value)
+                    }
+                    disabled={assignees.length === 0}
+                    placeholder="Choose a team member"
+                    triggerClassName="h-10! w-full rounded-lg"
+                  />
+                  {assignees.length === 0 && (
+                    <span className="text-xs font-normal text-gray-500">
+                      No members are assigned to this project yet.
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  Assignee ID
+                  <Input
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={assignedTo}
+                    onChange={(event) => setAssignedTo(event.target.value)}
+                    className={fieldClassName}
+                  />
+                </>
+              )}
             </label>
 
             <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">

@@ -8,6 +8,7 @@ import type {
   UploadProjectFileResponse,
   DeleteProjectFileResponse,
 } from "@/types/files.types";
+import { getBackendToken } from "../auth";
 
 const API_URL = process.env.API;
 const FILES_PER_PAGE = 15;
@@ -40,7 +41,7 @@ export async function getProjectFiles(
     throw new Error("A valid page number is required to fetch files.");
   }
 
-  const token = process.env.token;
+  const token =  await getBackendToken();
   if (!token) {
     throw new Error("You must be signed in to access project files.");
   }
@@ -89,7 +90,7 @@ export async function uploadProjectFile(
     throw new Error("Files must be 20 MB or smaller.");
   }
 
-  const token = process.env.token;
+  const token =  await getBackendToken();
   if (!token) {
     throw new Error("You must be signed in to upload project files.");
   }
@@ -130,7 +131,7 @@ export async function deleteProjectFile(
     throw new Error("A valid file ID is required to delete a file.");
   }
 
-  const token = process.env.token;
+  const token =  await getBackendToken();
   if (!token) {
     throw new Error("You must be signed in to delete project files.");
   }
