@@ -18,5 +18,6 @@ export function useProjectPermissions() {
     canUpdateTaskStatus: hasPermission(roles, "update_task_status"),
     canViewTeams: hasPermission(roles, "view_teams"),
     canUploadFile: hasPermission(roles, "upload_file"),
+    canDeleteFile: hasPermission(roles, "delete_file"),
   };
 }

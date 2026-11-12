@@ -1,4 +1,4 @@
-import { Dot, MoreVertical } from "lucide-react"
+import { Dot } from "lucide-react"
 import { useDroppable } from "@dnd-kit/core"
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 
@@ -53,9 +53,6 @@ export const TaskColumn = ({
         </h2>
        </div>
 
-        <button type="button" aria-label="Column options">
-          <MoreVertical size={16} />
-        </button>
       </div>
 
       {/*---------------- Column Content-------------------- */}
