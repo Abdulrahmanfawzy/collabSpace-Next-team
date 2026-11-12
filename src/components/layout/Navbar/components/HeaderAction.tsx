@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,25 +9,27 @@ import {
   UserNav,
   type HeaderUser,
 } from "@/components/layout/Navbar/components/Usernav";
+import NotificationBell from "@/components/layout/Navbar/components/NotificationBell";
+import type { NotificationItem } from "@/api/notifications.api";
 
 type HeaderActionsProps = {
   /** Pass a user to show the bell + user component. Leave empty to show Sign in / Sign up. */
   user?: HeaderUser | null;
-  hasUnread?: boolean;
+  notifications?: NotificationItem[];
+  unreadCount?: number;
   signInHref?: string;
   signUpHref?: string;
   onSearchChange?: (value: string) => void;
-  onBellClick?: () => void;
   onSignOut?: () => void;
 };
 
 export function HeaderActions({
   user,
-  hasUnread = true,
+  notifications = [],
+  unreadCount = 0,
   signInHref = "/sign-in",
   signUpHref = "/sign-up",
   onSearchChange,
-  onBellClick,
   onSignOut,
 }: HeaderActionsProps) {
   return (
@@ -45,18 +47,7 @@ export function HeaderActions({
 
       {user ? (
         <div className="flex items-center gap-3 sm:gap-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBellClick}
-            className="relative size-11 rounded-full"
-            aria-label={hasUnread ? "Notifications (unread)" : "Notifications"}
-          >
-            <Bell className="size-6" />
-            {hasUnread && (
-              <span className="absolute right-2.5 top-2 size-2.5 rounded-full bg-red-500 ring-2 ring-white" />
-            )}
-          </Button>
+          <NotificationBell items={notifications} unreadCount={unreadCount} />
           <UserNav user={user} onSignOut={onSignOut} />
         </div>
       ) : (

@@ -1,6 +1,7 @@
 "use client";
 
-import { LogOut } from "lucide-react";
+import { LogOut, Pencil, UserRound } from "lucide-react";
+import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -36,7 +37,6 @@ function initials(name: string) {
 
 
 export function UserNav({ user, onSignOut }: UserNavProps) {
-    console.log(user);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-3 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[#3b3bf5] focus-visible:ring-offset-2">
@@ -60,6 +60,19 @@ export function UserNav({ user, onSignOut }: UserNavProps) {
             </p>
           )}
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/profile">
+            <UserRound className="mr-2 size-4" />
+            Profile
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/edit">
+            <Pencil className="mr-2 size-4" />
+            Edit profile
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onSignOut} className="cursor-pointer">
           <LogOut className="mr-2 size-4" />
