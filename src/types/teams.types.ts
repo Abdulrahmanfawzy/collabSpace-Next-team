@@ -18,3 +18,19 @@ export interface Team {
 export interface TeamBoardProps {
   teams: Team[];
 }
+
+export interface TeamRoleOption {
+  value: string;
+  is_leader: boolean;
+}
+
+export interface TeamRolesData {
+  roles: TeamRoleOption[];
+  default: string;
+}
+
+export interface TeamRolesResponse {
+  success: boolean;
+  message: string;
+  data: TeamRolesData;
+}

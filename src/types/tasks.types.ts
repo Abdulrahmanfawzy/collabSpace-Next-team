@@ -14,6 +14,11 @@ export type ApiTaskStatus =
 
 export type TaskPriority = "critical" | "high" | "medium" | "low"
 
+export interface TaskAssigneeOption {
+  id: number;
+  name: string;
+}
+
 export interface TaskFilters {
   page?: number;
   project_id?: number;
