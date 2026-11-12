@@ -38,7 +38,7 @@ const Navbar = async () => {
     <header className="w-full py-5 bg-white mb-5">
       <nav className=" app-container mx-auto flex items-center gap-6">
         <h1 className="text-xl leading-4 font-normal">Collabspace</h1>
-        <MainNav />
+        <MainNav roles={account?.roles ?? []} />
         <div>
           <HeaderActions
             user={user}

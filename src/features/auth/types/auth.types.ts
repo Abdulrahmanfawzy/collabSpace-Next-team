@@ -4,6 +4,11 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export type UserRole =
+  | "Administrator"
+  | "Project Manager"
+  | "Team Member";
+
 export interface AuthUser {
   id: number;
   name: string;
@@ -15,7 +20,7 @@ export interface AuthUser {
   avatar_url: string | null;
   available_status?: string | null;
   status: string;
-  roles: string[];
+  roles: UserRole[];
   permissions: string[];
   google_linked: boolean;
   facebook_linked: boolean;

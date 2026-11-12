@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import { MainNavItem } from "@/types/Types";
+import { canViewReports } from "@/features/auth/permissions/hasPermission";
+import type { UserRole } from "@/features/auth/types/auth.types";
 
 const links: MainNavItem[] = [
   { label: "Dashboard", href: "/", active: "Dashboard" },
@@ -19,11 +21,14 @@ const links: MainNavItem[] = [
   { label: "Tasks", href: "/tasks", active: "Tasks" },
   { label: "Chats", href: "/chats", active: "Chats" },
   { label: "Meetings", href: "/meetings", active: "Meetings" },
-  { label: "Reports", href: "/profile", active: "Reports" },
+  { label: "Reports", href: "/reports", active: "Reports" },
 ];
 
-export default function MainNav() {
+export default function MainNav({ roles = [] }: { roles?: readonly UserRole[] }) {
   const pathname = usePathname();
+  const visibleLinks = links.filter(
+    ({ href }) => href !== "/reports" || canViewReports(roles),
+  );
 
 
   return (
@@ -34,7 +39,7 @@ export default function MainNav() {
           "rounded-full p-1 sm:gap-2 sm:p-2",
         )}
       >
-        {links.map(({ label, href }) => {
+        {visibleLinks.map(({ label, href }) => {
 
           const active =
             pathname === href ||
