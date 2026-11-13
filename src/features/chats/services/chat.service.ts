@@ -24,7 +24,7 @@ export const chatService = {
     perPage: number = 20
   ): Promise<ChatMessagesResponse> => {
     const { data } = await apiClient.get<ChatMessagesResponse>(
-      `/api/v1/projects/${projectId}/messages`,
+      `/projects/${projectId}/messages`,
       {
         params: {
           per_page: perPage,
@@ -40,7 +40,7 @@ export const chatService = {
     payload: SendMessagePayload
   ): Promise<ChatMessage> => {
     const { data } = await apiClient.post<ChatMessageResponse>(
-      `/api/v1/projects/${projectId}/messages`,
+      `/projects/${projectId}/messages`,
       payload
     );
 
@@ -52,7 +52,7 @@ export const chatService = {
     payload: UpdateMessagePayload
   ): Promise<ChatMessage> => {
     const { data } = await apiClient.patch<ChatMessageResponse>(
-      `/api/v1/messages/${messageId}`,
+      `/messages/${messageId}`,
       payload
     );
 
@@ -60,7 +60,7 @@ export const chatService = {
   },
 
   deleteMessage: async (messageId: number): Promise<void> => {
-    await apiClient.delete(`/api/v1/messages/${messageId}`);
+    await apiClient.delete(`/messages/${messageId}`);
   },
 };
 
@@ -85,7 +85,7 @@ interface ProjectsResponse {
 export const projectService = {
   async getProjects(): Promise<Project[]> {
     const { data } = await apiClient.get<ProjectsResponse>(
-      "/api/v1/projects"
+      "/projects"
     );
 
     return data.data.data;
