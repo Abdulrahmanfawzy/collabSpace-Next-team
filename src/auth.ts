@@ -43,17 +43,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.backendToken = user.backendToken;
-        token.backendUser = user.backendUser;
+        token.backendToken = (user as unknown as { backendToken?: string }).backendToken;
+        token.backendUser = (user as unknown as { backendUser?: string }).backendUser;
       }
       return token;
     },
 
     session({ session, token }) {
-      session.backendToken = token.backendToken ?? "";
-      if (token.backendUser) {
+      session.backendToken = typeof token.backendToken === "string" ? token.backendToken : "";
+      if (typeof token.backendUser === "string") {
         try {
-          session.user = JSON.parse(token.backendUser) as AuthUser;
+          session.user = JSON.parse(token.backendUser) as any;
         } catch {}
       }
       return session;

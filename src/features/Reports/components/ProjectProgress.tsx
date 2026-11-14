@@ -63,7 +63,7 @@ export function ProjectsProgress({
   const maxX = Math.max(0, ...data.map((d) => d.x))
   const maxY = Math.max(1, ...data.map((d) => d.value))
   const yTicks = Array.from({ length: 5 }, (_, index) => Math.ceil((maxY * index) / 4))
-  const onProjectChange=(p) => console.log(p)
+  const onProjectChange = (p: string) => console.log(p)
 
   return (
     <Card className="rounded-2xl border-0 shadow-sm">
