@@ -12,23 +12,22 @@ import ChatSearch from "@/features/chats/sidebar/ChatSearch";
 import DirectMessageList from "@/features/chats/sidebar/DirectMessageList";
 import ProjectChatList from "@/features/chats/sidebar/ProjectChatList";
 
-import {
-  directConversations,
-  chatProjects,
-} from "@/features/chats/data/mockChats";
+import { useProjects } from "@/features/chats/hooks/useProjects";
+import { hasPermission } from "@/utils/permission.utils";
 
+import type { AuthUser } from "@/features/auth/types/auth.types";
 import type {
   SelectedChat,
-  ChatChannel,
   ChatProject,
-  ChatConversation,
 } from "@/features/chats/types/chat.types";
 
 interface ChatSidebarProps {
+  user: AuthUser | null;
   onSelectChat: (chat: SelectedChat) => void;
 }
 
 export default function ChatSidebar({
+  user,
   onSelectChat,
 }: ChatSidebarProps) {
   const [activeTab, setActiveTab] =
@@ -36,22 +35,30 @@ export default function ChatSidebar({
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSelectDirectMessage = (
-    conversation: ChatConversation
-  ) => {
-    onSelectChat({
-      type: "direct",
-      conversation,
-    });
-  };
+  // Administrator UI access
+  const isAdministrator =
+    user?.roles?.includes("Administrator") ?? false;
 
-  const handleSelectChannel = (
-    channel: ChatChannel,
-    project: ChatProject
-  ) => {
+  // Project chat permission
+  const canAccessProjectChats =
+    isAdministrator ||
+    hasPermission(user, "access_all_project_chats");
+
+  const {
+    data: projects = [],
+    isLoading,
+    isError,
+  } = useProjects();
+
+  const handleSelectProject = (project: ChatProject) => {
     onSelectChat({
       type: "channel",
-      channel,
+      channel: {
+        id: project.id,
+        name: project.name,
+        description: "Project discussion",
+        unreadCount: 0,
+      },
       project,
     });
   };
@@ -73,18 +80,31 @@ export default function ChatSidebar({
       <div className="min-h-0 flex-1 overflow-y-auto">
         {activeTab === "inbox" ? (
           <DirectMessageList
-            conversations={directConversations}
+            conversations={[]}
             searchQuery={searchQuery}
-            onSelectChat={handleSelectDirectMessage}
+            onSelectChat={() => {}}
           />
+        ) : !canAccessProjectChats ? (
+          <p className="px-4 py-6 text-center text-sm text-muted-foreground">
+            You don't have permission to access project chats.
+          </p>
+        ) : isLoading ? (
+          <p className="px-4 py-6 text-center text-sm text-muted-foreground">
+            Loading projects...
+          </p>
+        ) : isError ? (
+          <p className="px-4 py-6 text-center text-sm text-destructive">
+            Failed to load projects.
+          </p>
         ) : (
           <ProjectChatList
-            projects={chatProjects.map((project) => ({
-              ...project,
-              time: "",
+            projects={projects.map((project) => ({
+              id: project.id,
+              name: project.name,
+              channels: [],
             }))}
             searchQuery={searchQuery}
-            onSelectChannel={handleSelectChannel}
+            onSelectProject={handleSelectProject}
           />
         )}
       </div>

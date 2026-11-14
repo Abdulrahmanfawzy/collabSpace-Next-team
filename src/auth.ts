@@ -1,3 +1,4 @@
+
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
@@ -5,6 +6,7 @@ import type { AuthUser } from "@/features/auth/types/auth.types";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+
   providers: [
     Credentials({
       credentials: {
@@ -46,6 +48,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.backendToken = (user as unknown as { backendToken?: string }).backendToken;
         token.backendUser = (user as unknown as { backendUser?: string }).backendUser;
       }
+
       return token;
     },
 
@@ -56,17 +59,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           session.user = JSON.parse(token.backendUser) as any;
         } catch {}
       }
+
       return session;
     },
   },
 
-  session: { strategy: "jwt" },
+  session: {
+    strategy: "jwt",
+  },
 
   pages: {
     signIn: "/login",
   },
 });
-
 
 /** Read the backend access token from the authenticated NextAuth server session. */
 export async function getAccessToken(): Promise<string | null> {
