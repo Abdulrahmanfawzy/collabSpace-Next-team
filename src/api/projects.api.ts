@@ -18,13 +18,14 @@ import type {
   AssignProjectTeamsPayload,
   AssignProjectTeamsResponse,
 } from "@/types/project";
+import { getBackendToken } from "../auth";
 
 const API_URL = process.env.API
 // ---------------- get projects ----------------
 export async function getProjects(
   filters: ProjectFiltersParams = {}
 ): Promise<ProjectsResponse> {
-  const token = process.env.token;
+  const token=await getBackendToken()
 
   const searchParams = new URLSearchParams();
 
@@ -59,7 +60,7 @@ export async function getProjectOverview({
   period,
   year,
 }: ProjectOverviewParams): Promise<ProjectOverview | null> {
-  const token = process.env.token;
+  const token = await getBackendToken();
    const params = new URLSearchParams({
     period,
     year: String(year),
@@ -97,7 +98,7 @@ export async function getProjectOverview({
 export async function getProjectTeams(
   projectId: number
 ): Promise<ProjectAssignedTeam[]> {
-  const token = process.env.token;
+  const token = await getBackendToken();
   const response = await fetch(
     `${API_URL}/api/v1/projects/${projectId}/teams`,
     {
@@ -127,7 +128,7 @@ export async function assignProjectTeams(
   projectId: number,
   payload: AssignProjectTeamsPayload
 ): Promise<AssignProjectTeamsResponse> {
-  const token = process.env.token;
+  const token = await getBackendToken();
   const response = await fetch(
     `${API_URL}/api/v1/projects/${projectId}/teams`,
     {
@@ -154,7 +155,7 @@ export async function deleteProjectTeam(
   projectId: number,
   teamId: number
 ): Promise<ProjectMutationResponse> {
-  const token = process.env.token;
+  const token = await getBackendToken();
   const response = await fetch(
     `${API_URL}/api/v1/projects/${projectId}/teams/${teamId}`,
     {
@@ -179,7 +180,7 @@ export async function deleteProjectTeam(
 export async function createProject(
   payload: CreateProjectPayload
 ): Promise<CreateProjectResponse> {
-  const token = process.env.token;
+  const token = await getBackendToken();
 
   const response = await fetch(
     `${process.env.API}/api/v1/projects`,
@@ -208,7 +209,7 @@ export async function updateProject(
   id: number,
   payload: UpdateProjectPayload
 ): Promise<UpdateProjectResponse> {
-  const token = process.env.token;
+  const token = await getBackendToken();
   const response = await fetch(`${API_URL}/api/v1/projects/${id}`, {
     method: "PUT",
     headers: {
@@ -231,7 +232,7 @@ export async function updateProject(
 export async function deleteProject(
   id: number
 ): Promise<ProjectMutationResponse> {
-  const token = process.env.token;
+  const token = await getBackendToken();
   const response = await fetch(`${API_URL}/api/v1/projects/${id}`, {
     method: "DELETE",
     headers: {

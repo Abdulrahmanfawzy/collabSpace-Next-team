@@ -23,6 +23,8 @@ interface OverviewTabProps {
   onYearChange: (year: number) => void;
   isChartLoading?: boolean;
   chartError?: Error | null;
+  canViewTeams?: boolean;
+  canManageTeams?: boolean;
 }
 const OverviewTab = ({
   isLoading = false,
@@ -37,6 +39,8 @@ const OverviewTab = ({
   onYearChange,
   isChartLoading = false,
   chartError = null,
+  canViewTeams = true,
+  canManageTeams = false,
 }: OverviewTabProps) => {
     if(isLoading){
         return (<OverviewProjectsSkeleton/>);
@@ -50,6 +54,11 @@ const OverviewTab = ({
     ...chartData.map((item) => item.value),
     1
   );
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 11 }, (_, index) => {
+    const optionYear = currentYear - 5 + index;
+    return { label: String(optionYear), value: String(optionYear) };
+  });
   return (
     <section className="my-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
        {/*------------------------ left section------------------------------------------------------ */}
@@ -75,11 +84,7 @@ const OverviewTab = ({
               {
                 label: "Year",
                 value: String(year),
-                options: [
-                  { label: "2025", value: "2025" },
-                  { label: "2026", value: "2026" },
-                  { label: "2027", value: "2027" },
-                ],
+                options: yearOptions,
                 onChange: (value) => onYearChange(Number(value)),
               },
             ]}
@@ -104,11 +109,16 @@ const OverviewTab = ({
           totalTasks={totalTasks}
         />
         
-        <TeamMembers
-          teams={teams}
-          isLoading={areTeamsLoading}
-          error={teamsError}
-        />
+        {canViewTeams && (
+          <TeamMembers
+            projectId={project.id}
+            teams={teams}
+            availableMembers={project.direct_members}
+            canManageMembers={canManageTeams}
+            isLoading={areTeamsLoading}
+            error={teamsError}
+          />
+        )}
       </div>
     </section>
   )

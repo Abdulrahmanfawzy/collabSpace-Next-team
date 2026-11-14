@@ -15,13 +15,15 @@ import { useDeleteProjectFile } from "@/hooks/files/use-delete-project-file";
 
 interface FileCardProps {
   file: ProjectFile;
+  canDeleteFile: boolean;
 }
 
-const FileCard = ({ file }: FileCardProps) => {
+const FileCard = ({ file, canDeleteFile }: FileCardProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { mutate: deleteFile, isPending } = useDeleteProjectFile();
 
   const handleDelete = () => {
+    if (!canDeleteFile) return;
     deleteFile(
       { fileId: file.id, projectId: file.projectId },
       { onSuccess: () => setDeleteDialogOpen(false) }
@@ -65,67 +67,71 @@ const FileCard = ({ file }: FileCardProps) => {
         >
           <Download size={15} />
         </a>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-xs"
-          aria-label={`Delete ${file.name}`}
-          title="Delete file"
-          className="text-red-600 hover:bg-red-50 hover:text-red-700"
-          onClick={() => setDeleteDialogOpen(true)}
-        >
-          <Trash2 aria-hidden="true" size={14} />
-        </Button>
+        {canDeleteFile && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-xs"
+            aria-label={`Delete ${file.name}`}
+            title="Delete file"
+            className="text-red-600 hover:bg-red-50 hover:text-red-700"
+            onClick={() => setDeleteDialogOpen(true)}
+          >
+            <Trash2 aria-hidden="true" size={14} />
+          </Button>
+        )}
       </div>
 
-      <Dialog
-        open={deleteDialogOpen}
-        onOpenChange={(open) => {
-          if (!isPending) setDeleteDialogOpen(open);
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete file permanently?</DialogTitle>
-            <DialogDescription>
-              “{file.name}” will be permanently removed from storage and the
-              project. This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              disabled={isPending}
-              onClick={() => setDeleteDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              disabled={isPending}
-              onClick={handleDelete}
-            >
-              {isPending ? (
-                <>
-                  <LoaderCircle
-                    aria-hidden="true"
-                    className="animate-spin"
-                    size={16}
-                  />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 aria-hidden="true" size={16} />
-                  Delete file
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {canDeleteFile && (
+        <Dialog
+          open={deleteDialogOpen}
+          onOpenChange={(open) => {
+            if (!isPending) setDeleteDialogOpen(open);
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete file permanently?</DialogTitle>
+              <DialogDescription>
+                “{file.name}” will be permanently removed from storage and the
+                project. This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isPending}
+                onClick={() => setDeleteDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={isPending}
+                onClick={handleDelete}
+              >
+                {isPending ? (
+                  <>
+                    <LoaderCircle
+                      aria-hidden="true"
+                      className="animate-spin"
+                      size={16}
+                    />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 aria-hidden="true" size={16} />
+                    Delete file
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

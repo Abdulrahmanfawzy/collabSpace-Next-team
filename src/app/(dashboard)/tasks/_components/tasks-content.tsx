@@ -6,26 +6,52 @@ import { UpdateTaskDialog } from "@/components/common/tasks/update-task-dialog";
 import TasksTabSkeleton from "@/components/skeletons/tasks-tab-skeleton";
 import { CommonPagination } from "@/components/common/common-pagination";
 import { useGetTasks } from "@/hooks/tasks/use-get-tasks";
+import { useUpdateTaskStatus } from "@/hooks/tasks/use-update-task-status";
 import { createTaskColumns } from "@/lib/task-board";
 import type { Task, TaskFilters } from "@/types/tasks.types";
 
 interface TasksContentProps {
   filters: TaskFilters;
   search: string;
+  canEditTask: boolean;
+  canDeleteTask: boolean;
+  canUpdateTaskStatus: boolean;
   onPageChange: (page: number) => void;
 }
 
-const TasksContent = ({ filters, search, onPageChange }: TasksContentProps) => {
+const TasksContent = ({
+  filters,
+  search,
+  canEditTask,
+  canDeleteTask,
+  canUpdateTaskStatus,
+  onPageChange,
+}: TasksContentProps) => {
   const [taskToUpdate, setTaskToUpdate] = useState<Task | null>(null);
   const { data, isPending, error } = useGetTasks(filters);
+  const updateTaskStatus = useUpdateTaskStatus();
   const tasks = data?.tasks ?? [];
 
-  const handleAddTask = (status: string) => {
-    console.log("Add task to:", status);
+  const handleTaskClick = (task: Task) => {
+    if (!canEditTask) return;
+    setTaskToUpdate(task);
   };
 
-  const handleTaskClick = (task: Task) => {
-    setTaskToUpdate(task);
+  const handleTaskMove = (
+    taskId: string,
+    status: Task["status"],
+    targetIndex: number
+  ) => {
+    if (!canUpdateTaskStatus) return;
+    const task = tasks.find((item) => item.id === taskId);
+    if (!task || task.status === status) return;
+
+    updateTaskStatus.mutate({
+      projectId: task.projectId ?? filters.project_id,
+      taskId,
+      status,
+      targetIndex,
+    });
   };
 
   const normalizedSearch = search.trim().toLocaleLowerCase();
@@ -47,7 +73,7 @@ const TasksContent = ({ filters, search, onPageChange }: TasksContentProps) => {
 
   return (
     <div className="mt-6">
-      {taskToUpdate && (
+      {canEditTask && taskToUpdate && (
         <UpdateTaskDialog
           key={taskToUpdate.id}
           task={taskToUpdate}
@@ -65,8 +91,14 @@ const TasksContent = ({ filters, search, onPageChange }: TasksContentProps) => {
       ) : visibleTasks.length > 0 ? (
         <TaskBoard
           columns={createTaskColumns(visibleTasks)}
-          onAddTask={handleAddTask}
-          onTaskClick={handleTaskClick}
+          onTaskClick={canEditTask ? handleTaskClick : undefined}
+          canEditTask={canEditTask}
+          canDeleteTask={canDeleteTask}
+          onTaskMove={
+            canUpdateTaskStatus && !updateTaskStatus.isPending
+              ? handleTaskMove
+              : undefined
+          }
         />
       ) : (
         <p className="py-12 text-center text-sm text-gray-500">

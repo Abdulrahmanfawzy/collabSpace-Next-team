@@ -8,6 +8,8 @@ export const TaskBoard = ({
   columns,
   onAddTask,
   onTaskClick,
+  canEditTask = Boolean(onTaskClick),
+  canDeleteTask = false,
   onTaskMove,
 }: TaskBoardProps) => {
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
@@ -42,6 +44,8 @@ export const TaskBoard = ({
           column={column}
           onAddTask={onAddTask}
           onTaskClick={onTaskClick}
+          canEditTask={canEditTask}
+          canDeleteTask={canDeleteTask}
           enableDragAndDrop={Boolean(onTaskMove)}
         />
       ))}

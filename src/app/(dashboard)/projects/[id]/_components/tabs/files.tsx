@@ -9,6 +9,7 @@ import FilesSkeleton from "@/components/skeletons/files-tab-skeleton";
 import { CommonPagination } from "@/components/common/common-pagination";
 import { useGetProjectFiles } from "@/hooks/files/use-get-project-files";
 import { useUploadProjectFile } from "@/hooks/files/use-upload-project-file";
+import { useProjectPermissions } from "../../../_components/use-project-permissions";
 
 interface FilesTabProps {
   projectId: number;
@@ -20,6 +21,7 @@ const FilesTab = ({
   isLoading = false,
 }: FilesTabProps) => {
   const maxFileSize = 20 * 1024 * 1024;
+  const { canUploadFile, canDeleteFile } = useProjectPermissions();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [page, setPage] = useState(1);
   const { data, isPending, error } = useGetProjectFiles(projectId, page);
@@ -29,6 +31,7 @@ const FilesTab = ({
   const recentFiles = files.slice(0, 3);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!canUploadFile) return;
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
@@ -70,7 +73,11 @@ const FilesTab = ({
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {recentFiles.map((file) => (
-            <FileCard key={file.id} file={file} />
+            <FileCard
+              key={file.id}
+              file={file}
+              canDeleteFile={canDeleteFile}
+            />
           ))}
         </div>
       </section>
@@ -83,30 +90,36 @@ const FilesTab = ({
             All Files
           </h2>
 
-          <div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              className="hidden"
-              disabled={isUploading}
-              onChange={handleFileChange}
-            />
+          {canUploadFile && (
+            <div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                disabled={isUploading}
+                onChange={handleFileChange}
+              />
 
-            <button
-              type="button"
-              disabled={isUploading}
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1 rounded-full bg-blue-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isUploading ? "Uploading..." : "Upload File"}
-              <Upload size={13} />
-            </button>
-          </div>
+              <button
+                type="button"
+                disabled={isUploading}
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-1 rounded-full bg-blue-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isUploading ? "Uploading..." : "Upload File"}
+                <Upload size={13} />
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {files.map((file) => (
-            <FileCard key={file.id} file={file} />
+            <FileCard
+              key={file.id}
+              file={file}
+              canDeleteFile={canDeleteFile}
+            />
           ))}
         </div>
 

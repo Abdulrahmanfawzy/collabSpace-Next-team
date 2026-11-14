@@ -16,6 +16,7 @@ import { useAssignTask } from "@/hooks/tasks/use-assign-task";
 import type {
   ApiTaskStatus,
   Task,
+  TaskAssigneeOption,
   UpdateTaskAssignmentPayload,
   UpdateTaskPayload,
 } from "@/types/tasks.types";
@@ -24,6 +25,7 @@ interface UpdateTaskDialogProps {
   task: Task;
   projectId?: number;
   onOpenChange: (open: boolean) => void;
+  assignees?: TaskAssigneeOption[];
 }
 
 const priorityOptions = [
@@ -64,6 +66,7 @@ export function UpdateTaskDialog({
   task,
   projectId,
   onOpenChange,
+  assignees,
 }: UpdateTaskDialogProps) {
   const { mutate, isPending } = useUpdateTask();
   const {
@@ -82,6 +85,7 @@ export function UpdateTaskDialog({
     task.assignees[0]?.id ?? ""
   );
   const [assignmentError, setAssignmentError] = useState("");
+  const assigneeOptions = assignees ?? [];
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -105,6 +109,15 @@ export function UpdateTaskDialog({
     const parsedAssigneeId = Number(assigneeId);
     if (!Number.isInteger(parsedAssigneeId) || parsedAssigneeId <= 0) {
       setAssignmentError("Enter a valid team member ID.");
+      return;
+    }
+    if (
+      assignees &&
+      !assignees.some((assignee) => assignee.id === parsedAssigneeId)
+    ) {
+      setAssignmentError(
+        "Choose a member assigned to one of this project's teams."
+      );
       return;
     }
 
@@ -137,18 +150,45 @@ export function UpdateTaskDialog({
             {task.assignees.length ? "Reassign task" : "Assign task"}
           </h3>
           <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
-            Team member ID
-            <Input
-              type="number"
-              min={1}
-              step={1}
-              value={assigneeId}
-              onChange={(event) => {
-                setAssigneeId(event.target.value);
-                setAssignmentError("");
-              }}
-              className={fieldClassName}
-            />
+            {assignees ? (
+              <>
+                Team member
+                <CommonSelect
+                  options={assigneeOptions.map((assignee) => ({
+                    label: assignee.name,
+                    value: String(assignee.id),
+                  }))}
+                  value={assigneeId}
+                  onValueChange={(value) => {
+                    setAssigneeId(value);
+                    setAssignmentError("");
+                  }}
+                  disabled={assigneeOptions.length === 0}
+                  placeholder="Choose a team member"
+                  triggerClassName="h-10! w-full rounded-lg"
+                />
+                {assigneeOptions.length === 0 && (
+                  <span className="text-xs font-normal text-gray-500">
+                    No members are assigned to this project yet.
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                Team member ID
+                <Input
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={assigneeId}
+                  onChange={(event) => {
+                    setAssigneeId(event.target.value);
+                    setAssignmentError("");
+                  }}
+                  className={fieldClassName}
+                />
+              </>
+            )}
           </label>
           {assignmentError && (
             <p role="alert" className="text-sm text-destructive">
@@ -158,7 +198,11 @@ export function UpdateTaskDialog({
           <Button
             type="button"
             variant="outline"
-            disabled={isAssigning || isPending}
+            disabled={
+              isAssigning ||
+              isPending ||
+              (assignees !== undefined && assigneeOptions.length === 0)
+            }
             onClick={handleAssign}
           >
             {isAssigning

@@ -7,7 +7,7 @@ import { moveTaskInColumns } from "@/lib/task-board";
 import type { ProjectKanban, TaskStatus } from "@/types/tasks.types";
 
 interface UpdateTaskStatusVariables {
-  projectId: number;
+  projectId?: number;
   taskId: string;
   status: TaskStatus;
   targetIndex: number;
@@ -20,6 +20,8 @@ export function useUpdateTaskStatus() {
     mutationFn: ({ taskId, status }: UpdateTaskStatusVariables) =>
       updateTaskStatusAction(taskId, status),
     onMutate: async ({ projectId, taskId, status, targetIndex }) => {
+      if (!projectId) return undefined;
+
       const queryKey = ["project-kanban", projectId];
       await queryClient.cancelQueries({ queryKey });
 
@@ -40,15 +42,22 @@ export function useUpdateTaskStatus() {
       return { previousKanban, queryKey };
     },
     onError: (error, _variables, context) => {
-      if (context?.previousKanban) {
+      if (context?.previousKanban && context.queryKey) {
         queryClient.setQueryData(context.queryKey, context.previousKanban);
       }
       toast.error(error.message || "Failed to update task status");
     },
     onSuccess: async (_task, { projectId }) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["project-kanban", projectId],
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+        ...(projectId
+          ? [
+              queryClient.invalidateQueries({
+                queryKey: ["project-kanban", projectId],
+              }),
+            ]
+          : []),
+      ]);
     },
   });
 }

@@ -1,4 +1,4 @@
-import { Dot, MoreVertical } from "lucide-react"
+import { Dot } from "lucide-react"
 import { useDroppable } from "@dnd-kit/core"
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 
@@ -10,6 +10,8 @@ interface TaskColumnProps {
   column: TaskColumnType
   onAddTask?: (status: TaskColumnType["id"]) => void
   onTaskClick?: (task: Task) => void
+  canEditTask: boolean
+  canDeleteTask: boolean
   enableDragAndDrop: boolean
 }
 
@@ -24,6 +26,8 @@ export const TaskColumn = ({
   column,
   onAddTask,
   onTaskClick,
+  canEditTask,
+  canDeleteTask,
   enableDragAndDrop,
 }: TaskColumnProps) => {
   const { setNodeRef } = useDroppable({
@@ -49,17 +53,14 @@ export const TaskColumn = ({
         </h2>
        </div>
 
-        <button type="button" aria-label="Column options">
-          <MoreVertical size={16} />
-        </button>
       </div>
 
       {/*---------------- Column Content-------------------- */}
       <div className="flex flex-col gap-3 p-3">
 
-        <AddTaskButton
-          onClick={() => onAddTask?.(column.id)}
-        />
+        {onAddTask && (
+          <AddTaskButton onClick={() => onAddTask(column.id)} />
+        )}
 
         <SortableContext
           items={column.tasks.map((task) => task.id)}
@@ -70,6 +71,8 @@ export const TaskColumn = ({
               key={task.id}
               task={task}
               onClick={onTaskClick}
+              canEditTask={canEditTask}
+              canDeleteTask={canDeleteTask}
               draggable={enableDragAndDrop}
               index={index}
             />

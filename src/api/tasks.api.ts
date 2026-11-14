@@ -19,13 +19,14 @@ import type {
   TasksResponse,
 } from "@/types/tasks.types";
 import { mapApiTask } from "../lib/tasks/task-mapper";
+import { getBackendToken } from "../auth";
 
 
 const API_URL = process.env.API;
 
 async function getAuthHeaders(): Promise<HeadersInit> {
-//   const token = await getAccessToken();
-const token=process.env.token;
+  const token = await getBackendToken();
+
   if (!token) {
     throw new Error("You must be signed in to access tasks.");
   }

@@ -11,6 +11,7 @@ import {
 import Link from "next/link"
 import type { Project } from "@/types/project"
 import { ProjectRowActions } from "./project-row-actions"
+import { useProjectPermissions } from "./use-project-permissions"
 
 interface ProjectsTableProps {
   projects: Project[]
@@ -45,13 +46,18 @@ const STATUS_STYLES: Record<Project["status"], string> = {
 
 const headerClass = "text-lg font-medium text-text-primary"
 export function ProjectsTable({ projects }: ProjectsTableProps) {
+  const { canEditProject, canDeleteProject } = useProjectPermissions();
+  const showActions = canEditProject || canDeleteProject;
+
   return (
     <div className="settings-sidebar-scrollbar mt-6 w-full overflow-x-auto">
       <Table className="min-w-225">
 
         <TableHeader>
           <TableRow className="border-b border-secondary-100 hover:bg-transparent pt-2 pb-4">
-            {TABLE_HEADERS.map((header) => (
+            {TABLE_HEADERS.filter(
+              (header) => header !== "Actions" || showActions
+            ).map((header) => (
               <TableHead key={header} className={headerClass}>
                 {header}
               </TableHead>
@@ -126,9 +132,11 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
                 </div>
               </TableCell>
 
-              <TableCell>
-                <ProjectRowActions project={project} />
-              </TableCell>
+              {showActions && (
+                <TableCell>
+                  <ProjectRowActions project={project} />
+                </TableCell>
+              )}
               
             </TableRow>
           ))}
