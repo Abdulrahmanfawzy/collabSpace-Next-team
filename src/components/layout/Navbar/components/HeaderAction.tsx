@@ -75,7 +75,7 @@ export function HeaderActions({
   };
 
   return (
-    <div className="flex items-center gap-2 sm:gap-5">
+    <div className="flex items-center gap-2 sm:gap-4">
       {/* ================= DESKTOP SEARCH (sm+) ================= */}
       <div ref={searchContainerRef} className="relative hidden sm:block w-48 md:w-60 lg:w-72">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-neutral-400" />
@@ -174,10 +174,13 @@ export function HeaderActions({
       {user ? (
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <NotificationBell items={notifications} unreadCount={unreadCount} />
-          <UserNav user={user} onSignOut={onSignOut} />
+          {/* Profile shown only on desktop (lg+), hidden on mobile because it's inside the mobile nav menu */}
+          <div className="hidden lg:block">
+            <UserNav user={user} onSignOut={onSignOut} />
+          </div>
         </div>
       ) : (
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="hidden lg:flex items-center gap-1.5 sm:gap-2 shrink-0">
           <Button asChild variant="ghost" size="sm" className="rounded-full px-3 sm:px-5 text-xs sm:text-sm">
             <Link href={signInHref}>Sign in</Link>
           </Button>

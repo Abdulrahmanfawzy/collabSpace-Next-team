@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -68,28 +68,22 @@ interface MainNavProps {
 export default function MainNav({ roles = [], user, onSignOut }: MainNavProps) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
-  // Close mobile menu on route change
+  // Close mobile drawer on route change
   useEffect(() => {
     setIsMobileOpen(false);
   }, [pathname]);
 
-  // Close mobile menu on outside click
+  // Lock background body scroll when mobile drawer is open
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        mobileMenuRef.current &&
-        !mobileMenuRef.current.contains(e.target as Node)
-      ) {
-        setIsMobileOpen(false);
-      }
-    }
-
     if (isMobileOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [isMobileOpen]);
 
   const visibleLinks = links.flatMap((link) => {
@@ -121,7 +115,7 @@ export default function MainNav({ roles = [], user, onSignOut }: MainNavProps) {
   };
 
   return (
-    <div ref={mobileMenuRef} className="relative flex items-center">
+    <div className="flex items-center">
       {/* Mobile Hamburger Toggle Button (< lg) */}
       <button
         type="button"
@@ -130,7 +124,7 @@ export default function MainNav({ roles = [], user, onSignOut }: MainNavProps) {
         aria-label={isMobileOpen ? "Close navigation menu" : "Open navigation menu"}
         aria-expanded={isMobileOpen}
       >
-        {isMobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+        <Menu className="size-5" />
       </button>
 
       {/* Desktop Horizontal Menu (lg+) */}
@@ -168,102 +162,131 @@ export default function MainNav({ roles = [], user, onSignOut }: MainNavProps) {
         </NavigationMenu>
       </div>
 
-      {/* Mobile Dropdown Panel (< lg) */}
+      {/* Mobile Drawer Navigation (< lg) - Stays 100% within viewport */}
       {isMobileOpen && (
-        <div className="lg:hidden absolute left-0 top-full z-50 mt-3 w-72 rounded-2xl border border-neutral-200/90 bg-white p-3 shadow-2xl backdrop-blur-md animate-in fade-in-0 zoom-in-95 duration-150">
-          {/* Profile Section on Mobile */}
-          {user ? (
-            <div className="mb-3 rounded-xl bg-neutral-50 p-3 border border-neutral-100">
-              <div className="flex items-center gap-3">
-                <Avatar className="size-11 shrink-0">
-                  {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
-                  <AvatarFallback className="bg-neutral-200 text-sm font-semibold">
-                    {initials(user.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-neutral-900">{user.name}</p>
-                  <p className="truncate text-xs font-medium text-neutral-500">{user.role}</p>
-                  {user.email && (
-                    <p className="truncate text-[11px] text-neutral-400">{user.email}</p>
-                  )}
+        <div className="lg:hidden">
+          {/* Backdrop overlay */}
+          <div
+            className="fixed inset-0 z-[140] bg-black/50 backdrop-blur-xs animate-in fade-in-0 duration-200"
+            onClick={() => setIsMobileOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Drawer panel */}
+          <aside
+            aria-label="Mobile Navigation Drawer"
+            className="fixed inset-y-0 left-0 z-[150] w-[min(320px,85vw)] bg-white shadow-2xl flex flex-col animate-in slide-in-from-left duration-200"
+          >
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-3.5">
+              <span className="text-lg font-bold text-neutral-900">Collabspace</span>
+              <button
+                type="button"
+                onClick={() => setIsMobileOpen(false)}
+                className="flex size-8 items-center justify-center rounded-full text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
+                aria-label="Close menu"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* User Profile Card */}
+              {user ? (
+                <div className="rounded-2xl bg-neutral-50 p-3.5 border border-neutral-100 shadow-2xs">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="size-11 shrink-0">
+                      {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
+                      <AvatarFallback className="bg-neutral-200 text-sm font-semibold">
+                        {initials(user.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-bold text-neutral-900">{user.name}</p>
+                      <p className="truncate text-xs font-medium text-neutral-500">{user.role}</p>
+                      {user.email && (
+                        <p className="truncate text-[11px] text-neutral-400">{user.email}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Profile Links */}
+                  <div className="mt-3 flex flex-col gap-1 border-t border-neutral-200/60 pt-2.5">
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsMobileOpen(false)}
+                      className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-200/60 transition-colors"
+                    >
+                      <UserRound className="size-4 text-neutral-500" />
+                      <span>Profile</span>
+                    </Link>
+                    <Link
+                      href="/edit"
+                      onClick={() => setIsMobileOpen(false)}
+                      className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-200/60 transition-colors"
+                    >
+                      <Pencil className="size-4 text-neutral-500" />
+                      <span>Edit profile</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileOpen(false);
+                        onSignOut?.();
+                      }}
+                      className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut className="size-4 text-red-500" />
+                      <span>Sign out</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="flex items-center gap-2 border-b border-neutral-100 pb-3">
+                  <Button asChild variant="ghost" size="sm" className="w-1/2 rounded-full text-xs">
+                    <Link href="/login" onClick={() => setIsMobileOpen(false)}>
+                      Sign in
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" className="w-1/2 rounded-full bg-primary-light text-xs hover:bg-[#3333e0]">
+                    <Link href="/register" onClick={() => setIsMobileOpen(false)}>
+                      Sign up
+                    </Link>
+                  </Button>
+                </div>
+              )}
 
-              {/* Profile Links */}
-              <div className="mt-3 flex flex-col gap-0.5 border-t border-neutral-200/60 pt-2">
-                <Link
-                  href="/profile"
-                  onClick={() => setIsMobileOpen(false)}
-                  className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200/60 transition-colors"
-                >
-                  <UserRound className="size-3.5 text-neutral-500" />
-                  <span>Profile</span>
-                </Link>
-                <Link
-                  href="/edit"
-                  onClick={() => setIsMobileOpen(false)}
-                  className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200/60 transition-colors"
-                >
-                  <Pencil className="size-3.5 text-neutral-500" />
-                  <span>Edit profile</span>
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileOpen(false);
-                    onSignOut?.();
-                  }}
-                  className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
-                >
-                  <LogOut className="size-3.5 text-red-500" />
-                  <span>Sign out</span>
-                </button>
+              {/* Navigation Links */}
+              <div>
+                <p className="px-2 pb-2 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                  Navigation
+                </p>
+                <nav className="flex flex-col gap-1">
+                  {visibleLinks.map(({ label, href, icon: Icon }) => {
+                    const active = isLinkActive(href);
+
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        onClick={() => setIsMobileOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-medium transition-colors",
+                          active
+                            ? "bg-primary-light text-white font-semibold shadow-xs"
+                            : "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900"
+                        )}
+                      >
+                        <Icon className={cn("size-4 shrink-0", active ? "text-white" : "text-neutral-500")} />
+                        <span>{label}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
               </div>
             </div>
-          ) : (
-            <div className="mb-3 flex items-center gap-2 border-b border-neutral-100 pb-3">
-              <Button asChild variant="ghost" size="sm" className="w-1/2 rounded-full text-xs">
-                <Link href="/login" onClick={() => setIsMobileOpen(false)}>
-                  Sign in
-                </Link>
-              </Button>
-              <Button asChild size="sm" className="w-1/2 rounded-full bg-primary-light text-xs hover:bg-[#3333e0]">
-                <Link href="/register" onClick={() => setIsMobileOpen(false)}>
-                  Sign up
-                </Link>
-              </Button>
-            </div>
-          )}
-
-          {/* Navigation Links */}
-          <div className="px-1 py-1">
-            <p className="px-2 pb-1.5 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
-              Menu
-            </p>
-            <nav className="flex flex-col gap-1 max-h-[50vh] overflow-y-auto">
-              {visibleLinks.map(({ label, href, icon: Icon }) => {
-                const active = isLinkActive(href);
-
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setIsMobileOpen(false)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-medium transition-colors",
-                      active
-                        ? "bg-primary-light text-white font-semibold shadow-xs"
-                        : "text-neutral-700 hover:bg-neutral-100/80 hover:text-neutral-900"
-                    )}
-                  >
-                    <Icon className={cn("size-4 shrink-0", active ? "text-white" : "text-neutral-500")} />
-                    <span>{label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+          </aside>
         </div>
       )}
     </div>

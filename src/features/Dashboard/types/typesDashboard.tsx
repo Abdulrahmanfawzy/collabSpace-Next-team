@@ -62,3 +62,9 @@ export type RecentFilesProps = { files: RecentFile[]; viewAllHref?: string };
 export type TasksAndTeamsProps = { tasks: Task[]; teams: Team[]; tasksHref?: string };
 export type MeetingsAndAskAIProps = { meetings: Meeting[]; meetingsHref?: string };
 export type UpcomingMeetingsProps = { meetings: Meeting[]; viewAllHref?: string };
+export type AskAIProps = {
+  onSend?: (message: string) => Promise<{ answer?: string } | void> | void;
+  heading?: string;
+  placeholder?: string;
+  className?: string;
+};
