@@ -60,7 +60,6 @@ export function CompletionVsDeadline({
               tick={{ fill: AXIS_TEXT, fontSize: 13 }}
             />
             <XAxis
-              dataKey="id"
               dataKey="axisLabel"
               tickLine={false}
               axisLine={false}

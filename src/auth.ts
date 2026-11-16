@@ -45,30 +45,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        const authUser = user as typeof user & {
-          backendToken: string;
-          backendUser: string;
-        };
-
-        token.backendToken = authUser.backendToken;
-        token.backendUser = authUser.backendUser;
+        token.backendToken = (user as unknown as { backendToken?: string }).backendToken;
+        token.backendUser = (user as unknown as { backendUser?: string }).backendUser;
       }
 
       return token;
     },
 
     session({ session, token }) {
-      session.backendToken =
-        typeof token.backendToken === "string"
-          ? token.backendToken
-          : "";
-
+      session.backendToken = typeof token.backendToken === "string" ? token.backendToken : "";
       if (typeof token.backendUser === "string") {
         try {
-          session.user = JSON.parse(token.backendUser) as AuthUser;
-        } catch {
-          console.error("Failed to parse backend user from session.");
-        }
+          session.user = JSON.parse(token.backendUser) as any;
+        } catch {}
       }
 
       return session;

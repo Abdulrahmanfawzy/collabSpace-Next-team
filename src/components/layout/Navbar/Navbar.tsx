@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { auth, signOut } from "@/auth";
 import getNotifications, { getUnreadNotificationCount } from "@/api/notifications.api";
 import type { NotificationItem } from "@/api/notifications.api";
@@ -35,10 +36,21 @@ const Navbar = async () => {
   }
 
   return (
-    <header className="w-full py-5 bg-white mb-5">
-      <nav className=" app-container mx-auto flex items-center gap-6">
-        <h1 className="text-xl leading-4 font-normal">Collabspace</h1>
-        <MainNav roles={account?.roles ?? []} />
+    <header className="relative w-full py-3 sm:py-5 bg-white mb-5 border-b border-neutral-100/80 shadow-2xs">
+      <nav className="app-container mx-auto flex items-center justify-between gap-3 sm:gap-6">
+        <div className="flex items-center gap-3 sm:gap-6">
+          <Link
+            href="/"
+            className="text-lg sm:text-xl leading-none font-normal shrink-0 tracking-tight text-neutral-900 hover:opacity-85 transition-opacity"
+          >
+            Collabspace
+          </Link>
+          <MainNav
+            roles={account?.roles ?? []}
+            user={user}
+            onSignOut={handleSignOut}
+          />
+        </div>
         <div>
           <HeaderActions
             user={user}
