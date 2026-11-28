@@ -1,20 +1,10 @@
 
 "use client";
 
-import { useState } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
 import { Download, FileText } from "lucide-react";
 
 import type { PDFFile } from "@/features/profile/types/profile.types";
 import { RelativeTime } from "@/components/common/RelativeTime";
-
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
 
 type PDFGridProps = {
   files: PDFFile[];
