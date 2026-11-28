@@ -139,7 +139,7 @@ const TasksHeader = ({
         <CreateTaskDialog
           open={createTaskOpen}
           onOpenChange={setCreateTaskOpen}
-          projectId={projectId}
+          defaultProjectId={projectId}
         />
       )}
 

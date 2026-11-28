@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { CommonSelect } from "@/components/common/common-select";
 import { useUpdateTask } from "@/hooks/tasks/use-update-task";
 import { useAssignTask } from "@/hooks/tasks/use-assign-task";
+import { useGetProjectTeams } from "@/hooks/projects/use-get-project-teams";
 import type {
   ApiTaskStatus,
   Task,
@@ -85,7 +86,44 @@ export function UpdateTaskDialog({
     task.assignees[0]?.id ?? ""
   );
   const [assignmentError, setAssignmentError] = useState("");
-  const assigneeOptions = assignees ?? [];
+  const effectiveProjectId = projectId ?? task.projectId;
+  const hasValidProject =
+    effectiveProjectId !== undefined &&
+    Number.isInteger(effectiveProjectId) &&
+    effectiveProjectId > 0;
+  const { data: projectTeams = [], isPending: areMembersLoading } =
+    useGetProjectTeams(assignees ? 0 : (effectiveProjectId ?? 0));
+  const memberOptions = useMemo(() => {
+    if (assignees) return assignees;
+    return projectTeams
+      .flatMap((team) => team.members)
+      .reduce<TaskAssigneeOption[]>((members, member) => {
+        if (!members.some(({ id }) => id === member.id)) {
+          members.push({ id: member.id, name: member.name });
+        }
+        return members;
+      }, []);
+  }, [assignees, projectTeams]);
+  const assigneeOptions = useMemo(() => {
+    const options = [...memberOptions];
+    for (const current of task.assignees) {
+      const id = Number(current.id);
+      if (
+        Number.isInteger(id) &&
+        id > 0 &&
+        !options.some((option) => option.id === id)
+      ) {
+        options.push({ id, name: current.name });
+      }
+    }
+    return options.sort((first, second) =>
+      first.name.localeCompare(second.name)
+    );
+  }, [memberOptions, task.assignees]);
+  const isMembersLoading = !assignees && areMembersLoading;
+  const isAssigneeSelectDisabled =
+    assigneeOptions.length === 0 ||
+    (!assignees && (!hasValidProject || areMembersLoading));
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -108,16 +146,11 @@ export function UpdateTaskDialog({
   const handleAssign = () => {
     const parsedAssigneeId = Number(assigneeId);
     if (!Number.isInteger(parsedAssigneeId) || parsedAssigneeId <= 0) {
-      setAssignmentError("Enter a valid team member ID.");
+      setAssignmentError("Select a team member.");
       return;
     }
-    if (
-      assignees &&
-      !assignees.some((assignee) => assignee.id === parsedAssigneeId)
-    ) {
-      setAssignmentError(
-        "Choose a member assigned to one of this project's teams."
-      );
+    if (!assigneeOptions.some((assignee) => assignee.id === parsedAssigneeId)) {
+      setAssignmentError("Choose a team member from this project.");
       return;
     }
 
@@ -150,44 +183,31 @@ export function UpdateTaskDialog({
             {task.assignees.length ? "Reassign task" : "Assign task"}
           </h3>
           <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
-            {assignees ? (
-              <>
-                Team member
-                <CommonSelect
-                  options={assigneeOptions.map((assignee) => ({
-                    label: assignee.name,
-                    value: String(assignee.id),
-                  }))}
-                  value={assigneeId}
-                  onValueChange={(value) => {
-                    setAssigneeId(value);
-                    setAssignmentError("");
-                  }}
-                  disabled={assigneeOptions.length === 0}
-                  placeholder="Choose a team member"
-                  triggerClassName="h-10! w-full rounded-lg"
-                />
-                {assigneeOptions.length === 0 && (
-                  <span className="text-xs font-normal text-gray-500">
-                    No members are assigned to this project yet.
-                  </span>
-                )}
-              </>
-            ) : (
-              <>
-                Team member ID
-                <Input
-                  type="number"
-                  min={1}
-                  step={1}
-                  value={assigneeId}
-                  onChange={(event) => {
-                    setAssigneeId(event.target.value);
-                    setAssignmentError("");
-                  }}
-                  className={fieldClassName}
-                />
-              </>
+            Team member
+            <CommonSelect
+              options={assigneeOptions.map((assignee) => ({
+                label: assignee.name,
+                value: String(assignee.id),
+              }))}
+              value={assigneeId}
+              onValueChange={(value) => {
+                setAssigneeId(value);
+                setAssignmentError("");
+              }}
+              disabled={isAssigneeSelectDisabled}
+              placeholder={
+                !assignees && !hasValidProject
+                  ? "Project unavailable"
+                  : isMembersLoading
+                    ? "Loading members..."
+                    : "Choose a team member"
+              }
+              triggerClassName="h-10! w-full rounded-lg"
+            />
+            {!isMembersLoading && assigneeOptions.length === 0 && (
+              <span className="text-xs font-normal text-gray-500">
+                No members are assigned to this project yet.
+              </span>
             )}
           </label>
           {assignmentError && (
@@ -198,11 +218,7 @@ export function UpdateTaskDialog({
           <Button
             type="button"
             variant="outline"
-            disabled={
-              isAssigning ||
-              isPending ||
-              (assignees !== undefined && assigneeOptions.length === 0)
-            }
+            disabled={isAssigning || isPending || isAssigneeSelectDisabled}
             onClick={handleAssign}
           >
             {isAssigning

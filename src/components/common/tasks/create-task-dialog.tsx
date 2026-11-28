@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { CommonSelect } from "@/components/common/common-select";
 import { useCreateTask } from "@/hooks/tasks/use-create-task";
+import { useGetProjects } from "@/hooks/projects/use-get-projects";
+import { useGetProjectTeams } from "@/hooks/projects/use-get-project-teams";
 import type {
   ApiTaskStatus,
   CreateTaskPayload,
@@ -23,7 +25,10 @@ import type {
 interface CreateTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Locks the task to this project and hides the project selector. */
   projectId?: number;
+  /** Preselects a project in the selector while still allowing changes. */
+  defaultProjectId?: number;
   defaultStatus?: TaskStatus;
   assignees?: TaskAssigneeOption[];
 }
@@ -56,13 +61,23 @@ export function CreateTaskDialog({
   open,
   onOpenChange,
   projectId,
+  defaultProjectId,
   defaultStatus = "todo",
   assignees,
 }: CreateTaskDialogProps) {
   const { mutate, isPending } = useCreateTask();
+  const initialProjectId = projectId ?? defaultProjectId;
   const [projectIdValue, setProjectIdValue] = useState(
-    projectId ? String(projectId) : ""
+    initialProjectId ? String(initialProjectId) : ""
   );
+  const { data: projectsData, isPending: areProjectsLoading } = useGetProjects({
+    per_page: 100,
+  });
+  const selectedProjectId = Number(projectId ?? projectIdValue);
+  const hasSelectedProject =
+    Number.isInteger(selectedProjectId) && selectedProjectId > 0;
+  const { data: projectTeams = [], isPending: areMembersLoading } =
+    useGetProjectTeams(assignees ? 0 : selectedProjectId);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] =
@@ -73,16 +88,40 @@ export function CreateTaskDialog({
   const [assignedTo, setAssignedTo] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [formError, setFormError] = useState("");
+  const projectOptions = useMemo(
+    () =>
+      (projectsData?.data?.data ?? []).map((project) => ({
+        label: project.name,
+        value: String(project.id),
+      })),
+    [projectsData]
+  );
+  const memberOptions = useMemo(() => {
+    if (assignees) return assignees;
+    return projectTeams
+      .flatMap((team) => team.members)
+      .reduce<TaskAssigneeOption[]>((members, member) => {
+        if (!members.some(({ id }) => id === member.id)) {
+          members.push({ id: member.id, name: member.name });
+        }
+        return members;
+      }, [])
+      .sort((first, second) => first.name.localeCompare(second.name));
+  }, [assignees, projectTeams]);
   const assigneeOptions = [
     { label: "Unassigned", value: "unassigned" },
-    ...(assignees ?? []).map((assignee) => ({
+    ...memberOptions.map((assignee) => ({
       label: assignee.name,
       value: String(assignee.id),
     })),
   ];
+  const handleProjectChange = (value: string) => {
+    setProjectIdValue(value);
+    setAssignedTo("");
+  };
 
   const resetForm = () => {
-    setProjectIdValue(projectId ? String(projectId) : "");
+    setProjectIdValue(initialProjectId ? String(initialProjectId) : "");
     setName("");
     setDescription("");
     setPriority("Medium");
@@ -95,7 +134,7 @@ export function CreateTaskDialog({
   const handleOpenChange = (nextOpen: boolean) => {
     if (isPending) return;
     if (nextOpen) {
-      setProjectIdValue(projectId ? String(projectId) : "");
+      setProjectIdValue(initialProjectId ? String(initialProjectId) : "");
       setStatus(apiStatusByTaskStatus[defaultStatus]);
       setFormError("");
     } else {
@@ -114,7 +153,7 @@ export function CreateTaskDialog({
       return;
     }
     if (!Number.isInteger(parsedProjectId) || parsedProjectId <= 0) {
-      setFormError("Enter a valid project ID.");
+      setFormError("Select a project.");
       return;
     }
     if (
@@ -155,16 +194,22 @@ export function CreateTaskDialog({
             <p className="text-sm text-gray-600">Project ID: {projectId}</p>
           ) : (
             <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
-              <span>Project ID <span className="text-destructive">*</span></span>
-              <Input
-                type="number"
-                min={1}
-                step={1}
-                required
+              <span>Project <span className="text-destructive">*</span></span>
+              <CommonSelect
+                options={projectOptions}
                 value={projectIdValue}
-                onChange={(event) => setProjectIdValue(event.target.value)}
-                className={fieldClassName}
+                onValueChange={handleProjectChange}
+                disabled={areProjectsLoading || projectOptions.length === 0}
+                placeholder={
+                  areProjectsLoading ? "Loading projects..." : "Choose a project"
+                }
+                triggerClassName="h-10! w-full rounded-lg"
               />
+              {!areProjectsLoading && projectOptions.length === 0 && (
+                <span className="text-xs font-normal text-gray-500">
+                  No projects are available yet.
+                </span>
+              )}
             </label>
           )}
 
@@ -216,38 +261,34 @@ export function CreateTaskDialog({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
-              {assignees ? (
-                <>
-                  Assign to project member
-                  <CommonSelect
-                    options={assigneeOptions}
-                    value={assignedTo || "unassigned"}
-                    onValueChange={(value) =>
-                      setAssignedTo(value === "unassigned" ? "" : value)
-                    }
-                    disabled={assignees.length === 0}
-                    placeholder="Choose a team member"
-                    triggerClassName="h-10! w-full rounded-lg"
-                  />
-                  {assignees.length === 0 && (
-                    <span className="text-xs font-normal text-gray-500">
-                      No members are assigned to this project yet.
-                    </span>
-                  )}
-                </>
-              ) : (
-                <>
-                  Assignee ID
-                  <Input
-                    type="number"
-                    min={1}
-                    step={1}
-                    value={assignedTo}
-                    onChange={(event) => setAssignedTo(event.target.value)}
-                    className={fieldClassName}
-                  />
-                </>
-              )}
+              Assign to project member
+              <CommonSelect
+                options={assigneeOptions}
+                value={assignedTo || "unassigned"}
+                onValueChange={(value) =>
+                  setAssignedTo(value === "unassigned" ? "" : value)
+                }
+                disabled={
+                  !hasSelectedProject ||
+                  areMembersLoading ||
+                  memberOptions.length === 0
+                }
+                placeholder={
+                  !hasSelectedProject
+                    ? "Select a project first"
+                    : areMembersLoading
+                      ? "Loading members..."
+                      : "Choose a team member"
+                }
+                triggerClassName="h-10! w-full rounded-lg"
+              />
+              {hasSelectedProject &&
+                !areMembersLoading &&
+                memberOptions.length === 0 && (
+                  <span className="text-xs font-normal text-gray-500">
+                    No members are assigned to this project yet.
+                  </span>
+                )}
             </label>
 
             <label className="flex flex-col gap-2 text-sm font-medium text-gray-700">
