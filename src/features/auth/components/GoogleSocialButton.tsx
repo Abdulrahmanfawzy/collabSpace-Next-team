@@ -38,12 +38,12 @@ export function GoogleSocialButton() {
                 variant="outline"
                 disabled={mutation.isPending}
                 onClick={handleGoogleLogin}
-                className="h-7.25 w-full rounded-[5px] border-border bg-transparent px-3 text-[9px] font-normal text-text-secondary shadow-none hover:bg-bg-light hover:text-text-primary md:text-[16px]"
+                className="h-12 w-full rounded-[5px] border-border bg-transparent px-4 py-2 text-[9px] font-normal text-text-secondary shadow-none hover:bg-bg-light hover:text-text-primary md:text-[16px] flex items-center justify-center gap-2.5"
             >
                 <Image
                     src={google}
                     alt="Google"
-                    className="mr-2.5 size-5 md:size-4"
+                    className="size-5 shrink-0 self-center md:size-4"
                 />
 
                 {mutation.isPending

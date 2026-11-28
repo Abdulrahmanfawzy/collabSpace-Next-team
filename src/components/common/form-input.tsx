@@ -66,8 +66,7 @@ function FormInput<TFieldValues extends FieldValues>({
             {leadingIcon ? (
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute left-2.25 right-0.5 top-1 z-10 size-4 flex translate-y-1
-                 items-center justify-center text-text-muted"
+                className="pointer-events-none absolute left-2.25 top-1/2 z-10 flex size-4 -translate-y-1/2 items-center justify-center text-text-muted"
               >
                 {leadingIcon}
               </span>
@@ -81,9 +80,9 @@ function FormInput<TFieldValues extends FieldValues>({
               value={(field.value ?? "") as string | number}
               aria-invalid={fieldState.invalid}
               className={cn(
-                "h-7.75 rounded-[7px] border-border bg-bg-light px-2.5 py-4 text-[9px] md:text-sm leading-none text-text-body shadow-none placeholder:text-text-muted focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/10",
-                leadingIcon && "pl-10",
-                isPassword && "pr-8",
+                "h-12 rounded-[7px] border-border bg-bg-light px-4 py-4 text-[9px] md:text-sm leading-none text-text-body shadow-none placeholder:text-text-muted focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/10",
+                leadingIcon && "pl-11",
+                isPassword && "pr-10",
                 className,
               )}
             />
