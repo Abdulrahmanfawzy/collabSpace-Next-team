@@ -13,6 +13,7 @@ import {
   AuthApiError,
 } from "@/features/auth/services/auth.service";
 import NavBar from "@/components/layout/Navbar/Navbar";
+import { ApiTokenProvider } from "@/components/providers/ApiTokenProvider";
 import { Toaster } from "sonner";
 
 interface DashboardLayoutProps {
@@ -47,6 +48,7 @@ export default async function DashboardLayout({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
+      <ApiTokenProvider token={accessToken} />
       <div className="bg-light w-full">
         <NavBar />
         <Toaster position="top-right" richColors />
